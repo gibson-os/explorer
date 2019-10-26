@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b5c1971248326f03ebd11dcdbb0f062",
+    "content-hash": "5f75b00e42534561ee7fe497654f52ea",
     "packages": [
         {
             "name": "gibson-os/core",
