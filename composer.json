@@ -1,5 +1,5 @@
 {
-  "name": "gibson-os/hc",
+  "name": "gibson-os/explorers",
   "require": {
     "mdo/mdo": "dev-master",
     "gibson-os/core": "dev-master",
