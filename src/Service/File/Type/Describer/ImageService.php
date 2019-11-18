@@ -1,19 +1,21 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Service\File\Type\Describer;
 
-use GibsonOS\Module\Explorer\Factory\File\Type\Image as ImageFactory;
+use GibsonOS\Module\Explorer\Factory\File\Type\ImageFactory as ImageFactory;
 
-class Image implements FileTypeDescriberInterface
+class ImageService implements FileTypeDescriberInterface
 {
     /**
      * @return string[]
      */
-    public function getFileEndings():array
+    public function getFileEndings(): array
     {
         return [
             'bmp',
             'png',
-            'gif'
+            'gif',
         ];
     }
 
@@ -24,7 +26,7 @@ class Image implements FileTypeDescriberInterface
     {
         return [
             'width',
-            'height'
+            'height',
         ];
     }
 

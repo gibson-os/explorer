@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Service\File\Type\Describer;
 
-use GibsonOS\Module\Explorer\Factory\File\Type\Video as VideoFactory;
+use GibsonOS\Module\Explorer\Factory\File\Type\VideoFactory as VideoFactory;
 
-class Video implements FileTypeDescriberInterface
+class VideoService implements FileTypeDescriberInterface
 {
     /**
      * @return string[]
@@ -27,7 +29,7 @@ class Video implements FileTypeDescriberInterface
             '3gp',
             'wmv',
             'rm',
-            'webm'
+            'webm',
         ];
     }
 
@@ -42,7 +44,7 @@ class Video implements FileTypeDescriberInterface
             'bitRate',
             'videoStreams',
             'audioStreams',
-            'subtitleStreams'
+            'subtitleStreams',
         ];
     }
 

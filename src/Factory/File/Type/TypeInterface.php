@@ -8,8 +8,7 @@ use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 interface TypeInterface
 {
     /**
-     * @param string $filename
      * @return FileTypeInterface
      */
-    public static function create(string $filename): FileTypeInterface;
+    public static function create(): FileTypeInterface;
 }

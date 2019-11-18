@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Model\Html5;
 
 use DateTime;
+use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
@@ -13,34 +16,42 @@ class Media extends AbstractModel
      * @var int
      */
     private $id;
+
     /**
      * @var string
      */
     private $token;
+
     /**
      * @var string
      */
     private $dir;
+
     /**
      * @var string
      */
     private $filename;
+
     /**
      * @var string|null
      */
     private $audioStream;
+
     /**
      * @var string
      */
     private $status;
+
     /**
      * @var int
      */
     private $type;
+
     /**
      * @var DateTime
      */
     private $added;
+
     /**
      * @var int
      */
@@ -76,11 +87,13 @@ class Media extends AbstractModel
 
     /**
      * @param int $id
+     *
      * @return Media
      */
     public function setId(int $id): Media
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -94,11 +107,13 @@ class Media extends AbstractModel
 
     /**
      * @param string $token
+     *
      * @return Media
      */
     public function setToken(string $token): Media
     {
         $this->token = $token;
+
         return $this;
     }
 
@@ -112,11 +127,13 @@ class Media extends AbstractModel
 
     /**
      * @param string $dir
+     *
      * @return Media
      */
     public function setDir(string $dir): Media
     {
         $this->dir = $dir;
+
         return $this;
     }
 
@@ -130,11 +147,13 @@ class Media extends AbstractModel
 
     /**
      * @param string $filename
+     *
      * @return Media
      */
     public function setFilename(string $filename): Media
     {
         $this->filename = $filename;
+
         return $this;
     }
 
@@ -148,11 +167,13 @@ class Media extends AbstractModel
 
     /**
      * @param string|null $audioStream
+     *
      * @return Media
      */
     public function setAudioStream(?string $audioStream): Media
     {
         $this->audioStream = $audioStream;
+
         return $this;
     }
 
@@ -166,11 +187,13 @@ class Media extends AbstractModel
 
     /**
      * @param string $status
+     *
      * @return Media
      */
     public function setStatus(string $status): Media
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -184,11 +207,13 @@ class Media extends AbstractModel
 
     /**
      * @param int $type
+     *
      * @return Media
      */
     public function setType(int $type): Media
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -202,11 +227,13 @@ class Media extends AbstractModel
 
     /**
      * @param DateTime $added
+     *
      * @return Media
      */
     public function setAdded(DateTime $added): Media
     {
         $this->added = $added;
+
         return $this;
     }
 
@@ -220,11 +247,13 @@ class Media extends AbstractModel
 
     /**
      * @param int $userId
+     *
      * @return Media
      */
     public function setUserId(int $userId): Media
     {
         $this->userId = $userId;
+
         return $this;
     }
 
@@ -238,6 +267,7 @@ class Media extends AbstractModel
 
     /**
      * @param User $user
+     *
      * @return Media
      */
     public function setUser(User $user): Media
@@ -249,12 +279,15 @@ class Media extends AbstractModel
     }
 
     /**
-     * @return Media
      * @throws SelectError
+     * @throws DateTimeError
+     *
+     * @return Media
      */
     public function loadUser(): Media
     {
         $this->loadForeignRecord($this->getUser(), $this->getUserId());
+
         return $this;
     }
 }

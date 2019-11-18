@@ -1,52 +1,88 @@
 <?php
+/** @noinspection SqlNoDataSourceInspection */
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Service;
 
+use GibsonOS\Core\Dto\Image;
 use GibsonOS\Core\Exception\FileNotFound;
+use GibsonOS\Core\Exception\GetError;
+use GibsonOS\Core\Exception\Image\CreateError;
+use GibsonOS\Core\Exception\Image\LoadError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
-use GibsonOS\Core\Factory\Image\Manipulate as ManipulateFactory;
-use GibsonOS\Core\Factory\Image\Thumbnail;
-use GibsonOS\Core\Factory\SqLite as SqLiteFactory;
+use GibsonOS\Core\Factory\SqLiteFactory;
 use GibsonOS\Core\Service\AbstractSingletonService;
-use GibsonOS\Core\Service\Image;
-use GibsonOS\Core\Service\SqLite;
-use GibsonOS\Core\Utility\Dir;
-use GibsonOS\Core\Utility\File;
-use GibsonOS\Core\Utility\Json;
+use GibsonOS\Core\Service\DirService;
+use GibsonOS\Core\Service\FileService;
+use GibsonOS\Core\Service\Image\ThumbnailService;
+use GibsonOS\Core\Service\SqLiteService;
+use GibsonOS\Core\Utility\JsonUtility;
 use SQLite3;
+use SQLite3Result;
 
-class GibsonStore extends AbstractSingletonService
+class GibsonStoreService extends AbstractSingletonService
 {
-    CONST META_TABLE_NAME = 'meta';
-    CONST META_CREATE_QUERY = 'CREATE TABLE meta (`key` varchar(32), `value` text, PRIMARY KEY (`key`))';
-    CONST FILE_META_TABLE_NAME = 'fileMeta';
-    CONST FILE_META_CREATE_QUERY = 'CREATE TABLE fileMeta (`chksum` varchar(32), `filename` varchar(255), `date` int, `key` varchar(32), `value` text, PRIMARY KEY (`key`, `filename`))';
-    CONST IMAGE_TABLE_NAME = 'image';
-    CONST IMAGE_CREATE_QUERY = 'CREATE TABLE image (`chksum` varchar(32), `filename` varchar(255), `date` int, `image` blob, PRIMARY KEY (`chksum`))';
-    CONST THUMBNAIL_TABLE_NAME = 'thumb';
-    CONST THUMBNAIL_CREATE_QUERY = 'CREATE TABLE thumb (`chksum` varchar(32), `filename` varchar(255), `date` int, `image` blob, PRIMARY KEY (`chksum`))';
+    const META_TABLE_NAME = 'meta';
+
+    const META_CREATE_QUERY = 'CREATE TABLE meta (`key` varchar(32), `value` text, PRIMARY KEY (`key`))';
+
+    const FILE_META_TABLE_NAME = 'fileMeta';
+
+    const FILE_META_CREATE_QUERY = 'CREATE TABLE fileMeta (`chksum` varchar(32), `filename` varchar(255), `date` int, `key` varchar(32), `value` text, PRIMARY KEY (`key`, `filename`))';
+
+    const IMAGE_TABLE_NAME = 'image';
+
+    const IMAGE_CREATE_QUERY = 'CREATE TABLE image (`chksum` varchar(32), `filename` varchar(255), `date` int, `image` blob, PRIMARY KEY (`chksum`))';
+
+    const THUMBNAIL_TABLE_NAME = 'thumb';
+
+    const THUMBNAIL_CREATE_QUERY = 'CREATE TABLE thumb (`chksum` varchar(32), `filename` varchar(255), `date` int, `image` blob, PRIMARY KEY (`chksum`))';
 
     /**
-     * @var SqLite[]
+     * @var SqLiteService[]
      */
     private $stores = [];
 
     /**
-     * @return AbstractSingletonService|GibsonStore
+     * @var FileService
      */
-    public static function getInstance()
+    private $file;
+
+    /**
+     * @var DirService
+     */
+    private $dir;
+
+    /**
+     * @var ThumbnailService
+     */
+    private $image;
+
+    /**
+     * GibsonStoreService constructor.
+     *
+     * @param FileService      $file
+     * @param DirService       $dir
+     * @param ThumbnailService $image
+     */
+    public function __construct(FileService $file, DirService $dir, ThumbnailService $image)
     {
-        return parent::getInstance();
+        $this->file = $file;
+        $this->dir = $dir;
+        $this->image = $image;
     }
 
     /**
      * @param string $dir
      * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * @param mixed  $default
+     *
      * @throws ExecuteError
      * @throws ReadError
+     *
+     * @return mixed
      */
     public function getDirMeta(string $dir, string $key, $default = null)
     {
@@ -58,7 +94,7 @@ class GibsonStore extends AbstractSingletonService
 
         try {
             $query = $store->query(
-                "SELECT * FROM " . self::META_TABLE_NAME .
+                'SELECT * FROM ' . self::META_TABLE_NAME .
                 " WHERE `key`='" . SQLite3::escapeString($key) . "'"
             );
         } catch (ExecuteError $exception) {
@@ -75,12 +111,14 @@ class GibsonStore extends AbstractSingletonService
     }
 
     /**
-     * @param string $dir
-     * @param null|array $keys
-     * @param mixed $default
-     * @return mixed
+     * @param string     $dir
+     * @param array|null $keys
+     * @param mixed      $default
+     *
      * @throws ExecuteError
      * @throws ReadError
+     *
+     * @return mixed
      */
     public function getDirMetas(string $dir, array $keys = null, $default = null)
     {
@@ -101,14 +139,14 @@ class GibsonStore extends AbstractSingletonService
         }
 
         try {
-            $query = $store->query("SELECT * FROM " . self::META_TABLE_NAME . $where);
+            $query = $store->query('SELECT * FROM ' . self::META_TABLE_NAME . $where);
         } catch (ExecuteError $exception) {
             return $default;
         }
 
         $returnList = [];
 
-        while ($row = $query->fetchArray(SQLITE_ASSOC)) {
+        while ($row = $query->fetchArray(SQLITE3_ASSOC)) {
             $returnList[$row['key']] = $row['value'];
         }
 
@@ -122,7 +160,8 @@ class GibsonStore extends AbstractSingletonService
     /**
      * @param string $dir
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @throws WriteError
      * @throws ExecuteError
      */
@@ -130,12 +169,13 @@ class GibsonStore extends AbstractSingletonService
     {
         $store = $this->getStoreToWrite($dir);
         $store->addTableIfNotExists(self::META_TABLE_NAME, self::META_CREATE_QUERY);
-        $store->execute("REPLACE INTO " . self::META_TABLE_NAME . " VALUES('" . SQLite3::escapeString($key) . "', '" . SQLite3::escapeString($value) . "')");
+        $store->execute('REPLACE INTO ' . self::META_TABLE_NAME . " VALUES('" . SQLite3::escapeString($key) . "', '" . SQLite3::escapeString($value) . "')");
     }
 
     /**
      * @param string $dir
-     * @param array $values
+     * @param array  $values
+     *
      * @throws ExecuteError
      * @throws WriteError
      */
@@ -149,15 +189,17 @@ class GibsonStore extends AbstractSingletonService
     /**
      * @param string $path
      * @param string $key
-     * @param mixed $default
-     * @return mixed
+     * @param mixed  $default
+     *
      * @throws ExecuteError
      * @throws ReadError
+     *
+     * @return mixed
      */
     public function getFileMeta(string $path, string $key, $default = null)
     {
-        $dir = File::getDir($path);
-        $filename = File::getFilename($path);
+        $dir = $this->file->getDir($path);
+        $filename = $this->file->getFilename($path);
 
         $store = $this->getStoreToRead($dir);
 
@@ -167,9 +209,9 @@ class GibsonStore extends AbstractSingletonService
 
         try {
             $query = $store->query(
-                "SELECT * FROM " . self::FILE_META_TABLE_NAME . " WHERE " .
+                'SELECT * FROM ' . self::FILE_META_TABLE_NAME . ' WHERE ' .
                 "`filename`='" . SQLite3::escapeString($filename) . "' AND " .
-                "`date`='" . SQLite3::escapeString(filemtime($path)) . "' AND `key`='" . SQLite3::escapeString($key) . "'"
+                "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "' AND `key`='" . SQLite3::escapeString($key) . "'"
             );
         } catch (ExecuteError $e) {
             return $default;
@@ -178,7 +220,7 @@ class GibsonStore extends AbstractSingletonService
         $row = $query->fetchArray(SQLITE3_ASSOC);
 
         if ($row !== false) {
-            $value = Json::decode($row['value']);
+            $value = JsonUtility::decode($row['value']);
 
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $value;
@@ -191,17 +233,19 @@ class GibsonStore extends AbstractSingletonService
     }
 
     /**
-     * @param string $path
-     * @param null|array $keys
-     * @param mixed $default
-     * @return mixed
+     * @param string     $path
+     * @param array|null $keys
+     * @param mixed      $default
+     *
      * @throws ReadError
      * @throws ExecuteError
+     *
+     * @return mixed
      */
     public function getFileMetas(string $path, array $keys = null, $default = null)
     {
-        $dir = File::getDir($path);
-        $filename = File::getFilename($path);
+        $dir = $this->file->getDir($path);
+        $filename = $this->file->getFilename($path);
 
         $store = $this->getStoreToRead($dir);
 
@@ -221,9 +265,9 @@ class GibsonStore extends AbstractSingletonService
 
         try {
             $query = $store->query(
-                "SELECT * FROM " . self::FILE_META_TABLE_NAME . " WHERE " .
+                'SELECT * FROM ' . self::FILE_META_TABLE_NAME . ' WHERE ' .
                 "`filename`='" . SQLite3::escapeString($filename) . "' AND " .
-                "`date`='" . SQLite3::escapeString(filemtime($path)) . "'" . $where
+                "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "'" . $where
             );
         } catch (ExecuteError $exception) {
             return $default;
@@ -232,7 +276,7 @@ class GibsonStore extends AbstractSingletonService
         $returnList = [];
 
         while ($row = $query->fetchArray(SQLITE3_ASSOC)) {
-            $value = Json::decode($row['value']);
+            $value = JsonUtility::decode($row['value']);
 
             if (json_last_error() === JSON_ERROR_NONE) {
                 $returnList[$row['key']] = $value;
@@ -250,15 +294,17 @@ class GibsonStore extends AbstractSingletonService
 
     /**
      * @param string $path
-     * @param array $keys
-     * @return bool
+     * @param array  $keys
+     *
      * @throws ExecuteError
      * @throws ReadError
+     *
+     * @return bool
      */
     public function hasFileMetas(string $path, array $keys): bool
     {
-        $dir = File::getDir($path);
-        $filename = File::getFilename($path);
+        $dir = $this->file->getDir($path);
+        $filename = $this->file->getFilename($path);
 
         $store = $this->getStoreToRead($dir);
 
@@ -278,36 +324,38 @@ class GibsonStore extends AbstractSingletonService
             return false;
         }
 
-        return count($keys) === (int)$count;
+        return count($keys) === (int) $count;
     }
 
     /**
-     * @param string $path
-     * @param string $key
-     * @param mixed $value
-     * @param null|string $checkSum
+     * @param string      $path
+     * @param string      $key
+     * @param mixed       $value
+     * @param string|null $checkSum
+     *
      * @throws ExecuteError
+     * @throws GetError
      * @throws WriteError
      */
     public function setFileMeta(string $path, string $key, $value, string $checkSum = null)
     {
-        $dir = File::getDir($path);
-        $filename = File::getFilename($path);
+        $dir = $this->file->getDir($path);
+        $filename = $this->file->getFilename($path);
         $checkSum = $this->getChecksum($path, $checkSum);
 
         if (
             is_array($value) ||
             is_object($value)
         ) {
-            $value = Json::encode($value);
+            $value = JsonUtility::encode($value);
         }
 
         $store = $this->getStoreToWrite($dir);
         $store->addTableIfNotExists(self::FILE_META_TABLE_NAME, self::FILE_META_CREATE_QUERY);
 
         $Query = $store->prepare(
-            "REPLACE INTO " . self::FILE_META_TABLE_NAME .
-            " VALUES(:checkSum, :filename, :date, :key, :value)"
+            'REPLACE INTO ' . self::FILE_META_TABLE_NAME .
+            ' VALUES(:checkSum, :filename, :date, :key, :value)'
         );
         $Query->bindValue(':checkSum', $checkSum, SQLITE3_TEXT);
         $Query->bindValue(':filename', $filename, SQLITE3_TEXT);
@@ -315,16 +363,18 @@ class GibsonStore extends AbstractSingletonService
         $Query->bindValue(':key', $key, SQLITE3_TEXT);
         $Query->bindValue(':value', $value, SQLITE3_TEXT);
 
-        if (!$Query->execute()) {
+        if (!$Query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
         }
     }
 
     /**
-     * @param string $dir
-     * @param array $values
-     * @param null|string $checkSum
+     * @param string      $dir
+     * @param array       $values
+     * @param string|null $checkSum
+     *
      * @throws ExecuteError
+     * @throws GetError
      * @throws WriteError
      */
     public function setFileMetas(string $dir, array $values, string $checkSum = null)
@@ -335,16 +385,19 @@ class GibsonStore extends AbstractSingletonService
     }
 
     /**
-     * @param string $path
-     * @param null|string $checkSum
-     * @return bool
-     * @throws ReadError
+     * @param string      $path
+     * @param string|null $checkSum
+     *
      * @throws ExecuteError
+     * @throws GetError
+     * @throws ReadError
+     *
+     * @return bool
      */
     public function hasFileImage(string $path, string $checkSum = null): bool
     {
-        $dir = File::getDir($path);
-        $filename = File::getFilename($path);
+        $dir = $this->file->getDir($path);
+        $filename = $this->file->getFilename($path);
         $store = $this->getStoreToRead($dir);
 
         if (!$store->hasTable(self::IMAGE_TABLE_NAME)) {
@@ -352,9 +405,9 @@ class GibsonStore extends AbstractSingletonService
         }
 
         $query = $store->querySingle(
-            "SELECT chksum FROM " . self::IMAGE_TABLE_NAME . " WHERE " .
+            'SELECT chksum FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
             "filename='" . SQLite3::escapeString($filename) . "' AND " .
-            "date='" . SQLite3::escapeString(filemtime($path)) . "'"
+            "date='" . SQLite3::escapeString((string) filemtime($path)) . "'"
         );
 
         if ($query) {
@@ -363,7 +416,7 @@ class GibsonStore extends AbstractSingletonService
 
         $checkSum = $this->getChecksum($path, $checkSum);
         $query = $store->querySingle(
-            "SELECT chksum FROM " . self::IMAGE_TABLE_NAME . " WHERE " .
+            'SELECT chksum FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
             "chksum='" . SQLite3::escapeString($checkSum) . "'"
         );
 
@@ -375,19 +428,23 @@ class GibsonStore extends AbstractSingletonService
     }
 
     /**
-     * @param string $path
+     * @param string   $path
      * @param int|null $width
      * @param int|null $height
-     * @return Image
+     *
      * @throws ExecuteError
      * @throws FileNotFound
      * @throws ReadError
      * @throws WriteError
+     * @throws LoadError
+     * @throws CreateError
+     *
+     * @return Image
      */
     public function getFileImage(string $path, int $width = null, int $height = null): Image
     {
-        $dir = File::getDir($path);
-        $filename = File::getFilename($path);
+        $dir = $this->file->getDir($path);
+        $filename = $this->file->getFilename($path);
         $store = $this->getStoreToWrite($dir);
 
         if (!$store->hasTable(self::IMAGE_TABLE_NAME)) {
@@ -396,7 +453,7 @@ class GibsonStore extends AbstractSingletonService
 
         try {
             $query = $store->query(
-                "SELECT * FROM " . self::IMAGE_TABLE_NAME . " WHERE " .
+                'SELECT * FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
                 "filename='" . SQLite3::escapeString($filename) . "'"
             );
         } catch (ExecuteError $e) {
@@ -406,25 +463,24 @@ class GibsonStore extends AbstractSingletonService
         $row = $query->fetchArray(SQLITE3_ASSOC);
 
         if ($row !== false) {
-            $image = new Image();
-            $image->load($row['image'], 'string');
+            $image = $this->image->load($row['image'], 'string');
 
             if (
                 $width !== null ||
                 $height !== null
             ) {
-                if ($width > $image->getWidth()) {
-                    $width = $image->getWidth();
+                if ($width > $this->image->getWidth($image)) {
+                    $width = $this->image->getWidth($image);
                 }
 
-                if ($height > $image->getHeight()) {
-                    $height = $image->getHeight();
+                if ($height > $this->image->getHeight($image)) {
+                    $height = $this->image->getHeight($image);
                 }
 
-                $imageManipulate = ManipulateFactory::createByImage($image);
-                $imageManipulate->resize(
-                    $width ?? $image->getWidth(),
-                    $height ?? $image->getHeight()
+                $this->image->resize(
+                    $image,
+                    $width ?? $this->image->getWidth($image),
+                    $height ?? $this->image->getHeight($image)
                 );
             }
 
@@ -435,17 +491,21 @@ class GibsonStore extends AbstractSingletonService
     }
 
     /**
-     * @deprecated
      * @param string $path
-     * @return Image|null
-     * @throws WriteError
+     *
      * @throws FileNotFound
      * @throws ExecuteError
+     * @throws LoadError
+     * @throws WriteError
+     *
+     * @return Image|null
+     *
+     * @deprecated
      */
     public function getThumbImage(string $path): ?Image
     {
-        $dir = File::getDir($path);
-        $filename = File::getFilename($path);
+        $dir = $this->file->getDir($path);
+        $filename = $this->file->getFilename($path);
         $store = $this->getStoreToWrite($dir);
 
         if (!$store->hasTable(self::THUMBNAIL_TABLE_NAME)) {
@@ -454,7 +514,7 @@ class GibsonStore extends AbstractSingletonService
 
         try {
             $query = $store->query(
-                "SELECT * FROM " . self::THUMBNAIL_TABLE_NAME . " WHERE " .
+                'SELECT * FROM ' . self::THUMBNAIL_TABLE_NAME . ' WHERE ' .
                 "filename='" . SQLite3::escapeString($filename) . "'"
             );
         } catch (ExecuteError $e) {
@@ -464,26 +524,26 @@ class GibsonStore extends AbstractSingletonService
         $row = $query->fetchArray(SQLITE3_ASSOC);
 
         if ($row !== false) {
-            $image = new Image();
-            $image->load($row['image'], 'string');
-
-            return $image;
+            return $this->image->load($row['image'], 'string');
         }
 
         return null;
     }
 
     /**
-     * @param string $path
-     * @param Image $image
-     * @param null|string $checkSum
+     * @param string      $path
+     * @param Image       $image
+     * @param string|null $checkSum
+     *
      * @throws ExecuteError
+     * @throws GetError
      * @throws WriteError
+     * @throws CreateError
      */
     public function setFileImage(string $path, Image $image, string $checkSum = null)
     {
-        $dir = File::getDir($path);
-        $filename = File::getFilename($path);
+        $dir = $this->file->getDir($path);
+        $filename = $this->file->getFilename($path);
         $store = $this->getStoreToWrite($dir);
         $store->addTableIfNotExists(self::IMAGE_TABLE_NAME, self::IMAGE_CREATE_QUERY);
         $checkSum = $this->getChecksum($path, $checkSum);
@@ -492,33 +552,34 @@ class GibsonStore extends AbstractSingletonService
         $query->bindValue(':chksum', $checkSum, SQLITE3_TEXT);
         $query->bindValue(':filename', $filename, SQLITE3_TEXT);
         $query->bindValue(':date', filemtime($path), SQLITE3_INTEGER);
-        $query->bindValue(':image', $image->getString('jpg'), SQLITE3_BLOB);
+        $query->bindValue(':image', $this->image->getString($image, 'jpg'), SQLITE3_BLOB);
 
-        if (!$query->execute()) {
+        if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
         }
 
         // @todo remove wenn explorer umgebaut ist
         $store->addTableIfNotExists(self::THUMBNAIL_TABLE_NAME, self::THUMBNAIL_CREATE_QUERY);
 
-        $thumbnail = Thumbnail::createByImage($image);
-        $thumbnail->create();
+        $thumbnail = $this->image->create();
 
         $query = $store->prepare('REPLACE INTO ' . self::THUMBNAIL_TABLE_NAME . ' VALUES(:chksum, :filename, :date, :image)');
         $query->bindValue(':chksum', $checkSum, SQLITE3_TEXT);
         $query->bindValue(':filename', $filename, SQLITE3_TEXT);
         $query->bindValue(':date', filemtime($path), SQLITE3_INTEGER);
-        $query->bindValue(':image', $thumbnail->getManipulate()->getImage()->getString('png'), SQLITE3_BLOB);
+        $query->bindValue(':image', $this->image->getString($thumbnail, 'png'), SQLITE3_BLOB);
 
-        if (!$query->execute()) {
+        if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
         }
     }
 
     /**
-     * @param string $dir
-     * @param null|array $existingFiles
+     * @param string     $dir
+     * @param array|null $existingFiles
+     *
      * @throws ExecuteError
+     * @throws GetError
      * @throws WriteError
      */
     public function cleanStore(string $dir, array $existingFiles = null)
@@ -529,9 +590,11 @@ class GibsonStore extends AbstractSingletonService
     }
 
     /**
-     * @param string $dir
-     * @param null|array $existingFiles
+     * @param string     $dir
+     * @param array|null $existingFiles
+     *
      * @throws ExecuteError
+     * @throws GetError
      * @throws WriteError
      */
     public function cleanFileMetas(string $dir, array $existingFiles = null)
@@ -542,7 +605,7 @@ class GibsonStore extends AbstractSingletonService
             return;
         }
 
-        if (is_null($existingFiles)) {
+        if ($existingFiles === null) {
             $existingFiles = $this->getExistingFiles($dir);
         }
 
@@ -551,16 +614,18 @@ class GibsonStore extends AbstractSingletonService
         }
 
         $store->execute(
-            "DELETE FROM " . self::FILE_META_TABLE_NAME .
+            'DELETE FROM ' . self::FILE_META_TABLE_NAME .
             " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')"
         );
     }
 
     /**
-     * @param string $dir
-     * @param null|array $existingFiles
+     * @param string     $dir
+     * @param array|null $existingFiles
+     *
      * @throws ExecuteError
      * @throws WriteError
+     * @throws GetError
      */
     public function cleanFileImages(string $dir, array $existingFiles = null)
     {
@@ -570,7 +635,7 @@ class GibsonStore extends AbstractSingletonService
             return;
         }
 
-        if (is_null($existingFiles)) {
+        if ($existingFiles === null) {
             $existingFiles = $this->getExistingFiles($dir);
         }
 
@@ -579,17 +644,20 @@ class GibsonStore extends AbstractSingletonService
         }
 
         $store->execute(
-            "DELETE FROM " . self::IMAGE_TABLE_NAME .
+            'DELETE FROM ' . self::IMAGE_TABLE_NAME .
             " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')"
         );
     }
 
     /**
-     * @deprecated
-     * @param string $dir
-     * @param null|array $existingFiles
+     * @param string     $dir
+     * @param array|null $existingFiles
+     *
      * @throws ExecuteError
      * @throws WriteError
+     * @throws GetError
+     *
+     * @deprecated
      */
     public function cleanFileThumbs(string $dir, array $existingFiles = null)
     {
@@ -599,7 +667,7 @@ class GibsonStore extends AbstractSingletonService
             return;
         }
 
-        if (is_null($existingFiles)) {
+        if ($existingFiles === null) {
             $existingFiles = $this->getExistingFiles($dir);
         }
 
@@ -608,13 +676,14 @@ class GibsonStore extends AbstractSingletonService
         }
 
         $store->execute(
-            "DELETE FROM " . self::THUMBNAIL_TABLE_NAME .
+            'DELETE FROM ' . self::THUMBNAIL_TABLE_NAME .
             " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')"
         );
     }
 
     /**
      * @param string $dir
+     *
      * @throws ExecuteError
      * @throws ReadError
      */
@@ -627,18 +696,21 @@ class GibsonStore extends AbstractSingletonService
 
     /**
      * @param string $dir
+     *
+     * @throws GetError
+     *
      * @return array
      */
     private function getExistingFiles(string $dir): array
     {
         $existingFiles = [];
 
-        foreach (glob(Dir::escapeForGlob($dir) . "*") as $path) {
+        foreach ($this->dir->getFiles($dir, '*') as $path) {
             if (is_dir($path)) {
                 continue;
             }
 
-            $existingFiles[] = File::getFilename($path);
+            $existingFiles[] = $this->file->getFilename($path);
         }
 
         return $existingFiles;
@@ -646,11 +718,13 @@ class GibsonStore extends AbstractSingletonService
 
     /**
      * @param string $dir
-     * @return SqLite
+     *
      * @throws ExecuteError
      * @throws WriteError
+     *
+     * @return SqLiteService
      */
-    private function getStoreToWrite(string $dir): SqLite
+    private function getStoreToWrite(string $dir): SqLiteService
     {
         if (!isset($this->stores[$dir])) {
             $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
@@ -661,17 +735,18 @@ class GibsonStore extends AbstractSingletonService
             throw new WriteError();
         }
 
-
         return $this->stores[$dir];
     }
 
     /**
      * @param string $dir
-     * @return SqLite
+     *
      * @throws ExecuteError
      * @throws ReadError
+     *
+     * @return SqLiteService
      */
-    private function getStoreToRead(string $dir): SqLite
+    private function getStoreToRead(string $dir): SqLiteService
     {
         if (!isset($this->stores[$dir])) {
             $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
@@ -686,16 +761,23 @@ class GibsonStore extends AbstractSingletonService
     }
 
     /**
-     * @param string $filename
-     * @param null|string $checkSum
+     * @param string      $filename
+     * @param string|null $checkSum
+     *
+     * @throws GetError
+     *
      * @return string
      */
     private function getChecksum(string $filename, string $checkSum = null): string
     {
-        if ($checkSum !== null) {
-            return $checkSum;
+        if ($checkSum === null) {
+            $checkSum = md5_file($filename);
+
+            if ($checkSum === false) {
+                throw new GetError(sprintf('Checksumme für "%s" nicht ermittelt!', $filename));
+            }
         }
 
-        return md5_file($filename);
+        return $checkSum;
     }
 }

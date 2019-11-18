@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Service\File\Type\Describer;
 
-use GibsonOS\Module\Explorer\Factory\File\Type\Jpg as JpgFactory;
+use GibsonOS\Module\Explorer\Factory\File\Type\JpgFactory as JpgFactory;
 
-class Jpg extends Image
+class JpgService extends ImageService
 {
     /**
      * @return string[]
@@ -12,7 +14,7 @@ class Jpg extends Image
     {
         return [
             'jpg',
-            'jpeg'
+            'jpeg',
         ];
     }
 

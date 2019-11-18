@@ -1,19 +1,23 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Service\File\Type;
 
-use GibsonOS\Core\Service\Image as ImageService;
+use GibsonOS\Core\Dto\Image;
 
 interface FileTypeInterface
 {
     /**
      * @param string $filename
+     *
      * @return array
      */
-    public function getMetas($filename);
+    public function getMetas(string $filename): array;
 
     /**
      * @param string $filename
-     * @return ImageService|null
+     *
+     * @return Image
      */
-    public function getImage($filename);
+    public function getImage(string $filename): Image;
 }

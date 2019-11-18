@@ -1,38 +1,73 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
+use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
+use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
+use GibsonOS\Core\Exception\File\OpenError;
 use GibsonOS\Core\Exception\FileNotFound;
+use GibsonOS\Core\Exception\GetError;
+use GibsonOS\Core\Exception\ProcessError;
+use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
-use GibsonOS\Core\Factory\Media as MediaFactory;
+use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
-use GibsonOS\Core\Utility\Dir;
+use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
-use GibsonOS\Module\Explorer\Service\GibsonStore;
-use GibsonOS\Module\Explorer\Service\Html5\Media as MediaService;
+use GibsonOS\Module\Explorer\Service\GibsonStoreService;
+use GibsonOS\Module\Explorer\Service\Html5\MediaService as MediaService;
 use mysqlDatabase;
 use mysqlTable;
+use stdClass;
 
-class ToSee extends AbstractDatabaseStore
+class ToSeeStore extends AbstractDatabaseStore
 {
-    public function __construct(mysqlDatabase $database = null)
+    /**
+     * @var DirService
+     */
+    private $dir;
+
+    /**
+     * @var MediaService
+     */
+    private $media;
+
+    /**
+     * ToSee constructor.
+     *
+     * @param mysqlDatabase $database
+     * @param DirService    $dir
+     * @param MediaService  $media
+     */
+    public function __construct(mysqlDatabase $database, DirService $dir, MediaService $media)
     {
         parent::__construct($database);
 
         $this->where[] = '`' . $this->getTableName() . '`.`status` IN(' .
-            $this->database->escape(MediaService::STATUS_GENERATE) . ', ' .
-            $this->database->escape(MediaService::STATUS_GENERATED) . ')';
+            $this->database->escape(ConvertStatus::STATUS_GENERATE) . ', ' .
+            $this->database->escape(ConvertStatus::STATUS_GENERATED) . ')';
+
+        $this->dir = $dir;
+        $this->media = $media;
     }
 
     /**
-     * @return array[]
-     * @throws ExecuteError
-     * @throws ReadError
      * @throws ConvertStatusError
+     * @throws DateTimeError
+     * @throws ExecuteError
      * @throws FileNotFound
+     * @throws GetError
+     * @throws OpenError
+     * @throws ProcessError
+     * @throws ReadError
+     * @throws SetError
+     *
+     * @return array[]
      */
-    public function getList()
+    public function getList(): array
     {
         $select = [
             'token' => 'token',
@@ -60,18 +95,19 @@ class ToSee extends AbstractDatabaseStore
 
         $this->table->appendUnion();
         $this->table->appendUnion($positionTable->getSelect());
-        $this->table->setOrderBy( '`orderDate` DESC');
+        $this->table->setOrderBy('`orderDate` DESC');
         $this->table->selectUnion(false);
 
-        $gibsonStore = GibsonStore::getInstance();
+        /** @var GibsonStoreService $gibsonStore */
+        $gibsonStore = GibsonStoreService::getInstance();
         $medias = [];
 
         foreach ($this->table->connection->fetchObjectList() as $media) {
             $filenamePattern = $this->generateFilenamePattern($media->filename);
-            $key = Dir::escapeForGlob($media->dir) . $filenamePattern;
+            $key = $this->dir->escapeForGlob($media->dir) . $filenamePattern;
 
-            $media->position = (int)$media->position;
-            $media->duration = (int)$gibsonStore->getFileMeta(
+            $media->position = (int) $media->position;
+            $media->duration = (int) $gibsonStore->getFileMeta(
                 $media->dir . $media->filename,
                 'duration',
                 0
@@ -117,12 +153,14 @@ class ToSee extends AbstractDatabaseStore
                 'status' => $media->status,
                 'duration' => $media->duration,
                 'position' => $media->position,
-                'nextFiles' => count($nextFiles)
+                'nextFiles' => count($nextFiles),
             ];
 
-            if ($media->status === MediaService::STATUS_GENERATE) {
-                $mediaService = MediaFactory::create($media->dir . $media->filename);
-                $convertStatus = $mediaService->getConvertStatus($media->token . '.mp4');
+            if ($media->status === ConvertStatus::STATUS_GENERATE) {
+                $mediaModel = (new Media())
+                    ->setFilename($media->token . '.mp4')
+                ;
+                $convertStatus = $this->media->getConvertStatus($mediaModel);
 
                 $listMedia['convertPercent'] = $convertStatus->getPercent();
                 $listMedia['convertTime'] = $convertStatus->getTime()->getTimestamp();
@@ -137,17 +175,18 @@ class ToSee extends AbstractDatabaseStore
 
     private function generateFilenamePattern($filename)
     {
-        return preg_replace('/(s?)\d{1,3}e?\d.*/i', '$1*', Dir::escapeForGlob($filename));
+        return preg_replace('/(s?)\d{1,3}e?\d.*/i', '$1*', $this->dir->escapeForGlob($filename));
     }
 
     /**
-     * @param $media
-     * @param $pattern
+     * @param stdClass $media
+     * @param string   $pattern
+     *
      * @return array
      */
-    private function getNextFiles($media, $pattern)
+    private function getNextFiles(stdClass $media, string $pattern): array
     {
-        $fileNames = glob($pattern);
+        $fileNames = (array) glob($pattern);
         $mediaFilePath = $media->dir . $media->filename;
         asort($fileNames);
 
@@ -167,18 +206,12 @@ class ToSee extends AbstractDatabaseStore
         return $filesWithBiggerNumbers;
     }
 
-    /**
-     * @return string
-     */
-    protected function getTableName()
+    protected function getTableName(): string
     {
         return 'explorer_html5_media';
     }
 
-    /**
-     * @return string
-     */
-    protected function getCountField()
+    protected function getCountField(): string
     {
         return '`id`';
     }
@@ -186,7 +219,7 @@ class ToSee extends AbstractDatabaseStore
     /**
      * @return string[]
      */
-    protected function getOrderMapping()
+    protected function getOrderMapping(): array
     {
         return [];
     }

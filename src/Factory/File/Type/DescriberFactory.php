@@ -1,20 +1,28 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Factory\File\Type;
 
 use GibsonOS\Core\Exception\FileNotFound;
-use GibsonOS\Core\Utility\Dir;
-use GibsonOS\Core\Utility\File;
+use GibsonOS\Core\Factory\DirFactory;
+use GibsonOS\Core\Factory\FileFactory;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 
-class Describer
+class DescriberFactory
 {
     /**
-     * @param $filename
-     * @return FileTypeDescriberInterface
+     * @param string $filename
+     *
+     * @throws \GibsonOS\Core\Exception\GetError
      * @throws FileNotFound
+     *
+     * @return FileTypeDescriberInterface
      */
     public static function create(string $filename): FileTypeDescriberInterface
     {
+        $fileService = FileFactory::create();
+        $dirService = DirFactory::create();
+
         $namespace = '\\GibsonOS\\Module\\Explorer\\Service\\File\\Type\\Describer\\';
         $classPath =
             realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR .
@@ -25,10 +33,10 @@ class Describer
             'File' . DIRECTORY_SEPARATOR .
             'Type' . DIRECTORY_SEPARATOR .
             'Describer' . DIRECTORY_SEPARATOR;
-        $fileEnding = File::getFileEnding($filename);
+        $fileEnding = $fileService->getFileEnding($filename);
 
-        foreach (glob(Dir::escapeForGlob($classPath) . '*.php') as $path) {
-            $classFilename = File::getFilename($path);
+        foreach ($dirService->getFiles($classPath, '*.php') as $path) {
+            $classFilename = $fileService->getFilename($path);
 
             if (mb_strpos($classFilename, 'Interface') !== false) {
                 continue;

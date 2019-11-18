@@ -1,17 +1,25 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Repository\Html5;
 
 use DateTime;
+use GibsonOS\Core\Exception\DateTimeError;
+use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Html5\Media as MediaModel;
 
-class Media extends AbstractRepository
+class MediaRepository extends AbstractRepository
 {
     /**
      * @param string $token
-     * @return MediaModel
+     *
+     * @throws DateTimeError
+     * @throws GetError
      * @throws SelectError
+     *
+     * @return MediaModel
      */
     public static function getByToken($token)
     {
@@ -34,8 +42,12 @@ class Media extends AbstractRepository
 
     /**
      * @param string $status
-     * @return MediaModel[]
+     *
      * @throws SelectError
+     * @throws DateTimeError
+     * @throws GetError
+     *
+     * @return MediaModel[]
      */
     public static function getAllByStatus($status)
     {
@@ -66,8 +78,12 @@ class Media extends AbstractRepository
 
     /**
      * @param DateTime $date
-     * @return array
+     *
+     * @throws DateTimeError
+     * @throws GetError
      * @throws SelectError
+     *
+     * @return array
      */
     public static function getAllOlderThan(DateTime $date)
     {

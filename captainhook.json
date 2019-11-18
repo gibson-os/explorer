@@ -1,0 +1,43 @@
+{
+  "commit-msg": {
+    "enabled": true,
+    "actions": [
+      {
+        "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\Regex",
+        "options": {
+          "regex": "/^(ADD|UPDATE|FIX|REMOVE|CHANGE|REFACTOR|MERGE)/i",
+          "error": "\nThe commit message has to contain one of the following keywords:\nADD, UPDATE, FIX, REMOVE, CHANGE, REFACTOR, MERGE\n\nExample:\nADD commit-message check"
+        }
+      },
+      {
+        "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\Regex",
+        "options": {
+          "regex": "/^(ADD|UPDATE|FIX|REMOVE|CHANGE|REFACTOR|MERGE) .{5,}/i",
+          "error": "\nEmpty Commit Message not allowed.\n\nExample:\nADD commit-message check"
+        }
+      }
+    ]
+  },
+  "pre-commit": {
+    "enabled": true,
+    "actions": [
+      {
+        "action": "php ./vendor/friendsofphp/php-cs-fixer/php-cs-fixer fix src --verbose --dry-run"
+      },
+      {
+        "action": "php ./vendor/phpstan/phpstan/bin/phpstan analyse -l 7 src"
+      },
+      {
+        "action": "echo 'php ./vendor/phpmd/phpmd/src/bin/phpmd src text ruleset.xml'"
+      }
+    ]
+  },
+  "pre-push": {
+    "enabled": true,
+    "actions": [
+      {
+        "action": "php ./vendor/codeception/codeception/codecept run unit --ext DotReporter --no-ansi --no-colors"
+      }
+    ]
+  }
+}

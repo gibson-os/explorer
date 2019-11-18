@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Service\File\Type\Describer;
 
 interface FileTypeDescriberInterface

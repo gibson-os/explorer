@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Model\Html5\Media;
 
 use DateTime;
+use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
@@ -14,22 +17,27 @@ class Position extends AbstractModel
      * @var int
      */
     private $mediaId;
+
     /**
      * @var int
      */
     private $userId;
+
     /**
      * @var int
      */
     private $position;
+
     /**
      * @var DateTime
      */
     private $modified;
+
     /**
      * @var Media
      */
     private $media;
+
     /**
      * @var User
      */
@@ -61,11 +69,13 @@ class Position extends AbstractModel
 
     /**
      * @param int $mediaId
+     *
      * @return Position
      */
     public function setMediaId(int $mediaId): Position
     {
         $this->mediaId = $mediaId;
+
         return $this;
     }
 
@@ -79,11 +89,13 @@ class Position extends AbstractModel
 
     /**
      * @param int $userId
+     *
      * @return Position
      */
     public function setUserId(int $userId): Position
     {
         $this->userId = $userId;
+
         return $this;
     }
 
@@ -97,11 +109,13 @@ class Position extends AbstractModel
 
     /**
      * @param int $position
+     *
      * @return Position
      */
     public function setPosition(int $position): Position
     {
         $this->position = $position;
+
         return $this;
     }
 
@@ -115,11 +129,13 @@ class Position extends AbstractModel
 
     /**
      * @param DateTime $modified
+     *
      * @return Position
      */
     public function setModified(DateTime $modified): Position
     {
         $this->modified = $modified;
+
         return $this;
     }
 
@@ -133,23 +149,27 @@ class Position extends AbstractModel
 
     /**
      * @param Media $media
+     *
      * @return Position
      */
     public function setMedia(Media $media): Position
     {
         $this->media = $media;
-        $this->setMediaId($media->getToken());
+        $this->setMediaId($media->getId());
 
         return $this;
     }
 
     /**
-     * @return Position
      * @throws SelectError
+     * @throws DateTimeError
+     *
+     * @return Position
      */
     public function loadMedia(): Position
     {
         $this->loadForeignRecord($this->getMedia(), $this->getMediaId());
+
         return $this;
     }
 
@@ -163,6 +183,7 @@ class Position extends AbstractModel
 
     /**
      * @param User $user
+     *
      * @return Position
      */
     public function setUser(User $user): Position
@@ -174,12 +195,15 @@ class Position extends AbstractModel
     }
 
     /**
-     * @return Position
+     * @throws DateTimeError
      * @throws SelectError
+     *
+     * @return Position
      */
     public function loadUser(): Position
     {
         $this->loadForeignRecord($this->getUser(), $this->getUserId());
+
         return $this;
     }
 }

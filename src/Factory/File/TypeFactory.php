@@ -1,40 +1,49 @@
 <?php
+declare(strict_types=1);
+
 namespace GibsonOS\Module\Explorer\Factory\File;
 
 use GibsonOS\Core\Exception\FileNotFound;
-use GibsonOS\Module\Explorer\Factory\File\Type\Describer;
+use GibsonOS\Core\Exception\GetError;
+use GibsonOS\Core\Factory\FileFactory;
+use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Factory\File\Type\TypeInterface;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
-use GibsonOS\Core\Utility\File;
 use OutOfBoundsException;
 
-class Type
+class TypeFactory
 {
     /**
-     * @param $filename
-     * @return FileTypeInterface
+     * @param string $filename
+     *
+     * @throws GetError
      * @throws FileNotFound
+     *
+     * @return FileTypeInterface
      */
-    public static function create($filename)
+    public static function create(string $filename): FileTypeInterface
     {
-        $fileTypeDescriber = Describer::create($filename);
+        $fileTypeDescriber = DescriberFactory::create($filename);
         /** @var TypeInterface $className */
         $className = $fileTypeDescriber->getFactoryClassName();
-        $fileType = $className::create($filename);
+        $fileType = $className::create();
 
         return $fileType;
     }
 
     /**
-     * @param $filename
+     * @param string                     $filename
      * @param FileTypeDescriberInterface $fileTypeDescriber
-     * @return mixed
+     *
      * @throws FileNotFound
+     *
+     * @return mixed
      */
-    public static function createWithDescriber($filename, FileTypeDescriberInterface $fileTypeDescriber)
+    public static function createWithDescriber(string $filename, FileTypeDescriberInterface $fileTypeDescriber)
     {
-        $fileEnding = File::getFileEnding($filename);
+        $fileService = FileFactory::create();
+        $fileEnding = $fileService->getFileEnding($filename);
 
         if (!in_array($fileEnding, $fileTypeDescriber->getFileEndings())) {
             throw new OutOfBoundsException('Datei passt nicht zum Describer!');
