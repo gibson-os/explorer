@@ -10,5 +10,5 @@ interface TypeInterface
     /**
      * @return FileTypeInterface
      */
-    public static function create(): FileTypeInterface;
+    public static function create();
 }

@@ -4,21 +4,29 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Factory\File\Type;
 
 use GibsonOS\Core\Exception\GetError;
+use GibsonOS\Core\Factory\AbstractSingletonFactory;
 use GibsonOS\Core\Factory\Ffmpeg\MediaFactory;
-use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
-use GibsonOS\Module\Explorer\Service\File\Type\VideoService as VideoTypeService;
+use GibsonOS\Module\Explorer\Service\File\Type\VideoService;
 
-class VideoFactory implements TypeInterface
+class VideoFactory extends AbstractSingletonFactory implements TypeInterface
 {
     /**
      * @throws GetError
      *
-     * @return VideoTypeService
+     * @return VideoService
      */
-    public static function create(): FileTypeInterface
+    public static function createInstance(): VideoService
     {
         $mediaService = MediaFactory::create();
 
-        return new VideoTypeService($mediaService);
+        return new VideoService($mediaService);
+    }
+
+    public static function create(): VideoService
+    {
+        /** @var VideoService $service */
+        $service = parent::create();
+
+        return $service;
     }
 }

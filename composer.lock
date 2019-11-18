@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec63fd7deebb37868be012d21105e63d",
+    "content-hash": "7dcc62596a5bf4160dfbf34ea262c748",
     "packages": [
         {
             "name": "gibson-os/core",
@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "git@wolli.dyndns.tv:/home/git/gibsonOs/Core.git",
-                "reference": "564ff49cc4e548d3a5ff463337cdc36cc03ca892"
+                "reference": "50c34128f37551ef28e48fba6c366def7dc6897c"
             },
             "require": {
                 "ext-fileinfo": "*",
@@ -63,7 +63,7 @@
                     "php ./vendor/codeception/codeception/codecept generate:test unit"
                 ]
             },
-            "time": "2019-11-18T21:05:38+00:00"
+            "time": "2019-11-18T22:47:57+00:00"
         },
         {
             "name": "mdo/mdo",
@@ -5510,7 +5510,9 @@
     "prefer-lowest": false,
     "platform": {
         "ext-mbstring": "*",
-        "ext-exif": "*"
+        "ext-exif": "*",
+        "ext-sqlite3": "*",
+        "ext-json": "*"
     },
     "platform-dev": []
 }

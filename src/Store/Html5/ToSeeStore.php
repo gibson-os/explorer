@@ -36,14 +36,24 @@ class ToSeeStore extends AbstractDatabaseStore
     private $media;
 
     /**
+     * @var GibsonStoreService
+     */
+    private $gibsonStore;
+
+    /**
      * ToSee constructor.
      *
-     * @param mysqlDatabase $database
-     * @param DirService    $dir
-     * @param MediaService  $media
+     * @param mysqlDatabase      $database
+     * @param DirService         $dir
+     * @param MediaService       $media
+     * @param GibsonStoreService $gibsonStore
      */
-    public function __construct(mysqlDatabase $database, DirService $dir, MediaService $media)
-    {
+    public function __construct(
+        mysqlDatabase $database,
+        DirService $dir,
+        MediaService $media,
+        GibsonStoreService $gibsonStore
+    ) {
         parent::__construct($database);
 
         $this->where[] = '`' . $this->getTableName() . '`.`status` IN(' .
@@ -52,6 +62,7 @@ class ToSeeStore extends AbstractDatabaseStore
 
         $this->dir = $dir;
         $this->media = $media;
+        $this->gibsonStore = $gibsonStore;
     }
 
     /**
@@ -98,8 +109,6 @@ class ToSeeStore extends AbstractDatabaseStore
         $this->table->setOrderBy('`orderDate` DESC');
         $this->table->selectUnion(false);
 
-        /** @var GibsonStoreService $gibsonStore */
-        $gibsonStore = GibsonStoreService::getInstance();
         $medias = [];
 
         foreach ($this->table->connection->fetchObjectList() as $media) {
@@ -107,7 +116,7 @@ class ToSeeStore extends AbstractDatabaseStore
             $key = $this->dir->escapeForGlob($media->dir) . $filenamePattern;
 
             $media->position = (int) $media->position;
-            $media->duration = (int) $gibsonStore->getFileMeta(
+            $media->duration = (int) $this->gibsonStore->getFileMeta(
                 $media->dir . $media->filename,
                 'duration',
                 0

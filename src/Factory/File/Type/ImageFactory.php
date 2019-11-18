@@ -3,19 +3,27 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Factory\File\Type;
 
+use GibsonOS\Core\Factory\AbstractSingletonFactory;
 use GibsonOS\Core\Factory\ImageFactory as CoreImageFactory;
-use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
-use GibsonOS\Module\Explorer\Service\File\Type\ImageService as ImageTypeService;
+use GibsonOS\Module\Explorer\Service\File\Type\ImageService;
 
-class ImageFactory implements TypeInterface
+class ImageFactory extends AbstractSingletonFactory implements TypeInterface
 {
     /**
-     * @return ImageTypeService
+     * @return ImageService
      */
-    public static function create(): FileTypeInterface
+    public static function createInstance(): ImageService
     {
         $imageService = CoreImageFactory::create();
 
-        return new ImageTypeService($imageService);
+        return new ImageService($imageService);
+    }
+
+    public static function create(): ImageService
+    {
+        /** @var ImageService $service */
+        $service = parent::create();
+
+        return $service;
     }
 }

@@ -13,7 +13,6 @@ use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Factory\SqLiteFactory;
-use GibsonOS\Core\Service\AbstractSingletonService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\Image\ThumbnailService;
@@ -22,7 +21,7 @@ use GibsonOS\Core\Utility\JsonUtility;
 use SQLite3;
 use SQLite3Result;
 
-class GibsonStoreService extends AbstractSingletonService
+class GibsonStoreService
 {
     const META_TABLE_NAME = 'meta';
 
@@ -353,17 +352,17 @@ class GibsonStoreService extends AbstractSingletonService
         $store = $this->getStoreToWrite($dir);
         $store->addTableIfNotExists(self::FILE_META_TABLE_NAME, self::FILE_META_CREATE_QUERY);
 
-        $Query = $store->prepare(
+        $query = $store->prepare(
             'REPLACE INTO ' . self::FILE_META_TABLE_NAME .
             ' VALUES(:checkSum, :filename, :date, :key, :value)'
         );
-        $Query->bindValue(':checkSum', $checkSum, SQLITE3_TEXT);
-        $Query->bindValue(':filename', $filename, SQLITE3_TEXT);
-        $Query->bindValue(':date', filemtime($path), SQLITE3_INTEGER);
-        $Query->bindValue(':key', $key, SQLITE3_TEXT);
-        $Query->bindValue(':value', $value, SQLITE3_TEXT);
+        $query->bindValue(':checkSum', $checkSum, SQLITE3_TEXT);
+        $query->bindValue(':filename', $filename, SQLITE3_TEXT);
+        $query->bindValue(':date', filemtime($path), SQLITE3_INTEGER);
+        $query->bindValue(':key', $key, SQLITE3_TEXT);
+        $query->bindValue(':value', $value, SQLITE3_TEXT);
 
-        if (!$Query->execute() instanceof SQLite3Result) {
+        if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
         }
     }
