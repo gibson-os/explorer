@@ -174,10 +174,15 @@ class Position extends AbstractModel
     }
 
     /**
+     * @throws DateTimeError
+     * @throws SelectError
+     *
      * @return User
      */
     public function getUser(): User
     {
+        $this->loadForeignRecord($this->user, $this->getUserId());
+
         return $this->user;
     }
 
@@ -190,19 +195,6 @@ class Position extends AbstractModel
     {
         $this->user = $user;
         $this->setUserId($user->getId());
-
-        return $this;
-    }
-
-    /**
-     * @throws DateTimeError
-     * @throws SelectError
-     *
-     * @return Position
-     */
-    public function loadUser(): Position
-    {
-        $this->loadForeignRecord($this->getUser(), $this->getUserId());
 
         return $this;
     }

@@ -258,10 +258,15 @@ class Media extends AbstractModel
     }
 
     /**
+     * @throws DateTimeError
+     * @throws SelectError
+     *
      * @return User
      */
     public function getUser(): User
     {
+        $this->loadForeignRecord($this->user, $this->getUserId());
+
         return $this->user;
     }
 
@@ -274,19 +279,6 @@ class Media extends AbstractModel
     {
         $this->user = $user;
         $this->setUserId($user->getId());
-
-        return $this;
-    }
-
-    /**
-     * @throws SelectError
-     * @throws DateTimeError
-     *
-     * @return Media
-     */
-    public function loadUser(): Media
-    {
-        $this->loadForeignRecord($this->getUser(), $this->getUserId());
 
         return $this;
     }
