@@ -69,27 +69,16 @@ class Media extends AbstractModel
         $this->user = new User();
     }
 
-    /**
-     * @return string
-     */
     public static function getTableName(): string
     {
         return 'explorer_html5_media';
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return Media
-     */
     public function setId(int $id): Media
     {
         $this->id = $id;
@@ -97,19 +86,11 @@ class Media extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getToken(): string
     {
         return $this->token;
     }
 
-    /**
-     * @param string $token
-     *
-     * @return Media
-     */
     public function setToken(string $token): Media
     {
         $this->token = $token;
@@ -117,19 +98,11 @@ class Media extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDir(): string
     {
         return $this->dir;
     }
 
-    /**
-     * @param string $dir
-     *
-     * @return Media
-     */
     public function setDir(string $dir): Media
     {
         $this->dir = $dir;
@@ -137,19 +110,11 @@ class Media extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFilename(): string
     {
         return $this->filename;
     }
 
-    /**
-     * @param string $filename
-     *
-     * @return Media
-     */
     public function setFilename(string $filename): Media
     {
         $this->filename = $filename;
@@ -157,19 +122,11 @@ class Media extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getAudioStream(): ?string
     {
         return $this->audioStream;
     }
 
-    /**
-     * @param string|null $audioStream
-     *
-     * @return Media
-     */
     public function setAudioStream(?string $audioStream): Media
     {
         $this->audioStream = $audioStream;
@@ -177,19 +134,11 @@ class Media extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getStatus(): string
     {
         return $this->status;
     }
 
-    /**
-     * @param string $status
-     *
-     * @return Media
-     */
     public function setStatus(string $status): Media
     {
         $this->status = $status;
@@ -197,19 +146,11 @@ class Media extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getType(): int
     {
         return $this->type;
     }
 
-    /**
-     * @param int $type
-     *
-     * @return Media
-     */
     public function setType(int $type): Media
     {
         $this->type = $type;
@@ -217,19 +158,11 @@ class Media extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getAdded(): DateTime
     {
         return $this->added;
     }
 
-    /**
-     * @param DateTime $added
-     *
-     * @return Media
-     */
     public function setAdded(DateTime $added): Media
     {
         $this->added = $added;
@@ -237,19 +170,11 @@ class Media extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getUserId(): int
     {
         return $this->userId;
     }
 
-    /**
-     * @param int $userId
-     *
-     * @return Media
-     */
     public function setUserId(int $userId): Media
     {
         $this->userId = $userId;
@@ -260,8 +185,6 @@ class Media extends AbstractModel
     /**
      * @throws DateTimeError
      * @throws SelectError
-     *
-     * @return User
      */
     public function getUser(): User
     {
@@ -270,11 +193,6 @@ class Media extends AbstractModel
         return $this->user;
     }
 
-    /**
-     * @param User $user
-     *
-     * @return Media
-     */
     public function setUser(User $user): Media
     {
         $this->user = $user;

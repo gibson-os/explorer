@@ -22,8 +22,6 @@ class VideoService implements FileTypeInterface
 
     /**
      * Video constructor.
-     *
-     * @param MediaService $mediaService
      */
     public function __construct(MediaService $mediaService)
     {
@@ -31,16 +29,12 @@ class VideoService implements FileTypeInterface
     }
 
     /**
-     * @param string $filename
-     *
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
      * @throws LoadError
      * @throws NoVideoError
      * @throws ProcessError
-     *
-     * @return Image
      */
     public function getImage(string $filename): Image
     {
@@ -62,12 +56,8 @@ class VideoService implements FileTypeInterface
     }
 
     /**
-     * @param string $filename
-     *
      * @throws FileNotFound
      * @throws ProcessError
-     *
-     * @return array
      */
     public function getMetas(string $filename): array
     {
@@ -83,11 +73,6 @@ class VideoService implements FileTypeInterface
         ];
     }
 
-    /**
-     * @param Media $media
-     *
-     * @return array
-     */
     private function getVideoStreams(Media $media): array
     {
         $videoStreams = [];
@@ -107,11 +92,6 @@ class VideoService implements FileTypeInterface
         return $videoStreams;
     }
 
-    /**
-     * @param Media $media
-     *
-     * @return array
-     */
     private function getAudioStreams(Media $media): array
     {
         $audioStreams = [];
@@ -130,11 +110,6 @@ class VideoService implements FileTypeInterface
         return $audioStreams;
     }
 
-    /**
-     * @param Media $media
-     *
-     * @return array
-     */
     private function getSubtitleStreams(Media $media): array
     {
         $subtitleStreams = [];

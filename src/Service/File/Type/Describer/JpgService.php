@@ -18,9 +18,6 @@ class JpgService extends ImageService
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getFactoryClassName(): string
     {
         return JpgFactory::class;

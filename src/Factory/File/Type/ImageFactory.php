@@ -9,9 +9,6 @@ use GibsonOS\Module\Explorer\Service\File\Type\ImageService;
 
 class ImageFactory extends AbstractSingletonFactory implements TypeInterface
 {
-    /**
-     * @return ImageService
-     */
     public static function createInstance(): ImageService
     {
         $imageService = CoreImageFactory::create();

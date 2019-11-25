@@ -61,10 +61,6 @@ class GibsonStoreService
 
     /**
      * GibsonStoreService constructor.
-     *
-     * @param FileService      $file
-     * @param DirService       $dir
-     * @param ThumbnailService $image
      */
     public function __construct(FileService $file, DirService $dir, ThumbnailService $image)
     {
@@ -74,9 +70,7 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $dir
-     * @param string $key
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @throws ExecuteError
      * @throws ReadError
@@ -110,9 +104,7 @@ class GibsonStoreService
     }
 
     /**
-     * @param string     $dir
-     * @param array|null $keys
-     * @param mixed      $default
+     * @param mixed $default
      *
      * @throws ExecuteError
      * @throws ReadError
@@ -157,9 +149,7 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $dir
-     * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @throws WriteError
      * @throws ExecuteError
@@ -172,9 +162,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $dir
-     * @param array  $values
-     *
      * @throws ExecuteError
      * @throws WriteError
      */
@@ -186,9 +173,7 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $path
-     * @param string $key
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @throws ExecuteError
      * @throws ReadError
@@ -232,9 +217,7 @@ class GibsonStoreService
     }
 
     /**
-     * @param string     $path
-     * @param array|null $keys
-     * @param mixed      $default
+     * @param mixed $default
      *
      * @throws ReadError
      * @throws ExecuteError
@@ -292,13 +275,8 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $path
-     * @param array  $keys
-     *
      * @throws ExecuteError
      * @throws ReadError
-     *
-     * @return bool
      */
     public function hasFileMetas(string $path, array $keys): bool
     {
@@ -327,10 +305,7 @@ class GibsonStoreService
     }
 
     /**
-     * @param string      $path
-     * @param string      $key
-     * @param mixed       $value
-     * @param string|null $checkSum
+     * @param mixed $value
      *
      * @throws ExecuteError
      * @throws GetError
@@ -368,10 +343,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param string      $dir
-     * @param array       $values
-     * @param string|null $checkSum
-     *
      * @throws ExecuteError
      * @throws GetError
      * @throws WriteError
@@ -384,14 +355,9 @@ class GibsonStoreService
     }
 
     /**
-     * @param string      $path
-     * @param string|null $checkSum
-     *
      * @throws ExecuteError
      * @throws GetError
      * @throws ReadError
-     *
-     * @return bool
      */
     public function hasFileImage(string $path, string $checkSum = null): bool
     {
@@ -427,18 +393,12 @@ class GibsonStoreService
     }
 
     /**
-     * @param string   $path
-     * @param int|null $width
-     * @param int|null $height
-     *
      * @throws ExecuteError
      * @throws FileNotFound
      * @throws ReadError
      * @throws WriteError
      * @throws LoadError
      * @throws CreateError
-     *
-     * @return Image
      */
     public function getFileImage(string $path, int $width = null, int $height = null): Image
     {
@@ -490,14 +450,10 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $path
-     *
      * @throws FileNotFound
      * @throws ExecuteError
      * @throws LoadError
      * @throws WriteError
-     *
-     * @return Image|null
      *
      * @deprecated
      */
@@ -530,10 +486,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param string      $path
-     * @param Image       $image
-     * @param string|null $checkSum
-     *
      * @throws ExecuteError
      * @throws GetError
      * @throws WriteError
@@ -574,9 +526,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param string     $dir
-     * @param array|null $existingFiles
-     *
      * @throws ExecuteError
      * @throws GetError
      * @throws WriteError
@@ -589,9 +538,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param string     $dir
-     * @param array|null $existingFiles
-     *
      * @throws ExecuteError
      * @throws GetError
      * @throws WriteError
@@ -619,9 +565,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param string     $dir
-     * @param array|null $existingFiles
-     *
      * @throws ExecuteError
      * @throws WriteError
      * @throws GetError
@@ -649,9 +592,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param string     $dir
-     * @param array|null $existingFiles
-     *
      * @throws ExecuteError
      * @throws WriteError
      * @throws GetError
@@ -681,8 +621,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $dir
-     *
      * @throws ExecuteError
      * @throws ReadError
      */
@@ -694,11 +632,7 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $dir
-     *
      * @throws GetError
-     *
-     * @return array
      */
     private function getExistingFiles(string $dir): array
     {
@@ -716,12 +650,8 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $dir
-     *
      * @throws ExecuteError
      * @throws WriteError
-     *
-     * @return SqLiteService
      */
     private function getStoreToWrite(string $dir): SqLiteService
     {
@@ -738,12 +668,8 @@ class GibsonStoreService
     }
 
     /**
-     * @param string $dir
-     *
      * @throws ExecuteError
      * @throws ReadError
-     *
-     * @return SqLiteService
      */
     private function getStoreToRead(string $dir): SqLiteService
     {
@@ -760,12 +686,7 @@ class GibsonStoreService
     }
 
     /**
-     * @param string      $filename
-     * @param string|null $checkSum
-     *
      * @throws GetError
-     *
-     * @return string
      */
     private function getChecksum(string $filename, string $checkSum = null): string
     {

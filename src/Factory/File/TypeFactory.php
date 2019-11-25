@@ -12,12 +12,8 @@ use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 class TypeFactory
 {
     /**
-     * @param string $filename
-     *
      * @throws GetError
      * @throws FileNotFound
-     *
-     * @return FileTypeInterface
      */
     public static function create(string $filename): FileTypeInterface
     {

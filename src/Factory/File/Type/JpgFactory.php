@@ -9,9 +9,6 @@ use GibsonOS\Module\Explorer\Service\File\Type\JpgService;
 
 class JpgFactory extends AbstractSingletonFactory implements TypeInterface
 {
-    /**
-     * @return JpgService
-     */
     public static function createInstance(): JpgService
     {
         $imageService = ImageFactory::create();

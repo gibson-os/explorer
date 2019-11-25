@@ -15,8 +15,5 @@ interface FileTypeDescriberInterface
      */
     public function getMetasStructure(): array;
 
-    /**
-     * @return string
-     */
     public function getFactoryClassName(): string;
 }

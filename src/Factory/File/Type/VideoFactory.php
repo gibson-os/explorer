@@ -12,8 +12,6 @@ class VideoFactory extends AbstractSingletonFactory implements TypeInterface
 {
     /**
      * @throws GetError
-     *
-     * @return VideoService
      */
     public static function createInstance(): VideoService
     {

@@ -57,8 +57,6 @@ class MediaStore extends AbstractDatabaseStore
      * @throws SelectError
      * @throws DateTimeError
      * @throws GetError
-     *
-     * @return array
      */
     public function getList(): array
     {

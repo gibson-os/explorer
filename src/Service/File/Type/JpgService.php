@@ -10,13 +10,9 @@ use GibsonOS\Core\Exception\Image\LoadError;
 class JpgService extends ImageService
 {
     /**
-     * @param string $filename
-     *
      * @throws LoadError
      * @throws GetError
      * @throws FileNotFound
-     *
-     * @return array
      */
     public function getMetas(string $filename): array
     {

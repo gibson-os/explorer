@@ -48,9 +48,6 @@ class VideoService implements FileTypeDescriberInterface
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getFactoryClassName(): string
     {
         return VideoFactory::class;

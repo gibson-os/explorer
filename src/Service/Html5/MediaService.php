@@ -29,8 +29,6 @@ class MediaService extends AbstractService
 
     /**
      * Media constructor.
-     *
-     * @param CoreMediaService $mediaService
      */
     public function __construct(CoreMediaService $mediaService)
     {
@@ -38,8 +36,6 @@ class MediaService extends AbstractService
     }
 
     /**
-     * @param string $filename
-     *
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
@@ -61,8 +57,6 @@ class MediaService extends AbstractService
     }
 
     /**
-     * @param string $filename
-     *
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
@@ -83,16 +77,12 @@ class MediaService extends AbstractService
     }
 
     /**
-     * @param Media $media
-     *
      * @throws ConvertStatusError
      * @throws DateTimeError
      * @throws FileNotFound
      * @throws OpenError
      * @throws ProcessError
      * @throws SetError
-     *
-     * @return ConvertStatus
      */
     public function getConvertStatus(Media $media): ConvertStatus
     {
@@ -109,9 +99,6 @@ class MediaService extends AbstractService
     }
 
     /**
-     * @param Media $media
-     * @param int   $currentPosition
-     *
      * @throws DateTimeError
      * @throws GetError
      * @throws SaveError

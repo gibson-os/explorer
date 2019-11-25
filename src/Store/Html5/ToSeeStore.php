@@ -42,11 +42,6 @@ class ToSeeStore extends AbstractDatabaseStore
 
     /**
      * ToSee constructor.
-     *
-     * @param mysqlDatabase      $database
-     * @param DirService         $dir
-     * @param MediaService       $media
-     * @param GibsonStoreService $gibsonStore
      */
     public function __construct(
         mysqlDatabase $database,
@@ -187,12 +182,6 @@ class ToSeeStore extends AbstractDatabaseStore
         return preg_replace('/(s?)\d{1,3}e?\d.*/i', '$1*', $this->dir->escapeForGlob($filename));
     }
 
-    /**
-     * @param stdClass $media
-     * @param string   $pattern
-     *
-     * @return array
-     */
     private function getNextFiles(stdClass $media, string $pattern): array
     {
         $fileNames = (array) glob($pattern);

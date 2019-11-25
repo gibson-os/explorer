@@ -51,27 +51,16 @@ class Position extends AbstractModel
         $this->user = new User();
     }
 
-    /**
-     * @return string
-     */
     public static function getTableName(): string
     {
         return 'explorer_html5_media_position';
     }
 
-    /**
-     * @return int
-     */
     public function getMediaId(): int
     {
         return $this->mediaId;
     }
 
-    /**
-     * @param int $mediaId
-     *
-     * @return Position
-     */
     public function setMediaId(int $mediaId): Position
     {
         $this->mediaId = $mediaId;
@@ -79,19 +68,11 @@ class Position extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getUserId(): int
     {
         return $this->userId;
     }
 
-    /**
-     * @param int $userId
-     *
-     * @return Position
-     */
     public function setUserId(int $userId): Position
     {
         $this->userId = $userId;
@@ -99,19 +80,11 @@ class Position extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPosition(): int
     {
         return $this->position;
     }
 
-    /**
-     * @param int $position
-     *
-     * @return Position
-     */
     public function setPosition(int $position): Position
     {
         $this->position = $position;
@@ -119,19 +92,11 @@ class Position extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getModified(): DateTime
     {
         return $this->modified;
     }
 
-    /**
-     * @param DateTime $modified
-     *
-     * @return Position
-     */
     public function setModified(DateTime $modified): Position
     {
         $this->modified = $modified;
@@ -139,19 +104,11 @@ class Position extends AbstractModel
         return $this;
     }
 
-    /**
-     * @return Media
-     */
     public function getMedia(): Media
     {
         return $this->media;
     }
 
-    /**
-     * @param Media $media
-     *
-     * @return Position
-     */
     public function setMedia(Media $media): Position
     {
         $this->media = $media;
@@ -163,8 +120,6 @@ class Position extends AbstractModel
     /**
      * @throws SelectError
      * @throws DateTimeError
-     *
-     * @return Position
      */
     public function loadMedia(): Position
     {
@@ -176,8 +131,6 @@ class Position extends AbstractModel
     /**
      * @throws DateTimeError
      * @throws SelectError
-     *
-     * @return User
      */
     public function getUser(): User
     {
@@ -186,11 +139,6 @@ class Position extends AbstractModel
         return $this->user;
     }
 
-    /**
-     * @param User $user
-     *
-     * @return Position
-     */
     public function setUser(User $user): Position
     {
         $this->user = $user;

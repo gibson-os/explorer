@@ -30,9 +30,6 @@ class ImageService implements FileTypeDescriberInterface
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getFactoryClassName(): string
     {
         return ImageFactory::class;

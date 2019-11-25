@@ -77,8 +77,6 @@ class MediaRepository extends AbstractRepository
     }
 
     /**
-     * @param DateTime $date
-     *
      * @throws DateTimeError
      * @throws GetError
      * @throws SelectError

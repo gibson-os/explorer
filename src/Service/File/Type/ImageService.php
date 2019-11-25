@@ -21,12 +21,8 @@ class ImageService implements FileTypeInterface
     }
 
     /**
-     * @param string $filename
-     *
      * @throws FileNotFound
      * @throws LoadError
-     *
-     * @return array
      */
     public function getMetas(string $filename): array
     {
@@ -39,12 +35,8 @@ class ImageService implements FileTypeInterface
     }
 
     /**
-     * @param string $filename
-     *
      * @throws FileNotFound
      * @throws LoadError
-     *
-     * @return Image
      */
     public function getImage(string $filename): Image
     {

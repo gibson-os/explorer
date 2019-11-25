@@ -11,12 +11,8 @@ use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterf
 class DescriberFactory
 {
     /**
-     * @param string $filename
-     *
      * @throws \GibsonOS\Core\Exception\GetError
      * @throws FileNotFound
-     *
-     * @return FileTypeDescriberInterface
      */
     public static function create(string $filename): FileTypeDescriberInterface
     {
