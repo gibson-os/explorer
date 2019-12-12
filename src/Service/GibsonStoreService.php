@@ -512,7 +512,7 @@ class GibsonStoreService
         // @todo remove wenn explorer umgebaut ist
         $store->addTableIfNotExists(self::THUMBNAIL_TABLE_NAME, self::THUMBNAIL_CREATE_QUERY);
 
-        $thumbnail = $this->image->create();
+        $thumbnail = $this->image->generate($image);
 
         $query = $store->prepare('REPLACE INTO ' . self::THUMBNAIL_TABLE_NAME . ' VALUES(:chksum, :filename, :date, :image)');
         $query->bindValue(':chksum', $checkSum, SQLITE3_TEXT);
