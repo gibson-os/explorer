@@ -5,6 +5,7 @@ namespace GibsonOS\Module\Explorer\Service\Html5;
 
 use DateTime;
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
+use GibsonOS\Core\Dto\Ffmpeg\Media as MediaDto;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
@@ -41,13 +42,13 @@ class MediaService extends AbstractService
      * @throws GetError
      * @throws ProcessError
      */
-    public function convertToMp4(string $filename)
+    public function convertToMp4(MediaDto $media, string $filename)
     {
         $this->mediaService->convert(
-            $this->mediaService->getMedia($filename),
+            $media,
+            $filename,
             'libx264',
             'libfdk_aac',
-            null,
             [
                 'crf' => 23,
                 'preset' => 'veryfast',
@@ -62,13 +63,13 @@ class MediaService extends AbstractService
      * @throws GetError
      * @throws ProcessError
      */
-    public function convertToWebm(string $filename)
+    public function convertToWebm(MediaDto $media, string $filename)
     {
         $this->mediaService->convert(
-            $this->mediaService->getMedia($filename),
+            $media,
+            $filename,
             'libvpx',
             'libvorbis',
-            null,
             [
                 'b:v' => '1500k',
                 'q:a' => 4,
