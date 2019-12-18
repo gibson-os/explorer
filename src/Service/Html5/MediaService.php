@@ -15,6 +15,7 @@ use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Service\AbstractService;
+use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\Ffmpeg\MediaService as CoreMediaService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position as PositionModel;
@@ -28,11 +29,17 @@ class MediaService extends AbstractService
     private $mediaService;
 
     /**
+     * @var DirService
+     */
+    private $dirService;
+
+    /**
      * Media constructor.
      */
-    public function __construct(CoreMediaService $mediaService)
+    public function __construct(CoreMediaService $mediaService, DirService $dirService)
     {
         $this->mediaService = $mediaService;
+        $this->dirService = $dirService;
     }
 
     /**
@@ -43,7 +50,9 @@ class MediaService extends AbstractService
      */
     public function convertToMp4(Media $media, string $filename)
     {
-        $mediaDto = $this->mediaService->getMedia($media->getFilename());
+        $mediaDto = $this->mediaService->getMedia(
+            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
+        );
 
         if (!empty($media->getAudioStream())) {
             $mediaDto->selectAudioStream($media->getAudioStream());
@@ -70,7 +79,7 @@ class MediaService extends AbstractService
      */
     public function convertToWebm(Media $media, string $filename)
     {
-        $mediaDto = $this->mediaService->getMedia($media->getFilename());
+        $mediaDto = $this->mediaService->getMedia($media->getDir() . $media->getFilename());
 
         if (!empty($media->getAudioStream())) {
             $mediaDto->selectAudioStream($media->getAudioStream());
