@@ -79,7 +79,9 @@ class MediaService extends AbstractService
      */
     public function convertToWebm(Media $media, string $filename)
     {
-        $mediaDto = $this->mediaService->getMedia($media->getDir() . $media->getFilename());
+        $mediaDto = $this->mediaService->getMedia(
+            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
+        );
 
         if (!empty($media->getAudioStream())) {
             $mediaDto->selectAudioStream($media->getAudioStream());
@@ -111,7 +113,9 @@ class MediaService extends AbstractService
             return new ConvertStatus($media->getStatus());
         }
 
-        $mediaDto = $this->mediaService->getMedia($media->getFilename());
+        $mediaDto = $this->mediaService->getMedia(
+            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
+        );
         $convertStatus = $this->mediaService->getConvertStatus($mediaDto, $media->getToken() . '.mp4')
             ->setStatus($media->getStatus())
         ;
