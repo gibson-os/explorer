@@ -196,7 +196,7 @@ class Media extends AbstractModel
     public function setUser(User $user): Media
     {
         $this->user = $user;
-        $this->setUserId($user->getId());
+        $this->setUserId($user->getId() ?? 0);
 
         return $this;
     }

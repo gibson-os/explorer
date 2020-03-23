@@ -168,7 +168,11 @@ class ToSeeStore extends AbstractDatabaseStore
 
                 $listMedia['convertPercent'] = $convertStatus->getPercent();
                 $listMedia['convertTime'] = $convertStatus->getTime()->getTimestamp();
-                $listMedia['convertTimeRemaining'] = $convertStatus->getTimeRemaining()->getTimestamp();
+                $listMedia['convertTimeRemaining'] =
+                    $convertStatus->getTimeRemaining() === null
+                    ? 0
+                    : $convertStatus->getTimeRemaining()->getTimestamp()
+                ;
             }
 
             $list[] = $listMedia;

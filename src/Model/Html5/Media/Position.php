@@ -142,7 +142,7 @@ class Position extends AbstractModel
     public function setUser(User $user): Position
     {
         $this->user = $user;
-        $this->setUserId($user->getId());
+        $this->setUserId($user->getId() ?? 0);
 
         return $this;
     }

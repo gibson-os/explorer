@@ -13,18 +13,14 @@ use GibsonOS\Module\Explorer\Model\Html5\Media as MediaModel;
 class MediaRepository extends AbstractRepository
 {
     /**
-     * @param string $token
-     *
      * @throws DateTimeError
      * @throws GetError
      * @throws SelectError
-     *
-     * @return MediaModel
      */
-    public static function getByToken($token)
+    public function getByToken(string $token): MediaModel
     {
-        $table = self::getTable(MediaModel::getTableName());
-        $table->setWhere('`token`=' . self::escape($token));
+        $table = $this->getTable(MediaModel::getTableName());
+        $table->setWhere('`token`=' . $this->escape($token));
         $table->setLimit(1);
 
         if (!$table->select()) {
@@ -41,18 +37,16 @@ class MediaRepository extends AbstractRepository
     }
 
     /**
-     * @param string $status
-     *
      * @throws SelectError
      * @throws DateTimeError
      * @throws GetError
      *
      * @return MediaModel[]
      */
-    public static function getAllByStatus($status)
+    public function getAllByStatus(string $status): array
     {
-        $table = self::getTable(MediaModel::getTableName());
-        $table->setWhere('`status`=' . self::escape($status));
+        $table = $this->getTable(MediaModel::getTableName());
+        $table->setWhere('`status`=' . $this->escape($status));
 
         if ($table->select() === false) {
             $exception = new SelectError();
@@ -81,12 +75,12 @@ class MediaRepository extends AbstractRepository
      * @throws GetError
      * @throws SelectError
      *
-     * @return array
+     * @return MediaModel[]
      */
-    public static function getAllOlderThan(DateTime $date)
+    public function getAllOlderThan(DateTime $date): array
     {
-        $table = self::getTable(MediaModel::getTableName());
-        $table->setWhere('`added`<' . self::escape($date->format('Y-m-d H:i:s')));
+        $table = $this->getTable(MediaModel::getTableName());
+        $table->setWhere('`added`<' . $this->escape($date->format('Y-m-d H:i:s')));
 
         if ($table->select() === false) {
             $exception = new SelectError();
