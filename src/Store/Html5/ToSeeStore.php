@@ -165,6 +165,9 @@ class ToSeeStore extends AbstractDatabaseStore
                 $mediaModel = (new Media())
                     ->setFilename($media->token . '.mp4')
                     ->setStatus($media->status)
+                    ->setDir($media->dir)
+                    ->setFilename($media->filename)
+                    ->setToken($media->token)
                 ;
                 $convertStatus = $this->media->getConvertStatus($mediaModel);
 
