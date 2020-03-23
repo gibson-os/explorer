@@ -116,11 +116,10 @@ class MediaService extends AbstractService
         $mediaDto = $this->mediaService->getMedia(
             $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
         );
-        $convertStatus = $this->mediaService->getConvertStatus($mediaDto, $media->getToken() . '.mp4')
+
+        return $this->mediaService->getConvertStatus($mediaDto, $media->getToken() . '.mp4')
             ->setStatus($media->getStatus())
         ;
-
-        return $convertStatus;
     }
 
     /**

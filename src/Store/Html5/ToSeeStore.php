@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
+use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
 use GibsonOS\Core\Exception\File\OpenError;
@@ -41,7 +42,7 @@ class ToSeeStore extends AbstractDatabaseStore
     private $gibsonStore;
 
     /**
-     * ToSee constructor.
+     * @throws CreateError
      */
     public function __construct(
         mysqlDatabase $database,
@@ -163,6 +164,7 @@ class ToSeeStore extends AbstractDatabaseStore
             if ($media->status === ConvertStatus::STATUS_GENERATE) {
                 $mediaModel = (new Media())
                     ->setFilename($media->token . '.mp4')
+                    ->setStatus($media->status)
                 ;
                 $convertStatus = $this->media->getConvertStatus($mediaModel);
 
