@@ -95,7 +95,6 @@
       <path value="$PROJECT_DIR$/vendor/ocramius/package-versions" />
       <path value="$PROJECT_DIR$/vendor/phpstan/phpstan" />
       <path value="$PROJECT_DIR$/vendor/phpstan/phpdoc-parser" />
-      <path value="$PROJECT_DIR$/vendor/psr/log" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php70" />
       <path value="$PROJECT_DIR$/vendor/symfony/dependency-injection" />
       <path value="$PROJECT_DIR$/vendor/symfony/config" />
@@ -114,6 +113,7 @@
       <path value="$PROJECT_DIR$/vendor/sebastianfeldmann/git" />
       <path value="$PROJECT_DIR$/vendor/sebastianfeldmann/cli" />
       <path value="$PROJECT_DIR$/vendor/sebastianfeldmann/camino" />
+      <path value="$PROJECT_DIR$/vendor/psr/log" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />
