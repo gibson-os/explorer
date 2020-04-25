@@ -22,13 +22,13 @@
     "enabled": true,
     "actions": [
       {
-        "action": "php ./vendor/friendsofphp/php-cs-fixer/php-cs-fixer fix src --verbose --dry-run"
+        "action": "composer php-cs-dry"
       },
       {
-        "action": "php ./vendor/phpstan/phpstan/bin/phpstan analyse -l 7 src"
+        "action": "composer php-psalm"
       },
       {
-        "action": "echo 'php ./vendor/phpmd/phpmd/src/bin/phpmd src text ruleset.xml'"
+        "action": "echo 'composer php-md'"
       }
     ]
   },

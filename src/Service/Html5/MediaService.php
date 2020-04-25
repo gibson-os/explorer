@@ -55,7 +55,7 @@ class MediaService extends AbstractService
         );
 
         if (!empty($media->getAudioStream())) {
-            $mediaDto->selectAudioStream($media->getAudioStream());
+            $mediaDto->selectAudioStream($media->getAudioStream() ?? '');
         }
 
         $this->mediaService->convert(
@@ -84,7 +84,7 @@ class MediaService extends AbstractService
         );
 
         if (!empty($media->getAudioStream())) {
-            $mediaDto->selectAudioStream($media->getAudioStream());
+            $mediaDto->selectAudioStream($media->getAudioStream() ?? '');
         }
 
         $this->mediaService->convert(
