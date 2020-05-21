@@ -12,6 +12,8 @@ use mysqlDatabase;
 
 class Media extends AbstractModel
 {
+    public const SUBTITLE_NONE = 'none';
+
     /**
      * @var int
      */
@@ -36,6 +38,11 @@ class Media extends AbstractModel
      * @var string|null
      */
     private $audioStream;
+
+    /**
+     * @var string|null
+     */
+    private $subtitleStream;
 
     /**
      * @var string
@@ -130,6 +137,18 @@ class Media extends AbstractModel
     public function setAudioStream(?string $audioStream): Media
     {
         $this->audioStream = $audioStream;
+
+        return $this;
+    }
+
+    public function getSubtitleStream(): ?string
+    {
+        return $this->subtitleStream;
+    }
+
+    public function setSubtitleStream(?string $subtitleStream): Media
+    {
+        $this->subtitleStream = $subtitleStream;
 
         return $this;
     }

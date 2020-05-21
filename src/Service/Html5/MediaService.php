@@ -58,6 +58,14 @@ class MediaService extends AbstractService
             $mediaDto->selectAudioStream($media->getAudioStream() ?? '');
         }
 
+        if (!empty($media->getSubtitleStream())) {
+            $mediaDto->selectSubtitleStream(
+                $media->getSubtitleStream() === Media::SUBTITLE_NONE
+                    ? null
+                    : $media->getSubtitleStream()
+            );
+        }
+
         $this->mediaService->convert(
             $mediaDto,
             $filename,
@@ -84,7 +92,15 @@ class MediaService extends AbstractService
         );
 
         if (!empty($media->getAudioStream())) {
-            $mediaDto->selectAudioStream($media->getAudioStream() ?? '');
+            $mediaDto->selectAudioStream($media->getAudioStream());
+        }
+
+        if (!empty($media->getSubtitleStream())) {
+            $mediaDto->selectSubtitleStream(
+                $media->getSubtitleStream() === Media::SUBTITLE_NONE
+                    ? null
+                    : $media->getSubtitleStream()
+            );
         }
 
         $this->mediaService->convert(
