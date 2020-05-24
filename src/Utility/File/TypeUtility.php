@@ -5,21 +5,21 @@ namespace GibsonOS\Module\Explorer\Utility\File;
 
 class TypeUtility
 {
-    private const CATEGORY_IMAGE = 1;
+    public const CATEGORY_IMAGE = 1;
 
-    private const CATEGORY_VIDEO = 2;
+    public  const CATEGORY_VIDEO = 2;
 
-    private const CATEGORY_PDF = 3;
+    public  const CATEGORY_PDF = 3;
 
-    private const CATEGORY_AUDIO = 4;
+    public  const CATEGORY_AUDIO = 4;
 
-    private const CATEGORY_OFFICE = 5;
+    public  const CATEGORY_OFFICE = 5;
 
-    private const CATEGORY_ARCHIVE = 6;
+    public  const CATEGORY_ARCHIVE = 6;
 
-    private const CATEGORY_BINARY = 7;
+    public  const CATEGORY_BINARY = 7;
 
-    private const CATEGORY_TEXT = 8;
+    public  const CATEGORY_TEXT = 8;
 
     private const EXTENSIONS_CATEGORY = [
         'jpg' => self::CATEGORY_IMAGE,
@@ -88,10 +88,12 @@ class TypeUtility
 
     public function getExtension(string $path): ?string
     {
-        if (mb_strrpos($path, '.') === false) {
+        $pointPosition = mb_strrpos($path, '.');
+
+        if ($pointPosition === false) {
             return null;
         }
 
-        return mb_substr($path, mb_strrpos($path, '.') + 1);
+        return mb_substr($path, $pointPosition + 1);
     }
 }

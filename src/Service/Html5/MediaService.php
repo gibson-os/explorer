@@ -17,8 +17,11 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Service\AbstractService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\Ffmpeg\MediaService as CoreMediaService;
+use GibsonOS\Core\Service\FileService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position as PositionModel;
+use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
+use GibsonOS\Module\Explorer\Utility\File\TypeUtility;
 use OutOfRangeException;
 
 class MediaService extends AbstractService
@@ -34,12 +37,35 @@ class MediaService extends AbstractService
     private $dirService;
 
     /**
+     * @var FileService
+     */
+    private $fileService;
+
+    /**
+     * @var MediaRepository
+     */
+    private $mediaRepository;
+
+    /**
+     * @var TypeUtility
+     */
+    private $typeUtility;
+
+    /**
      * Media constructor.
      */
-    public function __construct(CoreMediaService $mediaService, DirService $dirService)
-    {
+    public function __construct(
+        CoreMediaService $mediaService,
+        DirService $dirService,
+        FileService $fileService,
+        MediaRepository $mediaRepository,
+        TypeUtility $typeUtility
+    ) {
         $this->mediaService = $mediaService;
+        $this->fileService = $fileService;
         $this->dirService = $dirService;
+        $this->mediaRepository = $mediaRepository;
+        $this->typeUtility = $typeUtility;
     }
 
     /**
@@ -156,5 +182,55 @@ class MediaService extends AbstractService
             ->setModified(new DateTime())
             ->save()
         ;
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws GetError
+     * @throws SaveError
+     */
+    public function scheduleConvert(
+        int $userId,
+        string $dir,
+        array $files = [],
+        string $audioStream = null,
+        string $subtitleStream = null
+    ): void {
+        if (empty($files)) {
+            $files = $this->dirService->getFiles($dir);
+        }
+
+        foreach ($files as $file) {
+            if (is_dir($file)) {
+                $this->scheduleConvert(
+                    $userId,
+                    $dir,
+                    array_map(function ($path) {
+                        return $this->fileService->getFilename($path);
+                    }, $this->dirService->getFiles($file)),
+                    $audioStream,
+                    $subtitleStream
+                );
+
+                continue;
+            }
+
+            $category = $this->typeUtility->getCategory($file);
+
+            if ($category !== TypeUtility::CATEGORY_VIDEO) {
+                continue;
+            }
+
+            (new Media())
+                ->setToken($this->mediaRepository->getFreeToken())
+                ->setDir($dir)
+                ->setFilename($file)
+                ->setAudioStream($audioStream)
+                ->setSubtitleStream($subtitleStream)
+                ->setType($category)
+                ->setUserId($userId)
+                ->save()
+            ;
+        }
     }
 }

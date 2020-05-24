@@ -15,20 +15,25 @@ use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Utility\StatusCode;
-use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
-use GibsonOS\Module\Explorer\Utility\File\TypeUtility;
 
 class Html5Controller extends AbstractController
 {
+    /**
+     * @throws DateTimeError
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SaveError
+     * @throws SelectError
+     */
     public function convert(
         ModuleRepository $moduleRepository,
         SettingRepository $settingRepository,
-        MediaRepository $mediaRepository,
-        TypeUtility $typeUtility,
+        MediaService $mediaService,
         string $dir,
-        array $files,
+        array $files = [],
         string $audioStream = null,
         string $subtitleStream = null
     ): AjaxResponse {
@@ -48,18 +53,9 @@ class Html5Controller extends AbstractController
             );
         }
 
-        foreach ($files as $file) {
-            (new Media())
-                ->setToken($mediaRepository->getFreeToken())
-                ->setDir($dir)
-                ->setFilename($file)
-                ->setAudioStream($audioStream)
-                ->setSubtitleStream($subtitleStream)
-                ->setType($typeUtility->getCategory($file))
-                ->setUserId($userId)
-                ->save()
-            ;
-        }
+        $mediaService->scheduleConvert($userId, $dir, $files, $audioStream, $subtitleStream);
+
+        return $this->returnSuccess();
     }
 
     /**
