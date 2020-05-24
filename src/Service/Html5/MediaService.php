@@ -143,17 +143,18 @@ class MediaService extends AbstractService
      * @throws GetError
      * @throws SaveError
      */
-    public function savePosition(Media $media, int $currentPosition)
+    public function savePosition(Media $media, int $currentPosition, int $userId): void
     {
         if ($currentPosition === 0) {
             throw new OutOfRangeException('Position 0 ist nicht gültig!');
         }
 
-        $position = new PositionModel();
-        $position->setMediaId($media->getId());
-        $position->setPosition($currentPosition);
-        $position->setUserId(1); // @todo User id ermitteln
-        $position->setModified(new DateTime());
-        $position->save();
+        (new PositionModel())
+            ->setMediaId($media->getId())
+            ->setPosition($currentPosition)
+            ->setUserId($userId)
+            ->setModified(new DateTime())
+            ->save()
+        ;
     }
 }
