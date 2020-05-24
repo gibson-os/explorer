@@ -5,12 +5,16 @@ namespace GibsonOS\Module\Explorer\Controller;
 
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\DateTimeError;
+use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
+use GibsonOS\Core\Exception\File\OpenError;
+use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\LoginRequired;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\PermissionDenied;
+use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
-use GibsonOS\Core\Repository\ModuleRepository;
+use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
@@ -29,7 +33,6 @@ class Html5Controller extends AbstractController
      * @throws SelectError
      */
     public function convert(
-        ModuleRepository $moduleRepository,
         SettingRepository $settingRepository,
         MediaService $mediaService,
         string $dir,
@@ -40,8 +43,8 @@ class Html5Controller extends AbstractController
         $this->checkPermission(PermissionService::WRITE + PermissionService::MANAGE);
 
         $userId = $this->sessionService->getUserId() ?? 0;
-        $homPath = $settingRepository->getByKey(
-            $moduleRepository->getByName($this->requestService->getModuleName())->getId() ?? 0,
+        $homPath = $settingRepository->getByKeyAndModuleName(
+            $this->requestService->getModuleName(),
             $userId,
             'home_path'
         );
@@ -56,6 +59,28 @@ class Html5Controller extends AbstractController
         $mediaService->scheduleConvert($userId, $dir, $files, $audioStream, $subtitleStream);
 
         return $this->returnSuccess();
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     * @throws ConvertStatusError
+     * @throws FileNotFound
+     * @throws OpenError
+     * @throws ProcessError
+     * @throws SetError
+     */
+    public function convertStatus(
+        MediaService $mediaService,
+        MediaRepository $mediaRepository,
+        string $token
+    ): AjaxResponse {
+        $this->checkPermission(PermissionService::READ);
+
+        return $this->returnSuccess($mediaService->getConvertStatus($mediaRepository->getByToken($token)));
     }
 
     /**
