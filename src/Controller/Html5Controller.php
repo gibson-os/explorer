@@ -15,6 +15,7 @@ use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
+use GibsonOS\Core\Repository\FileResponse;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
@@ -81,6 +82,29 @@ class Html5Controller extends AbstractController
         $this->checkPermission(PermissionService::READ);
 
         return $this->returnSuccess($mediaService->getConvertStatus($mediaRepository->getByToken($token)));
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     */
+    public function video(SettingRepository $settingRepository, string $token): FileResponse
+    {
+        $this->checkPermission(PermissionService::READ);
+
+        return (new FileResponse(
+            $this->requestService,
+            $settingRepository->getByKeyAndModuleName(
+                $this->requestService->getModuleName(),
+                $this->sessionService->getUserId() ?? 0,
+                'html5_media_path'
+            )->getValue() . $token . '.mp4'
+        ))
+            ->setType('video/mp4')
+            ->setDisposition(null)
+        ;
     }
 
     /**
