@@ -17,11 +17,11 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Service\AbstractService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\Ffmpeg\MediaService as CoreMediaService;
+use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position as PositionModel;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
-use GibsonOS\Module\Explorer\Utility\File\TypeUtility;
 use OutOfRangeException;
 
 class MediaService extends AbstractService
@@ -47,9 +47,9 @@ class MediaService extends AbstractService
     private $mediaRepository;
 
     /**
-     * @var TypeUtility
+     * @var TypeService
      */
-    private $typeUtility;
+    private $typeService;
 
     /**
      * Media constructor.
@@ -59,13 +59,13 @@ class MediaService extends AbstractService
         DirService $dirService,
         FileService $fileService,
         MediaRepository $mediaRepository,
-        TypeUtility $typeUtility
+        TypeService $typeService
     ) {
         $this->mediaService = $mediaService;
         $this->fileService = $fileService;
         $this->dirService = $dirService;
         $this->mediaRepository = $mediaRepository;
-        $this->typeUtility = $typeUtility;
+        $this->typeService = $typeService;
     }
 
     /**
@@ -215,9 +215,9 @@ class MediaService extends AbstractService
                 continue;
             }
 
-            $category = $this->typeUtility->getCategory($file);
+            $category = $this->typeService->getCategory($file);
 
-            if ($category !== TypeUtility::CATEGORY_VIDEO) {
+            if ($category !== TypeService::TYPE_CATEGORY_VIDEO) {
                 continue;
             }
 

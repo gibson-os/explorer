@@ -9,19 +9,30 @@ use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
 use GibsonOS\Core\Exception\File\OpenError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
+use GibsonOS\Core\Exception\Image\CreateError;
+use GibsonOS\Core\Exception\Image\LoadError;
 use GibsonOS\Core\Exception\LoginRequired;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
-use GibsonOS\Core\Repository\FileResponse;
+use GibsonOS\Core\Exception\Sqlite\ExecuteError;
+use GibsonOS\Core\Exception\Sqlite\ReadError;
+use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Repository\SettingRepository;
+use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
+use GibsonOS\Core\Service\Response\FileResponse;
+use GibsonOS\Core\Service\Response\Response;
+use GibsonOS\Core\Service\Response\TwigResponse;
 use GibsonOS\Core\Utility\StatusCode;
+use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
+use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
+use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
 
 class Html5Controller extends AbstractController
 {
@@ -130,5 +141,101 @@ class Html5Controller extends AbstractController
         );
 
         return $this->returnSuccess();
+    }
+
+    /**
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     */
+    public function chromecast(): TwigResponse
+    {
+        $this->checkPermission(PermissionService::READ);
+
+        return $this->renderTemplate('@explorer/chromecast.html.twig');
+    }
+
+    /**
+     * @throws ConvertStatusError
+     * @throws DateTimeError
+     * @throws FileNotFound
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws OpenError
+     * @throws PermissionDenied
+     * @throws ProcessError
+     * @throws SetError
+     * @throws ExecuteError
+     * @throws ReadError
+     */
+    public function toSeeList(ToSeeStore $toSeeStore): AjaxResponse
+    {
+        $this->checkPermission(PermissionService::READ);
+
+        return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     */
+    public function get(MediaRepository $mediaRepository, string $token): AjaxResponse
+    {
+        $this->checkPermission(PermissionService::READ);
+
+        return $this->returnSuccess($mediaRepository->getByToken($token));
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws ExecuteError
+     * @throws FileNotFound
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws ReadError
+     * @throws SelectError
+     * @throws CreateError
+     * @throws LoadError
+     * @throws WriteError
+     */
+    public function image(
+        MediaRepository $mediaRepository,
+        GibsonStoreService $gibsonStoreService,
+        ImageService $imageService,
+        string $token,
+        int $width = null,
+        int $height = null
+    ): Response {
+        $this->checkPermission(PermissionService::READ);
+
+        $media = $mediaRepository->getByToken($token);
+        $path = $media->getDir() . $media->getFilename();
+
+        if (!$gibsonStoreService->hasFileImage($path)) {
+            $fileTypeService = TypeFactory::create($path);
+            $image = $fileTypeService->getImage($path);
+            $gibsonStoreService->setFileImage($path, $image);
+        }
+
+        $image = $gibsonStoreService->getFileImage($path, $width, $height);
+        $body = $imageService->getString($image, 'jpg');
+
+        return new Response(
+            $body,
+            StatusCode::OK,
+            [
+                'Pragma' => 'public',
+                'Expires' => 0,
+                'Accept-Ranges' => 'bytes',
+                'Cache-Control' => ['must-revalidate, post-check=0, pre-check=0', 'private'],
+                'Content-Type' => 'image/jpg',
+                'Content-Length' => strlen($body),
+                'Content-Transfer-Encoding' => 'binary',
+                'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
+            ]
+        );
     }
 }
