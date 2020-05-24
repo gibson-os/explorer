@@ -103,4 +103,16 @@ class MediaRepository extends AbstractRepository
 
         return $models;
     }
+
+    public function getFreeToken(): string
+    {
+        $table = $this->getTable(MediaModel::getTableName());
+
+        do {
+            $token = md5((string) rand());
+            $table->setWhere('`token`=' . $this->escape($token));
+        } while ($table->select());
+
+        return $token;
+    }
 }
