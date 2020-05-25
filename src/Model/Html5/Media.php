@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Model\Html5;
 
+use DateTime;
 use DateTimeInterface;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Repository\SelectError;
@@ -82,6 +83,7 @@ class Media extends AbstractModel
         parent::__construct($database);
 
         $this->user = new User();
+        $this->added = new DateTime();
     }
 
     public static function getTableName(): string
