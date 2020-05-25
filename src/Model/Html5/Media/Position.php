@@ -112,7 +112,7 @@ class Position extends AbstractModel
     public function setMedia(Media $media): Position
     {
         $this->media = $media;
-        $this->setMediaId($media->getId());
+        $this->setMediaId($media->getId() ?? 0);
 
         return $this;
     }

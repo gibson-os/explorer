@@ -176,7 +176,7 @@ class MediaService extends AbstractService
         }
 
         (new PositionModel())
-            ->setMediaId($media->getId())
+            ->setMediaId($media->getId() ?? 0)
             ->setPosition($currentPosition)
             ->setUserId($userId)
             ->setModified(new DateTime())

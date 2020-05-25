@@ -14,6 +14,14 @@ class Media extends AbstractModel
 {
     public const SUBTITLE_NONE = 'none';
 
+    public const STATUS_ERROR = 'error';
+
+    public const STATUS_WAIT = 'wait';
+
+    public const STATUS_GENERATE = 'generate';
+
+    public const STATUS_GENERATED = 'generated';
+
     /**
      * @var int
      */
@@ -81,7 +89,7 @@ class Media extends AbstractModel
         return 'explorer_html5_media';
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
