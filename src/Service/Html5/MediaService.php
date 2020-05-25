@@ -13,6 +13,7 @@ use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
+use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Service\AbstractService;
 use GibsonOS\Core\Service\DirService;
@@ -195,21 +196,28 @@ class MediaService extends AbstractService
         array $files = [],
         string $audioStream = null,
         string $subtitleStream = null
-    ): void {
+    ): array {
+        $dir = $this->dirService->addEndSlash($dir);
+
         if (empty($files)) {
-            $files = $this->dirService->getFiles($dir);
+            $files = array_map(function ($path) {
+                return $this->fileService->getFilename($path);
+            }, $this->dirService->getFiles($dir));
         }
 
+        $tokens = [];
+
         foreach ($files as $file) {
-            if (is_dir($file)) {
-                $this->scheduleConvert(
-                    $userId,
-                    $dir,
-                    array_map(function ($path) {
-                        return $this->fileService->getFilename($path);
-                    }, $this->dirService->getFiles($file)),
-                    $audioStream,
-                    $subtitleStream
+            if (is_dir($dir . $file)) {
+                $tokens = array_merge(
+                    $tokens,
+                    $this->scheduleConvert(
+                        $userId,
+                        $dir,
+                        [],
+                        $audioStream,
+                        $subtitleStream
+                    )
                 );
 
                 continue;
@@ -221,16 +229,26 @@ class MediaService extends AbstractService
                 continue;
             }
 
-            (new Media())
-                ->setToken($this->mediaRepository->getFreeToken())
-                ->setDir($dir)
-                ->setFilename($file)
-                ->setAudioStream($audioStream)
-                ->setSubtitleStream($subtitleStream)
-                ->setType($category)
-                ->setUserId($userId)
-                ->save()
-            ;
+            try {
+                $media = $this->mediaRepository->getByDirAndFilename($dir, $file);
+                $tokens[$media->getDir() . $media->getFilename()] = $media->getToken();
+            } catch (SelectError $e) {
+                $token = $this->mediaRepository->getFreeToken();
+                $tokens[$dir . $file] = $token;
+
+                (new Media())
+                    ->setToken($token)
+                    ->setDir($dir)
+                    ->setFilename($file)
+                    ->setAudioStream($audioStream)
+                    ->setSubtitleStream($subtitleStream)
+                    ->setType($category)
+                    ->setUserId($userId)
+                    ->save()
+                ;
+            }
         }
+
+        return $tokens;
     }
 }

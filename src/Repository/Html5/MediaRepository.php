@@ -36,6 +36,25 @@ class MediaRepository extends AbstractRepository
         return $model;
     }
 
+    public function getByDirAndFilename(string $dir, string $filename): MediaModel
+    {
+        $table = $this->getTable(MediaModel::getTableName());
+        $table->setWhere('`dir`=' . $this->escape($dir) . ' AND `filename`=' . $this->escape($filename));
+        $table->setLimit(1);
+
+        if (!$table->select()) {
+            $exception = new SelectError(sprintf('Media "%s" nicht gefunden!', $dir . $filename));
+            $exception->setTable($table);
+
+            throw $exception;
+        }
+
+        $model = new MediaModel();
+        $model->loadFromMysqlTable($table);
+
+        return $model;
+    }
+
     /**
      * @throws SelectError
      * @throws DateTimeError

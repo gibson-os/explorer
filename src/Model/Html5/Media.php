@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Model\Html5;
 
-use DateTime;
+use DateTimeInterface;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\AbstractModel;
@@ -63,7 +63,7 @@ class Media extends AbstractModel
     private $type;
 
     /**
-     * @var DateTime
+     * @var DateTimeInterface
      */
     private $added;
 
@@ -185,12 +185,12 @@ class Media extends AbstractModel
         return $this;
     }
 
-    public function getAdded(): DateTime
+    public function getAdded(): DateTimeInterface
     {
         return $this->added;
     }
 
-    public function setAdded(DateTime $added): Media
+    public function setAdded(DateTimeInterface $added): Media
     {
         $this->added = $added;
 

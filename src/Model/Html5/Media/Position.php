@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Model\Html5\Media;
 
-use DateTime;
+use DateTimeInterface;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\AbstractModel;
@@ -29,7 +29,7 @@ class Position extends AbstractModel
     private $position;
 
     /**
-     * @var DateTime
+     * @var DateTimeInterface
      */
     private $modified;
 
@@ -92,12 +92,12 @@ class Position extends AbstractModel
         return $this;
     }
 
-    public function getModified(): DateTime
+    public function getModified(): DateTimeInterface
     {
         return $this->modified;
     }
 
-    public function setModified(DateTime $modified): Position
+    public function setModified(DateTimeInterface $modified): Position
     {
         $this->modified = $modified;
 

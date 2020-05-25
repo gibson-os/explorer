@@ -68,9 +68,9 @@ class Html5Controller extends AbstractController
             );
         }
 
-        $mediaService->scheduleConvert($userId, $dir, $files, $audioStream, $subtitleStream);
-
-        return $this->returnSuccess();
+        return $this->returnSuccess(
+            $mediaService->scheduleConvert($userId, $dir, $files, $audioStream, $subtitleStream)
+        );
     }
 
     /**
