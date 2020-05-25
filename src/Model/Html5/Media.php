@@ -55,7 +55,7 @@ class Media extends AbstractModel
     /**
      * @var string
      */
-    private $status;
+    private $status = self::STATUS_WAIT;
 
     /**
      * @var int
