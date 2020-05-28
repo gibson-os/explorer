@@ -23,6 +23,7 @@ use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\PermissionService;
+use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
@@ -44,14 +45,38 @@ class Html5Controller extends AbstractController
      * @throws PermissionDenied
      * @throws SelectError
      */
-    public function index(MediaStore $mediaStore, int $start = 0, int $limit = 0, array $sort = []): AjaxResponse
-    {
+    public function index(
+        RequestService $requestService,
+        SettingRepository $settingRepository,
+        MediaStore $mediaStore,
+        int $start = 0,
+        int $limit = 100,
+        array $sort = []
+    ): AjaxResponse {
         $this->checkPermission(PermissionService::READ);
+
+        $settingModels = $settingRepository->getAllByModuleName(
+            $requestService->getModuleName(),
+            $this->sessionService->getUserId() ?? 0
+        );
+        $settings = [];
+
+        foreach ($settingModels as $setting) {
+            if (mb_strpos($setting->getKey(), 'html5_') !== 0) {
+                continue;
+            }
+
+            $settings[$setting->getKey()] = $setting->getValue();
+        }
 
         $mediaStore->setLimit($limit, $start);
         $mediaStore->setSortByExt($sort);
 
-        return $this->returnSuccess($mediaStore->getList(), $mediaStore->getCount());
+        return new AjaxResponse([
+            'data' => $mediaStore->getList(),
+            'total' => $mediaStore->getCount(),
+            'settings' => $settings,
+        ]);
     }
 
     /**
