@@ -76,6 +76,7 @@ class Html5Controller extends AbstractController
             'data' => $mediaStore->getList(),
             'total' => $mediaStore->getCount(),
             'settings' => $settings,
+            'size' => $mediaStore->getSize(),
         ]);
     }
 
