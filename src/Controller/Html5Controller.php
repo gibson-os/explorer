@@ -32,10 +32,28 @@ use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
+use GibsonOS\Module\Explorer\Store\Html5\MediaStore;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
 
 class Html5Controller extends AbstractController
 {
+    /**
+     * @throws DateTimeError
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     */
+    public function index(MediaStore $mediaStore, int $start = 0, int $limit = 0, array $sort = []): AjaxResponse
+    {
+        $this->checkPermission(PermissionService::READ);
+
+        $mediaStore->setLimit($limit, $start);
+        $mediaStore->setSortByExt($sort);
+
+        return $this->returnSuccess($mediaStore->getList(), $mediaStore->getCount());
+    }
+
     /**
      * @throws DateTimeError
      * @throws GetError
