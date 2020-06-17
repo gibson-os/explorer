@@ -15,6 +15,7 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Service\DirService;
+use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
@@ -152,13 +153,14 @@ class ToSeeStore extends AbstractDatabaseStore
             }
 
             $listMedia = [
-                'token' => $media->token,
+                'html5VideoToken' => $media->token,
                 'dir' => $media->dir,
                 'filename' => $media->filename,
                 'status' => $media->status,
                 'duration' => $media->duration,
                 'position' => $media->position,
                 'nextFiles' => count($nextFiles),
+                'category' => TypeService::TYPE_CATEGORY_VIDEO,
             ];
 
             if ($media->status === ConvertStatus::STATUS_GENERATE) {
