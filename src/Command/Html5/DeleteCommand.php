@@ -6,6 +6,7 @@ namespace GibsonOS\Module\Explorer\Command\Html5;
 use DateTime;
 use Exception;
 use GibsonOS\Core\Command\AbstractCommand;
+use GibsonOS\Core\Exception\ArgumentError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
@@ -71,6 +72,8 @@ class DeleteCommand extends AbstractCommand
         $this->flockService = $flockService;
         $this->dirService = $dirService;
         $this->fileService = $fileService;
+
+        $this->setOption('dry');
     }
 
     /**
@@ -102,6 +105,7 @@ class DeleteCommand extends AbstractCommand
      * @throws GetError
      * @throws SelectError
      * @throws ModelDeleteError
+     * @throws ArgumentError
      */
     private function deleteWhereFileNotExists(): void
     {
@@ -110,7 +114,14 @@ class DeleteCommand extends AbstractCommand
                 continue;
             }
 
-            $media->delete();
+            if ($this->hasOption('dry')) {
+                printf(
+                    'Media %s deleted because file does not exist.' . PHP_EOL,
+                    $media->getDir() . $media->getFilename()
+                );
+            } else {
+                $media->delete();
+            }
         }
     }
 
@@ -118,6 +129,7 @@ class DeleteCommand extends AbstractCommand
      * @throws DateTimeError
      * @throws DeleteError
      * @throws GetError
+     * @throws ArgumentError
      */
     private function deleteWhereMediaNotExists(): void
     {
@@ -129,7 +141,14 @@ class DeleteCommand extends AbstractCommand
                 $this->mediaRepository->getByToken($token);
             } catch (SelectError $e) {
                 try {
-                    $this->fileService->delete($this->mediaPath, $filename);
+                    if ($this->hasOption('dry')) {
+                        printf(
+                            'Generated Video %s deleted because media entity does not exist.' . PHP_EOL,
+                            $this->mediaPath . $filename
+                        );
+                    } else {
+                        $this->fileService->delete($this->mediaPath, $filename);
+                    }
                 } catch (FileNotFound $e) {
                     // File does not exists
                 }
@@ -155,8 +174,17 @@ class DeleteCommand extends AbstractCommand
             )->getValue();
 
             foreach ($this->mediaRepository->getAllOlderThan(new DateTime('-' . $lifetime . ' days')) as $media) {
-                $this->fileService->delete($this->dirService->addEndSlash($media->getDir()) . $media->getFilename());
-                $media->delete();
+                if ($this->hasOption('dry')) {
+                    printf(
+                        'Media %s deleted because generate date %s is older than %s.' . PHP_EOL,
+                        $media->getDir() . $media->getFilename(),
+                        $media->getAdded()->format('Y-m-d'),
+                        (new DateTime('-' . $lifetime . ' days'))->format('Y-m-d')
+                    );
+                } else {
+                    $this->fileService->delete($this->dirService->addEndSlash($media->getDir()) . $media->getFilename());
+                    $media->delete();
+                }
             }
         } catch (SelectError $e) {
             return;
@@ -218,8 +246,19 @@ class DeleteCommand extends AbstractCommand
                 }
 
                 $fileSize = filesize($this->mediaPath . $media->getToken() . '.mp4');
-                $this->fileService->delete($this->dirService->addEndSlash($media->getDir()) . $media->getFilename());
-                $media->delete();
+
+                if ($this->hasOption('dry')) {
+                    printf(
+                        'Media %s deleted because folder size is %i Byte bigger as %i Byte.' . PHP_EOL,
+                        $media->getDir() . $media->getFilename(),
+                        $deleteSize,
+                        $size
+                    );
+                } else {
+                    $this->fileService->delete($this->dirService->addEndSlash($media->getDir()) . $media->getFilename());
+                    $media->delete();
+                }
+
                 $deleteSize -= $fileSize;
             }
         } catch (SelectError $e) {
