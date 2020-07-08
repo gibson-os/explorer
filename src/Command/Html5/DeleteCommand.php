@@ -249,7 +249,7 @@ class DeleteCommand extends AbstractCommand
 
                 if ($this->hasOption('dry')) {
                     printf(
-                        'Media %s deleted because folder size is %i Byte bigger as %i Byte.' . PHP_EOL,
+                        'Media %s deleted because folder size is %d Byte bigger as %d Byte.' . PHP_EOL,
                         $media->getDir() . $media->getFilename(),
                         $deleteSize,
                         $size
