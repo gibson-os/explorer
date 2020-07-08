@@ -83,6 +83,7 @@ class DeleteCommand extends AbstractCommand
      * @throws GetError
      * @throws ModelDeleteError
      * @throws SelectError
+     * @throws ArgumentError
      */
     protected function run(): int
     {
@@ -162,6 +163,7 @@ class DeleteCommand extends AbstractCommand
      * @throws FileNotFound
      * @throws GetError
      * @throws ModelDeleteError
+     * @throws ArgumentError
      * @throws Exception
      */
     private function deleteWhereLifetimeExpired(): void
@@ -200,6 +202,7 @@ class DeleteCommand extends AbstractCommand
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
+     * @throws ArgumentError
      * @throws ModelDeleteError
      */
     private function deleteWhereSizeExceeded(): void
