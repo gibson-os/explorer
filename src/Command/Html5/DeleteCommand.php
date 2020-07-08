@@ -173,6 +173,10 @@ class DeleteCommand extends AbstractCommand
                 'html5_media_lifetime'
             )->getValue();
 
+            if (empty($lifetime)) {
+                return;
+            }
+
             foreach ($this->mediaRepository->getAllOlderThan(new DateTime('-' . $lifetime . ' days')) as $media) {
                 if ($this->hasOption('dry')) {
                     printf(
@@ -249,7 +253,7 @@ class DeleteCommand extends AbstractCommand
 
                 if ($this->hasOption('dry')) {
                     printf(
-                        'Media %s deleted because folder size is %d Byte bigger as %d Byte.' . PHP_EOL,
+                        'Media %s deleted because folder size is %d Bytes bigger as %d Bytes.' . PHP_EOL,
                         $media->getDir() . $media->getFilename(),
                         $deleteSize,
                         $size
