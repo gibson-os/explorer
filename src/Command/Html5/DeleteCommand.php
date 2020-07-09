@@ -10,6 +10,8 @@ use GibsonOS\Core\Exception\ArgumentError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
+use GibsonOS\Core\Exception\Flock\FlockError;
+use GibsonOS\Core\Exception\Flock\UnFlockError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\DeleteError as ModelDeleteError;
 use GibsonOS\Core\Exception\Repository\SelectError;
@@ -19,7 +21,6 @@ use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\FlockService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
-use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 
 class DeleteCommand extends AbstractCommand
 {
@@ -27,11 +28,6 @@ class DeleteCommand extends AbstractCommand
      * @var MediaRepository
      */
     private $mediaRepository;
-
-    /**
-     * @var MediaService
-     */
-    private $mediaService;
 
     /**
      * @var SettingRepository
@@ -60,14 +56,12 @@ class DeleteCommand extends AbstractCommand
 
     public function __construct(
         MediaRepository $mediaRepository,
-        MediaService $mediaService,
         SettingRepository $settingRepository,
         FlockService $flockService,
         DirService $dirService,
         FileService $fileService
     ) {
         $this->mediaRepository = $mediaRepository;
-        $this->mediaService = $mediaService;
         $this->settingRepository = $settingRepository;
         $this->flockService = $flockService;
         $this->dirService = $dirService;
@@ -84,19 +78,28 @@ class DeleteCommand extends AbstractCommand
      * @throws ModelDeleteError
      * @throws SelectError
      * @throws ArgumentError
+     * @throws UnFlockError
      */
     protected function run(): int
     {
-        $this->mediaPath = $this->settingRepository->getByKeyAndModuleName(
-            'explorer',
-            0,
-            'html5_media_path'
-        )->getValue();
+        try {
+            $this->flockService->flock();
 
-        $this->deleteWhereFileNotExists();
-        $this->deleteWhereMediaNotExists();
-        $this->deleteWhereLifetimeExpired();
-        $this->deleteWhereSizeExceeded();
+            $this->mediaPath = $this->settingRepository->getByKeyAndModuleName(
+                'explorer',
+                0,
+                'html5_media_path'
+            )->getValue();
+
+            $this->deleteWhereFileNotExists();
+            $this->deleteWhereMediaNotExists();
+            $this->deleteWhereLifetimeExpired();
+            $this->deleteWhereSizeExceeded();
+
+            $this->flockService->unFlock();
+        } catch (FlockError $e) {
+            // Delete in progress
+        }
 
         return 0;
     }
