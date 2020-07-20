@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service\File\Type\Describer;
 
-use GibsonOS\Module\Explorer\Factory\File\Type\VideoFactory as VideoFactory;
+use GibsonOS\Module\Explorer\Service\File\Type\VideoService;
 
-class VideoService implements FileTypeDescriberInterface
+class VideoDescriber implements FileTypeDescriberInterface
 {
     /**
      * @return string[]
@@ -48,8 +48,18 @@ class VideoService implements FileTypeDescriberInterface
         ];
     }
 
-    public function getFactoryClassName(): string
+    public function getServiceClassname(): string
     {
-        return VideoFactory::class;
+        return VideoService::class;
+    }
+
+    public function isImageAvailable(): bool
+    {
+        return true;
+    }
+
+    public function getCategory(): int
+    {
+        return self::CATEGORY_VIDEO;
     }
 }

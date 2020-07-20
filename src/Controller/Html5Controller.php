@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Controller;
 
+use Exception;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\DateTimeError;
+use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
 use GibsonOS\Core\Exception\File\OpenError;
 use GibsonOS\Core\Exception\FileNotFound;
@@ -244,11 +246,14 @@ class Html5Controller extends AbstractController
      * @throws CreateError
      * @throws LoadError
      * @throws WriteError
+     * @throws FactoryError
+     * @throws Exception
      */
     public function image(
         MediaRepository $mediaRepository,
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
+        TypeFactory $typeFactory,
         string $token,
         int $width = null,
         int $height = null
@@ -259,7 +264,7 @@ class Html5Controller extends AbstractController
         $path = $media->getDir() . $media->getFilename();
 
         if (!$gibsonStoreService->hasFileImage($path)) {
-            $fileTypeService = TypeFactory::create($path);
+            $fileTypeService = $typeFactory->create($path);
             $image = $fileTypeService->getImage($path);
             $gibsonStoreService->setFileImage($path, $image);
         }

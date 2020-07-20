@@ -3,18 +3,31 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Factory\File\Type;
 
-use GibsonOS\Core\Exception\FileNotFound;
+use GibsonOS\Core\Exception\FactoryError;
+use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Factory\DirFactory;
 use GibsonOS\Core\Factory\FileFactory;
+use GibsonOS\Core\Service\ServiceManagerService;
+use GibsonOS\Module\Explorer\Service\File\Type\Describer\DefaultDescriber;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 
 class DescriberFactory
 {
     /**
-     * @throws \GibsonOS\Core\Exception\GetError
-     * @throws FileNotFound
+     * @var ServiceManagerService
      */
-    public static function create(string $filename): FileTypeDescriberInterface
+    private $serviceManagerService;
+
+    public function __construct(ServiceManagerService $serviceManagerService)
+    {
+        $this->serviceManagerService = $serviceManagerService;
+    }
+
+    /**
+     * @throws GetError
+     * @throws FactoryError
+     */
+    public function create(string $filename): FileTypeDescriberInterface
     {
         $fileService = FileFactory::create();
         $dirService = DirFactory::create();
@@ -39,7 +52,7 @@ class DescriberFactory
             }
 
             $className = $namespace . str_replace('.php', '', $classFilename);
-            $fileTypeDescriberService = new $className();
+            $fileTypeDescriberService = $this->serviceManagerService->get($className);
 
             if (!$fileTypeDescriberService instanceof FileTypeDescriberInterface) {
                 continue;
@@ -50,6 +63,6 @@ class DescriberFactory
             }
         }
 
-        throw new FileNotFound('Dateityp Beschreiber existiert nicht!');
+        return new DefaultDescriber();
     }
 }

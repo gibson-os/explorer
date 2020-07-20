@@ -5,8 +5,8 @@ namespace GibsonOS\Module\Explorer\Command;
 
 use Exception;
 use GibsonOS\Core\Command\AbstractCommand;
-use GibsonOS\Core\Dto\Image;
 use GibsonOS\Core\Exception\DateTimeError;
+use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\Flock\FlockError;
 use GibsonOS\Core\Exception\Flock\UnFlockError;
@@ -20,8 +20,8 @@ use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\EnvService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\FlockService;
+use GibsonOS\Core\Service\ServiceManagerService;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
-use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 
 class IndexerCommand extends AbstractCommand
@@ -56,13 +56,25 @@ class IndexerCommand extends AbstractCommand
      */
     private $envService;
 
+    /**
+     * @var DescriberFactory
+     */
+    private $describerFactory;
+
+    /**
+     * @var ServiceManagerService
+     */
+    private $serviceManagerService;
+
     public function __construct(
         FlockService $flockService,
         SettingRepository $settingRepository,
         GibsonStoreService $gibsonStoreService,
         DirService $dirService,
         FileService $fileService,
-        EnvService $envService
+        EnvService $envService,
+        DescriberFactory $describerFactory,
+        ServiceManagerService $serviceManagerService
     ) {
         $this->flockService = $flockService;
         $this->settingRepository = $settingRepository;
@@ -70,6 +82,8 @@ class IndexerCommand extends AbstractCommand
         $this->dirService = $dirService;
         $this->fileService = $fileService;
         $this->envService = $envService;
+        $this->describerFactory = $describerFactory;
+        $this->serviceManagerService = $serviceManagerService;
 
         $this->setOption('renew');
     }
@@ -195,22 +209,23 @@ class IndexerCommand extends AbstractCommand
      * @throws ExecuteError
      * @throws ReadError
      * @throws WriteError
+     * @throws FactoryError
      */
     private function indexFile(string $path): void
     {
-        $fileTypeDescriber = DescriberFactory::create($path);
+        $fileTypeDescriber = $this->describerFactory->create($path);
         $fileTypeService = null;
         $checkSum = null;
 
         if (!$this->gibsonStoreService->hasFileMetas($path, $fileTypeDescriber->getMetasStructure())) {
-            $fileTypeService = TypeFactory::create($path);
+            $fileTypeService = $this->serviceManagerService->get($fileTypeDescriber->getServiceClassname());
             $checkSum = md5_file($path);
             $this->gibsonStoreService->setFileMetas($path, $fileTypeService->getMetas($path), $checkSum ?: null);
         }
 
         if (!$this->gibsonStoreService->hasFileImage($path)) {
             if ($fileTypeService === null) {
-                $fileTypeService = TypeFactory::create($path);
+                $fileTypeService = $this->serviceManagerService->get($fileTypeDescriber->getServiceClassname());
             }
 
             try {

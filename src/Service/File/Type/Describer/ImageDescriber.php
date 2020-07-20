@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service\File\Type\Describer;
 
-use GibsonOS\Module\Explorer\Factory\File\Type\ImageFactory as ImageFactory;
+use GibsonOS\Module\Explorer\Service\File\Type\ImageService;
 
-class ImageService implements FileTypeDescriberInterface
+class ImageDescriber implements FileTypeDescriberInterface
 {
     /**
      * @return string[]
@@ -30,8 +30,18 @@ class ImageService implements FileTypeDescriberInterface
         ];
     }
 
-    public function getFactoryClassName(): string
+    public function getServiceClassname(): string
     {
-        return ImageFactory::class;
+        return ImageService::class;
+    }
+
+    public function isImageAvailable(): bool
+    {
+        return true;
+    }
+
+    public function getCategory(): int
+    {
+        return self::CATEGORY_IMAGE;
     }
 }

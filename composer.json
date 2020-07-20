@@ -7,7 +7,8 @@
     "ext-exif": "*",
     "ext-sqlite3": "*",
     "ext-json": "*",
-    "vimeo/psalm": "^3.11"
+    "vimeo/psalm": "^3.11",
+    "ext-iconv": "*"
   },
   "require-dev": {
     "codeception/codeception": "^3.1",

@@ -47,26 +47,26 @@ class GibsonStoreService
     /**
      * @var FileService
      */
-    private $file;
+    private $fileService;
 
     /**
      * @var DirService
      */
-    private $dir;
+    private $dirService;
 
     /**
      * @var ThumbnailService
      */
-    private $image;
+    private $thumbnailService;
 
     /**
      * GibsonStoreService constructor.
      */
-    public function __construct(FileService $file, DirService $dir, ThumbnailService $image)
+    public function __construct(FileService $fileService, DirService $dirService, ThumbnailService $thumbnailService)
     {
-        $this->file = $file;
-        $this->dir = $dir;
-        $this->image = $image;
+        $this->fileService = $fileService;
+        $this->dirService = $dirService;
+        $this->thumbnailService = $thumbnailService;
     }
 
     /**
@@ -182,8 +182,8 @@ class GibsonStoreService
      */
     public function getFileMeta(string $path, string $key, $default = null)
     {
-        $dir = $this->file->getDir($path);
-        $filename = $this->file->getFilename($path);
+        $dir = $this->fileService->getDir($path);
+        $filename = $this->fileService->getFilename($path);
 
         $store = $this->getStoreToRead($dir);
 
@@ -226,8 +226,8 @@ class GibsonStoreService
      */
     public function getFileMetas(string $path, array $keys = null, $default = null)
     {
-        $dir = $this->file->getDir($path);
-        $filename = $this->file->getFilename($path);
+        $dir = $this->fileService->getDir($path);
+        $filename = $this->fileService->getFilename($path);
 
         $store = $this->getStoreToRead($dir);
 
@@ -280,8 +280,8 @@ class GibsonStoreService
      */
     public function hasFileMetas(string $path, array $keys): bool
     {
-        $dir = $this->file->getDir($path);
-        $filename = $this->file->getFilename($path);
+        $dir = $this->fileService->getDir($path);
+        $filename = $this->fileService->getFilename($path);
 
         $store = $this->getStoreToRead($dir);
 
@@ -313,8 +313,8 @@ class GibsonStoreService
      */
     public function setFileMeta(string $path, string $key, $value, string $checkSum = null)
     {
-        $dir = $this->file->getDir($path);
-        $filename = $this->file->getFilename($path);
+        $dir = $this->fileService->getDir($path);
+        $filename = $this->fileService->getFilename($path);
         $checkSum = $this->getChecksum($path, $checkSum);
 
         if (
@@ -361,8 +361,8 @@ class GibsonStoreService
      */
     public function hasFileImage(string $path, string $checkSum = null): bool
     {
-        $dir = $this->file->getDir($path);
-        $filename = $this->file->getFilename($path);
+        $dir = $this->fileService->getDir($path);
+        $filename = $this->fileService->getFilename($path);
         $store = $this->getStoreToRead($dir);
 
         if (!$store->hasTable(self::IMAGE_TABLE_NAME)) {
@@ -402,8 +402,8 @@ class GibsonStoreService
      */
     public function getFileImage(string $path, int $width = null, int $height = null): Image
     {
-        $dir = $this->file->getDir($path);
-        $filename = $this->file->getFilename($path);
+        $dir = $this->fileService->getDir($path);
+        $filename = $this->fileService->getFilename($path);
         $store = $this->getStoreToWrite($dir);
 
         if (!$store->hasTable(self::IMAGE_TABLE_NAME)) {
@@ -422,24 +422,24 @@ class GibsonStoreService
         $row = $query->fetchArray(SQLITE3_ASSOC);
 
         if ($row !== false) {
-            $image = $this->image->load($row['image'], 'string');
+            $image = $this->thumbnailService->load($row['image'], 'string');
 
             if (
                 $width !== null ||
                 $height !== null
             ) {
-                if ($width > $this->image->getWidth($image)) {
-                    $width = $this->image->getWidth($image);
+                if ($width > $this->thumbnailService->getWidth($image)) {
+                    $width = $this->thumbnailService->getWidth($image);
                 }
 
-                if ($height > $this->image->getHeight($image)) {
-                    $height = $this->image->getHeight($image);
+                if ($height > $this->thumbnailService->getHeight($image)) {
+                    $height = $this->thumbnailService->getHeight($image);
                 }
 
-                $this->image->resize(
+                $this->thumbnailService->resize(
                     $image,
-                    $width ?? $this->image->getWidth($image),
-                    $height ?? $this->image->getHeight($image)
+                    $width ?? $this->thumbnailService->getWidth($image),
+                    $height ?? $this->thumbnailService->getHeight($image)
                 );
             }
 
@@ -459,8 +459,8 @@ class GibsonStoreService
      */
     public function getThumbImage(string $path): ?Image
     {
-        $dir = $this->file->getDir($path);
-        $filename = $this->file->getFilename($path);
+        $dir = $this->fileService->getDir($path);
+        $filename = $this->fileService->getFilename($path);
         $store = $this->getStoreToWrite($dir);
 
         if (!$store->hasTable(self::THUMBNAIL_TABLE_NAME)) {
@@ -479,7 +479,7 @@ class GibsonStoreService
         $row = $query->fetchArray(SQLITE3_ASSOC);
 
         if ($row !== false) {
-            return $this->image->load($row['image'], 'string');
+            return $this->thumbnailService->load($row['image'], 'string');
         }
 
         return null;
@@ -493,8 +493,8 @@ class GibsonStoreService
      */
     public function setFileImage(string $path, Image $image, string $checkSum = null)
     {
-        $dir = $this->file->getDir($path);
-        $filename = $this->file->getFilename($path);
+        $dir = $this->fileService->getDir($path);
+        $filename = $this->fileService->getFilename($path);
         $store = $this->getStoreToWrite($dir);
         $store->addTableIfNotExists(self::IMAGE_TABLE_NAME, self::IMAGE_CREATE_QUERY);
         $checkSum = $this->getChecksum($path, $checkSum);
@@ -503,7 +503,7 @@ class GibsonStoreService
         $query->bindValue(':chksum', $checkSum, SQLITE3_TEXT);
         $query->bindValue(':filename', $filename, SQLITE3_TEXT);
         $query->bindValue(':date', filemtime($path), SQLITE3_INTEGER);
-        $query->bindValue(':image', $this->image->getString($image, 'jpg'), SQLITE3_BLOB);
+        $query->bindValue(':image', $this->thumbnailService->getString($image, 'jpg'), SQLITE3_BLOB);
 
         if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
@@ -512,13 +512,13 @@ class GibsonStoreService
         // @todo remove wenn explorer umgebaut ist
         $store->addTableIfNotExists(self::THUMBNAIL_TABLE_NAME, self::THUMBNAIL_CREATE_QUERY);
 
-        $thumbnail = $this->image->generate($image);
+        $thumbnail = $this->thumbnailService->generate($image);
 
         $query = $store->prepare('REPLACE INTO ' . self::THUMBNAIL_TABLE_NAME . ' VALUES(:chksum, :filename, :date, :image)');
         $query->bindValue(':chksum', $checkSum, SQLITE3_TEXT);
         $query->bindValue(':filename', $filename, SQLITE3_TEXT);
         $query->bindValue(':date', filemtime($path), SQLITE3_INTEGER);
-        $query->bindValue(':image', $this->image->getString($thumbnail, 'png'), SQLITE3_BLOB);
+        $query->bindValue(':image', $this->thumbnailService->getString($thumbnail, 'png'), SQLITE3_BLOB);
 
         if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
@@ -638,12 +638,12 @@ class GibsonStoreService
     {
         $existingFiles = [];
 
-        foreach ($this->dir->getFiles($dir, '*') as $path) {
+        foreach ($this->dirService->getFiles($dir, '*') as $path) {
             if (is_dir($path)) {
                 continue;
             }
 
-            $existingFiles[] = $this->file->getFilename($path);
+            $existingFiles[] = $this->fileService->getFilename($path);
         }
 
         return $existingFiles;
@@ -673,6 +673,8 @@ class GibsonStoreService
      */
     private function getStoreToRead(string $dir): SqLiteService
     {
+        $dir = $this->dirService->addEndSlash($dir);
+
         if (!isset($this->stores[$dir])) {
             $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
             $this->stores[$dir]->busyTimeout(5000);

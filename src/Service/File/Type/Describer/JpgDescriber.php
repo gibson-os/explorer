@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service\File\Type\Describer;
 
-use GibsonOS\Module\Explorer\Factory\File\Type\JpgFactory as JpgFactory;
+use GibsonOS\Module\Explorer\Service\File\Type\JpgService;
 
-class JpgService extends ImageService
+class JpgDescriber extends ImageDescriber
 {
     /**
      * @return string[]
@@ -18,8 +18,8 @@ class JpgService extends ImageService
         ];
     }
 
-    public function getFactoryClassName(): string
+    public function getServiceClassname(): string
     {
-        return JpgFactory::class;
+        return JpgService::class;
     }
 }
