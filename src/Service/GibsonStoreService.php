@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service;
 
+use Exception;
 use GibsonOS\Core\Dto\Image;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
@@ -676,7 +677,12 @@ class GibsonStoreService
         $dir = $this->dirService->addEndSlash($dir);
 
         if (!isset($this->stores[$dir])) {
-            $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
+            try {
+                $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
+            } catch (Exception $exception) {
+                throw new ExecuteError('Cant create database', 0, $exception);
+            }
+
             $this->stores[$dir]->busyTimeout(5000);
         }
 
