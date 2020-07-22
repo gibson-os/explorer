@@ -92,25 +92,8 @@ class DirListStore extends AbstractStore
                 continue;
             }
 
-            $iconCls = 'icon_dir';
-
-            try {
-                $icon = $this->gibsonStoreService->getDirMeta($file, 'icon');
-
-                if (!empty($icon)) {
-                    $iconCls = $icon;
-                }
-            } catch (ExecuteError $e) {
-                // Write error
-            }
-
-            $dirParts = explode(DIRECTORY_SEPARATOR, $file);
-            $id = $this->dirService->addEndSlash($file);
-            $dirs[$id] = [
-                'id' => $id,
-                'text' => array_pop($dirParts),
-                'iconCls' => 'icon16 ' . $iconCls,
-            ];
+            $item = $this->getItem($file);
+            $dirs[$item['id']] = $item;
         }
 
         return $dirs;
@@ -119,10 +102,23 @@ class DirListStore extends AbstractStore
     private function loadParentDir(string $dir, array $data): array
     {
         $dir = $this->dirService->removeEndSlash($dir);
-        $dirWithoutHomePath = preg_replace('/^' . preg_quote($this->homePath, DIRECTORY_SEPARATOR) . '/', '', $dir);
+        $dirWithoutHomePath = preg_replace(
+            '/^' . preg_quote($this->homePath, '/') . '/',
+            '',
+            $dir,
+            1,
+            $hits
+        );
 
-        if (empty($dirWithoutHomePath)) {
-            return $data;
+        if ($hits === 0 || empty($dirWithoutHomePath)) {
+            $item = $this->getItem($dir);
+
+            if (!empty($data)) {
+                $item['expanded'] = true;
+                $item['data'] = $data;
+            }
+
+            return [$item];
         }
 
         $dirParts = explode(DIRECTORY_SEPARATOR, $dir);
@@ -137,5 +133,29 @@ class DirListStore extends AbstractStore
         }
 
         return $this->loadParentDir($parentDir, array_values($dirs));
+    }
+
+    private function getItem(string $file): array
+    {
+        $iconCls = 'icon_dir';
+
+        try {
+            $icon = $this->gibsonStoreService->getDirMeta($file, 'icon');
+
+            if (!empty($icon)) {
+                $iconCls = $icon;
+            }
+        } catch (ExecuteError $e) {
+            // Write error
+        }
+
+        $dirParts = explode(DIRECTORY_SEPARATOR, $file);
+        $id = $this->dirService->addEndSlash($file);
+
+        return [
+            'id' => $id,
+            'text' => array_pop($dirParts),
+            'iconCls' => 'icon16 ' . $iconCls,
+        ];
     }
 }
