@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Controller;
 
 use GibsonOS\Core\Controller\AbstractController;
+use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\FileNotFound;
@@ -14,8 +15,10 @@ use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Repository\SettingRepository;
+use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
+use GibsonOS\Module\Explorer\Service\DirService;
 use GibsonOS\Module\Explorer\Store\DirListStore;
 use GibsonOS\Module\Explorer\Store\DirStore;
 
@@ -58,6 +61,12 @@ class DirController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws DateTimeError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     */
     public function dirList(
         DirListStore $dirListStore,
         SettingRepository $settingRepository,
@@ -86,5 +95,20 @@ class DirController extends AbstractController
         ;
 
         return $this->returnSuccess($dirListStore->getList());
+    }
+
+    /**
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws CreateError
+     */
+    public function add(DirService $dirService, CoreDirService $coreDirService, string $dir, string $dirname): AjaxResponse
+    {
+        $this->checkPermission(PermissionService::WRITE);
+
+        $path = $coreDirService->addEndSlash($dir) . $dirname;
+        $coreDirService->create($path);
+
+        return $this->returnSuccess($dirService->get($path));
     }
 }
