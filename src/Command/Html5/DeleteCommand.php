@@ -151,7 +151,7 @@ class DeleteCommand extends AbstractCommand
                             $this->mediaPath . $filename
                         );
                     } else {
-                        $this->fileService->delete($this->mediaPath, $filename);
+                        $this->fileService->delete($file);
                     }
                 } catch (FileNotFound $e) {
                     // File does not exists
@@ -191,7 +191,7 @@ class DeleteCommand extends AbstractCommand
                         (new DateTime('-' . $lifetime . ' days'))->format('Y-m-d')
                     );
                 } else {
-                    $this->fileService->delete($this->dirService->addEndSlash($media->getDir()) . $media->getFilename());
+                    $this->fileService->delete($this->mediaPath . $media->getToken() . '.mp4');
                     $media->delete();
                 }
             }
@@ -265,7 +265,7 @@ class DeleteCommand extends AbstractCommand
                         $size
                     );
                 } else {
-                    $this->fileService->delete($this->dirService->addEndSlash($media->getDir()) . $media->getFilename());
+                    $this->fileService->delete($this->mediaPath . $media->getToken() . '.mp4');
                     $media->delete();
                 }
 
