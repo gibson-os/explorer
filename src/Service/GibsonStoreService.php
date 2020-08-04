@@ -155,22 +155,26 @@ class GibsonStoreService
      * @throws WriteError
      * @throws ExecuteError
      */
-    public function setDirMeta(string $dir, string $key, $value)
+    public function setDirMeta(string $dir, string $key, $value): GibsonStoreService
     {
         $store = $this->getStoreToWrite($dir);
         $store->addTableIfNotExists(self::META_TABLE_NAME, self::META_CREATE_QUERY);
-        $store->execute('REPLACE INTO ' . self::META_TABLE_NAME . " VALUES('" . SQLite3::escapeString($key) . "', '" . SQLite3::escapeString($value) . "')");
+        $store->execute('REPLACE INTO ' . self::META_TABLE_NAME . " VALUES('" . SQLite3::escapeString($key) . "', '" . (is_numeric($value) ? $value : SQLite3::escapeString($value)) . "')");
+
+        return $this;
     }
 
     /**
      * @throws ExecuteError
      * @throws WriteError
      */
-    public function setDirMetas(string $dir, array $values)
+    public function setDirMetas(string $dir, array $values): GibsonStoreService
     {
         foreach ($values as $key => $value) {
             $this->setDirMeta($dir, $key, $value);
         }
+
+        return $this;
     }
 
     /**
@@ -312,7 +316,7 @@ class GibsonStoreService
      * @throws GetError
      * @throws WriteError
      */
-    public function setFileMeta(string $path, string $key, $value, string $checkSum = null)
+    public function setFileMeta(string $path, string $key, $value, string $checkSum = null): GibsonStoreService
     {
         $dir = $this->fileService->getDir($path);
         $filename = $this->fileService->getFilename($path);
@@ -341,6 +345,8 @@ class GibsonStoreService
         if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
         }
+
+        return $this;
     }
 
     /**
@@ -348,11 +354,13 @@ class GibsonStoreService
      * @throws GetError
      * @throws WriteError
      */
-    public function setFileMetas(string $dir, array $values, string $checkSum = null)
+    public function setFileMetas(string $dir, array $values, string $checkSum = null): GibsonStoreService
     {
         foreach ($values as $key => $value) {
             $this->setFileMeta($dir, $key, $value, $checkSum);
         }
+
+        return $this;
     }
 
     /**
@@ -492,7 +500,7 @@ class GibsonStoreService
      * @throws WriteError
      * @throws CreateError
      */
-    public function setFileImage(string $path, Image $image, string $checkSum = null)
+    public function setFileImage(string $path, Image $image, string $checkSum = null): GibsonStoreService
     {
         $dir = $this->fileService->getDir($path);
         $filename = $this->fileService->getFilename($path);
@@ -524,6 +532,8 @@ class GibsonStoreService
         if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
         }
+
+        return $this;
     }
 
     /**
@@ -531,11 +541,15 @@ class GibsonStoreService
      * @throws GetError
      * @throws WriteError
      */
-    public function cleanStore(string $dir, array $existingFiles = null)
+    public function cleanStore(string $dir, array $existingFiles = null): GibsonStoreService
     {
-        $this->cleanFileMetas($dir, $existingFiles);
-        $this->cleanFileImages($dir, $existingFiles);
-        $this->cleanFileThumbs($dir, $existingFiles);
+        $this
+            ->cleanFileMetas($dir, $existingFiles)
+            ->cleanFileImages($dir, $existingFiles)
+            ->cleanFileThumbs($dir, $existingFiles)
+        ;
+
+        return $this;
     }
 
     /**
@@ -543,12 +557,12 @@ class GibsonStoreService
      * @throws GetError
      * @throws WriteError
      */
-    public function cleanFileMetas(string $dir, array $existingFiles = null)
+    public function cleanFileMetas(string $dir, array $existingFiles = null): GibsonStoreService
     {
         $store = $this->getStoreToWrite($dir);
 
         if (!$store->hasTable(self::FILE_META_TABLE_NAME)) {
-            return;
+            return $this;
         }
 
         if ($existingFiles === null) {
@@ -563,6 +577,8 @@ class GibsonStoreService
             'DELETE FROM ' . self::FILE_META_TABLE_NAME .
             " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')"
         );
+
+        return $this;
     }
 
     /**
@@ -570,12 +586,12 @@ class GibsonStoreService
      * @throws WriteError
      * @throws GetError
      */
-    public function cleanFileImages(string $dir, array $existingFiles = null)
+    public function cleanFileImages(string $dir, array $existingFiles = null): GibsonStoreService
     {
         $store = $this->getStoreToWrite($dir);
 
         if (!$store->hasTable(self::IMAGE_TABLE_NAME)) {
-            return;
+            return $this;
         }
 
         if ($existingFiles === null) {
@@ -590,6 +606,8 @@ class GibsonStoreService
             'DELETE FROM ' . self::IMAGE_TABLE_NAME .
             " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')"
         );
+
+        return $this;
     }
 
     /**
@@ -599,12 +617,12 @@ class GibsonStoreService
      *
      * @deprecated
      */
-    public function cleanFileThumbs(string $dir, array $existingFiles = null)
+    public function cleanFileThumbs(string $dir, array $existingFiles = null): GibsonStoreService
     {
         $store = $this->getStoreToWrite($dir);
 
         if (!$store->hasTable(self::THUMBNAIL_TABLE_NAME)) {
-            return;
+            return $this;
         }
 
         if ($existingFiles === null) {
@@ -619,17 +637,21 @@ class GibsonStoreService
             'DELETE FROM ' . self::THUMBNAIL_TABLE_NAME .
             " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')"
         );
+
+        return $this;
     }
 
     /**
      * @throws ExecuteError
      * @throws ReadError
      */
-    public function close(string $dir)
+    public function close(string $dir): GibsonStoreService
     {
         $store = $this->getStoreToRead($dir);
         $store->close();
         unset($this->stores[$dir]);
+
+        return $this;
     }
 
     /**
@@ -656,8 +678,14 @@ class GibsonStoreService
      */
     private function getStoreToWrite(string $dir): SqLiteService
     {
+        $dir = $this->dirService->addEndSlash($dir);
+
         if (!isset($this->stores[$dir])) {
-            $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
+            try {
+                $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
+            } catch (Exception $exception) {
+                throw new ExecuteError(sprintf('Cant create database for %s to write', $dir), 0, $exception);
+            }
             $this->stores[$dir]->busyTimeout(5000);
         }
 
@@ -680,7 +708,7 @@ class GibsonStoreService
             try {
                 $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
             } catch (Exception $exception) {
-                throw new ExecuteError('Cant create database', 0, $exception);
+                throw new ExecuteError(sprintf('Cant create database for %s to read', $dir), 0, $exception);
             }
 
             $this->stores[$dir]->busyTimeout(5000);

@@ -50,7 +50,6 @@ class FileService
     /**
      * @throws FactoryError
      * @throws GetError
-     * @throws ExecuteError
      * @throws ReadError
      */
     public function get(string $path): File
@@ -79,7 +78,7 @@ class FileService
 
         $fileTypeDescriber = $this->describerFactory->create($path);
 
-        return (new File(
+        $file = (new File(
             $filename,
             $this->coreFileService->getFileEnding($path),
             $fileSize,
@@ -88,9 +87,16 @@ class FileService
             ->setThumbAvailable($fileTypeDescriber->isImageAvailable())
             ->setHtml5VideoStatus($html5Status)
             ->setHtml5VideoToken($html5Token)
-            ->setMetaInfos($this->gibsonStoreService->getFileMetas($path) ?: [])
             ->setAccessed(fileatime($path))
             ->setModified(filemtime($path))
         ;
+
+        try {
+            $file->setMetaInfos($this->gibsonStoreService->getFileMetas($path) ?: []);
+        } catch (ExecuteError $e) {
+            // Store error
+        }
+
+        return $file;
     }
 }

@@ -8,6 +8,7 @@ use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
+use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Store\AbstractStore;
 use GibsonOS\Module\Explorer\Service\DirService;
@@ -169,5 +170,19 @@ class DirStore extends AbstractStore
         }
 
         $this->metas['dirsize'] += $this->metas['filesize'];
+
+        $dir = $this->dirService->get($this->dir)
+            ->setSize($this->metas['dirsize'])
+            ->setFiles($this->metas['filecount'])
+            ->setDirFiles($this->metas['dirfilecount'])
+            ->setDirs($this->metas['dircount'])
+            ->setDirDirs($this->metas['dirdircount'])
+        ;
+
+        try {
+            $this->dirService->set($dir);
+        } catch (ExecuteError | WriteError $e) {
+            // write error
+        }
     }
 }
