@@ -87,18 +87,17 @@ class DirService
      */
     public function set(Dir $dir): DirService
     {
+        $dirPath = $this->coreDirService->addEndSlash($dir->getPath()) . $dir->getName();
         $this->gibsonStoreService
-            ->setDirMeta($dir->getPath(), 'dirsize', $dir->getSize())
-            ->setDirMeta($dir->getPath(), 'filecount', $dir->getFiles())
-            ->setDirMeta($dir->getPath(), 'dirfilecount', $dir->getDirFiles())
-            ->setDirMeta($dir->getPath(), 'dircount', $dir->getDirs())
-            ->setDirMeta($dir->getPath(), 'dirdircount', $dir->getDirDirs())
+            ->setDirMeta($dirPath, 'dirsize', $dir->getSize())
+            ->setDirMeta($dirPath, 'filecount', $dir->getFiles())
+            ->setDirMeta($dirPath, 'dirfilecount', $dir->getDirFiles())
+            ->setDirMeta($dirPath, 'dircount', $dir->getDirs())
+            ->setDirMeta($dirPath, 'dirdircount', $dir->getDirDirs())
         ;
 
-        if (empty($dir->getIcon())) {
-            // @todo remove icon
-        } else {
-            $this->gibsonStoreService->setDirMeta($dir->getPath(), 'icon', $dir->getIcon());
+        if (!empty($dir->getIcon())) {
+            $this->gibsonStoreService->setDirMeta($dirPath, 'icon', $dir->getIcon());
         }
 
         return $this;
