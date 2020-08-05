@@ -21,6 +21,8 @@ use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 
 class ConvertCommand extends AbstractCommand
 {
+    private const FLOCK_NAME = 'html5Convert';
+
     /**
      * @var MediaRepository
      */
@@ -65,7 +67,7 @@ class ConvertCommand extends AbstractCommand
     protected function run(): int
     {
         try {
-            $this->flockService->flock();
+            $this->flockService->flock(self::FLOCK_NAME);
 
             foreach ($this->mediaRepository->getAllByStatus(Media::STATUS_WAIT) as $media) {
                 $media
@@ -92,7 +94,7 @@ class ConvertCommand extends AbstractCommand
                 // @todo c2dm muss noch rein
             }
 
-            $this->flockService->unFlock();
+            $this->flockService->unFlock(self::FLOCK_NAME);
         } catch (FlockError $e) {
             // Convert in progress
         }
