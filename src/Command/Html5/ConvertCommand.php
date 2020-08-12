@@ -7,14 +7,14 @@ use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
-use GibsonOS\Core\Exception\Flock\FlockError;
-use GibsonOS\Core\Exception\Flock\UnFlockError;
+use GibsonOS\Core\Exception\Flock\LockError;
+use GibsonOS\Core\Exception\Flock\UnlockError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\SettingRepository;
-use GibsonOS\Core\Service\FlockService;
+use GibsonOS\Core\Service\LockService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
@@ -39,20 +39,20 @@ class ConvertCommand extends AbstractCommand
     private $settingRepository;
 
     /**
-     * @var FlockService
+     * @var LockService
      */
-    private $flockService;
+    private $lockService;
 
     public function __construct(
         MediaRepository $mediaRepository,
         MediaService $mediaService,
         SettingRepository $settingRepository,
-        FlockService $flockService
+        LockService $lockService
     ) {
         $this->mediaRepository = $mediaRepository;
         $this->mediaService = $mediaService;
         $this->settingRepository = $settingRepository;
-        $this->flockService = $flockService;
+        $this->lockService = $lockService;
     }
 
     /**
@@ -62,12 +62,12 @@ class ConvertCommand extends AbstractCommand
      * @throws ProcessError
      * @throws SaveError
      * @throws SelectError
-     * @throws UnFlockError
+     * @throws UnlockError
      */
     protected function run(): int
     {
         try {
-            $this->flockService->flock(self::FLOCK_NAME);
+            $this->lockService->lock(self::FLOCK_NAME);
 
             foreach ($this->mediaRepository->getAllByStatus(Media::STATUS_WAIT) as $media) {
                 $media
@@ -94,8 +94,8 @@ class ConvertCommand extends AbstractCommand
                 // @todo c2dm muss noch rein
             }
 
-            $this->flockService->unFlock(self::FLOCK_NAME);
-        } catch (FlockError $e) {
+            $this->lockService->unlock(self::FLOCK_NAME);
+        } catch (LockError $e) {
             // Convert in progress
         }
 

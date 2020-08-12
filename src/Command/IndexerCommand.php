@@ -8,8 +8,8 @@ use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\FileNotFound;
-use GibsonOS\Core\Exception\Flock\FlockError;
-use GibsonOS\Core\Exception\Flock\UnFlockError;
+use GibsonOS\Core\Exception\Flock\LockError;
+use GibsonOS\Core\Exception\Flock\UnlockError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
@@ -19,7 +19,7 @@ use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\EnvService;
 use GibsonOS\Core\Service\FileService;
-use GibsonOS\Core\Service\FlockService;
+use GibsonOS\Core\Service\LockService;
 use GibsonOS\Core\Service\ServiceManagerService;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
@@ -27,9 +27,9 @@ use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 class IndexerCommand extends AbstractCommand
 {
     /**
-     * @var FlockService
+     * @var LockService
      */
-    private $flockService;
+    private $lockService;
 
     /**
      * @var SettingRepository
@@ -67,7 +67,7 @@ class IndexerCommand extends AbstractCommand
     private $serviceManagerService;
 
     public function __construct(
-        FlockService $flockService,
+        LockService $lockService,
         SettingRepository $settingRepository,
         GibsonStoreService $gibsonStoreService,
         DirService $dirService,
@@ -76,7 +76,7 @@ class IndexerCommand extends AbstractCommand
         DescriberFactory $describerFactory,
         ServiceManagerService $serviceManagerService
     ) {
-        $this->flockService = $flockService;
+        $this->lockService = $lockService;
         $this->settingRepository = $settingRepository;
         $this->gibsonStoreService = $gibsonStoreService;
         $this->dirService = $dirService;
@@ -89,26 +89,29 @@ class IndexerCommand extends AbstractCommand
     }
 
     /**
-     * @throws UnFlockError
+     * @throws UnlockError
      * @throws DateTimeError
      * @throws SelectError
      */
     protected function run(): int
     {
         try {
-            $this->flockService->flock();
+            $this->lockService->lock();
 
             $homePath = $this->settingRepository->getByKeyAndModuleName('explorer', 0, 'home_path');
             $this->indexDir($homePath->getValue(), false);
 
-            $this->flockService->unFlock();
-        } catch (FlockError $e) {
+            $this->lockService->unlock();
+        } catch (LockError $e) {
             // Indexer in progress
         }
 
         return 0;
     }
 
+    /**
+     * @throws GetError
+     */
     private function indexDir(string $dir, bool $noStore): array
     {
         $files = [];

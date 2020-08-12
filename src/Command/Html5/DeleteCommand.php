@@ -10,15 +10,15 @@ use GibsonOS\Core\Exception\ArgumentError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
-use GibsonOS\Core\Exception\Flock\FlockError;
-use GibsonOS\Core\Exception\Flock\UnFlockError;
+use GibsonOS\Core\Exception\Flock\LockError;
+use GibsonOS\Core\Exception\Flock\UnlockError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\DeleteError as ModelDeleteError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
-use GibsonOS\Core\Service\FlockService;
+use GibsonOS\Core\Service\LockService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 
@@ -35,9 +35,9 @@ class DeleteCommand extends AbstractCommand
     private $settingRepository;
 
     /**
-     * @var FlockService
+     * @var LockService
      */
-    private $flockService;
+    private $lockService;
 
     /**
      * @var DirService
@@ -57,13 +57,13 @@ class DeleteCommand extends AbstractCommand
     public function __construct(
         MediaRepository $mediaRepository,
         SettingRepository $settingRepository,
-        FlockService $flockService,
+        LockService $lockService,
         DirService $dirService,
         FileService $fileService
     ) {
         $this->mediaRepository = $mediaRepository;
         $this->settingRepository = $settingRepository;
-        $this->flockService = $flockService;
+        $this->lockService = $lockService;
         $this->dirService = $dirService;
         $this->fileService = $fileService;
 
@@ -78,12 +78,12 @@ class DeleteCommand extends AbstractCommand
      * @throws ModelDeleteError
      * @throws SelectError
      * @throws ArgumentError
-     * @throws UnFlockError
+     * @throws UnlockError
      */
     protected function run(): int
     {
         try {
-            $this->flockService->flock();
+            $this->lockService->lock();
 
             $this->mediaPath = $this->settingRepository->getByKeyAndModuleName(
                 'explorer',
@@ -96,8 +96,8 @@ class DeleteCommand extends AbstractCommand
             $this->deleteWhereLifetimeExpired();
             $this->deleteWhereSizeExceeded();
 
-            $this->flockService->unFlock();
-        } catch (FlockError $e) {
+            $this->lockService->unlock();
+        } catch (LockError $e) {
             // Delete in progress
         }
 
