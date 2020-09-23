@@ -21,7 +21,7 @@ use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 
 class ConvertCommand extends AbstractCommand
 {
-    private const FLOCK_NAME = 'html5Convert';
+    private const LOCK_NAME = 'html5Convert';
 
     /**
      * @var MediaRepository
@@ -67,7 +67,7 @@ class ConvertCommand extends AbstractCommand
     protected function run(): int
     {
         try {
-            $this->lockService->lock(self::FLOCK_NAME);
+            $this->lockService->lock(self::LOCK_NAME);
 
             foreach ($this->mediaRepository->getAllByStatus(Media::STATUS_WAIT) as $media) {
                 $media
@@ -94,7 +94,7 @@ class ConvertCommand extends AbstractCommand
                 // @todo c2dm muss noch rein
             }
 
-            $this->lockService->unlock(self::FLOCK_NAME);
+            $this->lockService->unlock(self::LOCK_NAME);
         } catch (LockError $e) {
             // Convert in progress
         }
