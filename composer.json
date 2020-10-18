@@ -11,11 +11,11 @@
     "ext-iconv": "*"
   },
   "require-dev": {
-    "codeception/codeception": "^3.1",
+    "codeception/codeception": "^4.0",
     "friendsofphp/php-cs-fixer": "^2.15",
     "phpmd/phpmd": "^2.7",
-    "captainhook/captainhook": "^4.5",
-    "captainhook/plugin-composer": "^4.0"
+    "captainhook/captainhook": "^5.0",
+    "captainhook/plugin-composer": "^5.0"
   },
   "repositories": [
     {
