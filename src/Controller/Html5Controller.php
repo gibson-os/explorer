@@ -75,6 +75,8 @@ class Html5Controller extends AbstractController
         $mediaStore->setSortByExt($sort);
 
         return new AjaxResponse([
+            'success' => true,
+            'failure' => false,
             'data' => $mediaStore->getList(),
             'total' => $mediaStore->getCount(),
             'settings' => $settings,

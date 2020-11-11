@@ -52,6 +52,8 @@ class DirController extends AbstractController
         $dirStore->setDir($dir);
 
         return new AjaxResponse([
+            'success' => true,
+            'failure' => false,
             'data' => $dirStore->getList(),
             'total' => $dirStore->getCount(),
             'dir' => $dir,
