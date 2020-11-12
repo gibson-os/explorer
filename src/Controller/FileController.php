@@ -80,6 +80,27 @@ class FileController extends AbstractController
     }
 
     /**
+     * @throws DateTimeError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     */
+    public function show(RequestService $requestService): ResponseInterface
+    {
+        $this->checkPermission(PermissionService::READ);
+
+        $filename = '/' . urldecode($requestService->getQueryString());
+
+        if (mb_strpos($this->getHomePath(), $filename) === 0) {
+            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+        }
+
+        return (new FileResponse($requestService, $filename))
+            ->setDisposition('inline')
+        ;
+    }
+
+    /**
      * @throws FactoryError
      * @throws GetError
      * @throws LoginRequired
