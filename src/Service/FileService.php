@@ -8,10 +8,12 @@ use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
+use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Service\FileService as CoreFileService;
 use GibsonOS\Module\Explorer\Dto\File;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
+use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 
 class FileService
 {
@@ -98,5 +100,16 @@ class FileService
         }
 
         return $file;
+    }
+
+    /**
+     * @throws ExecuteError
+     * @throws GetError
+     * @throws WriteError
+     */
+    public function setFileMetas(FileTypeInterface $fileTypeService, string $path): void
+    {
+        $checkSum = md5_file($path);
+        $this->gibsonStoreService->setFileMetas($path, $fileTypeService->getMetas($path), $checkSum ?: null);
     }
 }

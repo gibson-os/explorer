@@ -14,7 +14,6 @@ class MediaRepository extends AbstractRepository
 {
     /**
      * @throws DateTimeError
-     * @throws GetError
      * @throws SelectError
      */
     public function getByToken(string $token): MediaModel

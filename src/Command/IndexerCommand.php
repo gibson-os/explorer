@@ -22,6 +22,8 @@ use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\LockService;
 use GibsonOS\Core\Service\ServiceManagerService;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
+use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
+use GibsonOS\Module\Explorer\Service\FileService as ExplorerFileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 
 class IndexerCommand extends AbstractCommand
@@ -66,6 +68,11 @@ class IndexerCommand extends AbstractCommand
      */
     private $serviceManagerService;
 
+    /**
+     * @var ExplorerFileService
+     */
+    private $explorerFileService;
+
     public function __construct(
         LockService $lockService,
         SettingRepository $settingRepository,
@@ -74,7 +81,8 @@ class IndexerCommand extends AbstractCommand
         FileService $fileService,
         EnvService $envService,
         DescriberFactory $describerFactory,
-        ServiceManagerService $serviceManagerService
+        ServiceManagerService $serviceManagerService,
+        ExplorerFileService $explorerFileService
     ) {
         $this->lockService = $lockService;
         $this->settingRepository = $settingRepository;
@@ -84,6 +92,7 @@ class IndexerCommand extends AbstractCommand
         $this->envService = $envService;
         $this->describerFactory = $describerFactory;
         $this->serviceManagerService = $serviceManagerService;
+        $this->explorerFileService = $explorerFileService;
 
         $this->setOption('renew');
     }
@@ -221,9 +230,9 @@ class IndexerCommand extends AbstractCommand
         $checkSum = null;
 
         if (!$this->gibsonStoreService->hasFileMetas($path, $fileTypeDescriber->getMetasStructure())) {
+            /** @var FileTypeInterface $fileTypeService */
             $fileTypeService = $this->serviceManagerService->get($fileTypeDescriber->getServiceClassname());
-            $checkSum = md5_file($path);
-            $this->gibsonStoreService->setFileMetas($path, $fileTypeService->getMetas($path), $checkSum ?: null);
+            $this->explorerFileService->setFileMetas($fileTypeService, $path);
         }
 
         if (!$this->gibsonStoreService->hasFileImage($path)) {
@@ -233,10 +242,7 @@ class IndexerCommand extends AbstractCommand
 
             try {
                 $image = $fileTypeService->getImage($path);
-
-                if ($checkSum === null) {
-                    $checkSum = md5_file($path);
-                }
+                $checkSum = md5_file($path);
 
                 $this->gibsonStoreService->setFileImage($path, $image, $checkSum ?: null);
             } catch (Exception $e) {
