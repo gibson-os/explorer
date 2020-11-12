@@ -491,7 +491,7 @@
             "source": {
                 "type": "git",
                 "url": "git@wolli.dyndns.tv:/home/git/gibsonOs/Core.git",
-                "reference": "af2af7d79d26a5c1168945a6628c9a617cb17c30"
+                "reference": "b90fdd6b725f8f7eb22cdd494fb211e1b94ab96b"
             },
             "require": {
                 "ext-fileinfo": "*",
@@ -547,7 +547,7 @@
                     "php ./vendor/codeception/codeception/codecept generate:test unit"
                 ]
             },
-            "time": "2020-11-08T20:37:47+00:00"
+            "time": "2020-11-12T22:20:27+00:00"
         },
         {
             "name": "mdo/mdo",
@@ -1668,20 +1668,6 @@
                 "interfaces",
                 "interoperability",
                 "standards"
-            ],
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
             ],
             "time": "2020-09-07T11:33:47+00:00"
         },
@@ -4763,12 +4749,6 @@
             "keywords": [
                 "cli"
             ],
-            "funding": [
-                {
-                    "url": "https://github.com/sebastianfeldmann",
-                    "type": "github"
-                }
-            ],
             "time": "2020-08-27T18:10:25+00:00"
         },
         {
@@ -5094,20 +5074,6 @@
             ],
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
             "time": "2020-09-07T11:33:47+00:00"
         },
         {
