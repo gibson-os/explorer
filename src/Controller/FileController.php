@@ -8,6 +8,7 @@ use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FactoryError;
+use GibsonOS\Core\Exception\FileExistsError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\LoginRequired;
@@ -218,6 +219,30 @@ class FileController extends AbstractController
         $fileService->move($dir . $oldFilename, $path);
 
         return $this->returnSuccess();
+    }
+
+    /**
+     * @throws CreateError
+     * @throws FactoryError
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws ReadError
+     * @throws FileExistsError
+     */
+    public function add(
+        CoreFileService $coreFileService,
+        FileService $fileService,
+        string $dir,
+        string $filename
+    ): AjaxResponse {
+        $this->checkPermission(PermissionService::WRITE);
+
+        $path = $dir . $filename;
+
+        $coreFileService->save($path, null);
+
+        return $this->returnSuccess($fileService->get($path));
     }
 
     /**
