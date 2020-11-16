@@ -11,6 +11,7 @@ use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Service\FileService as CoreFileService;
 use GibsonOS\Module\Explorer\Dto\File;
+use GibsonOS\Module\Explorer\Exception\OverwriteException;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
@@ -111,5 +112,28 @@ class FileService
     {
         $checkSum = md5_file($path);
         $this->gibsonStoreService->setFileMetas($path, $fileTypeService->getMetas($path), $checkSum ?: null);
+    }
+
+    public function isWritable(
+        string $path,
+        array $overwrite = [],
+        array $ignore = []
+    ) {
+        if (file_exists($path)) {
+            if (!is_writable($path)) {
+                return false;
+            }
+
+            if (
+                in_array($path, $overwrite) ||
+                in_array($path, $ignore)
+            ) {
+                return true;
+            }
+
+            throw new OverwriteException($path, $overwrite, $ignore);
+        }
+
+        return is_writable($this->coreFileService->getDir($path));
     }
 }

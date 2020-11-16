@@ -4,16 +4,23 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Controller;
 
 use GibsonOS\Core\Controller\AbstractController;
+use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
+use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FactoryError;
+use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\LoginRequired;
+use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Exception\Repository\SelectError;
+use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Repository\SettingRepository;
+use GibsonOS\Core\Service\DirService;
+use GibsonOS\Core\Service\FileService as CoreFileService;
 use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
@@ -23,7 +30,9 @@ use GibsonOS\Core\Service\ServiceManagerService;
 use GibsonOS\Core\Service\SessionService;
 use GibsonOS\Core\Service\TwigService;
 use GibsonOS\Core\Utility\StatusCode;
+use GibsonOS\Module\Explorer\Exception\OverwriteException;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
+use GibsonOS\Module\Explorer\Service\FileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\TrashService;
 
@@ -45,6 +54,13 @@ class FileController extends AbstractController
         $this->settingRepository = $settingRepository;
     }
 
+    /**
+     * @throws DateTimeError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     * @throws SaveError
+     */
     public function delete(
         TrashService $trashService,
         string $dir,
@@ -98,6 +114,78 @@ class FileController extends AbstractController
         return (new FileResponse($requestService, $filename))
             ->setDisposition('inline')
         ;
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     * @throws OverwriteException
+     */
+    public function upload(
+        DirService $dirService,
+        FileService $fileService,
+        string $dir,
+        ?array $file,
+        ?string $filename,
+        array $overwrite = [],
+        array $ignore = [],
+        bool $overwriteAll = false,
+        bool $ignoreAll = false
+    ): AjaxResponse {
+        $this->checkPermission(PermissionService::WRITE);
+
+        $dir = $dirService->addEndSlash($dir);
+        $path = $dir . $file['name'];
+
+        if (mb_strpos($this->getHomePath(), $dir) === 0) {
+            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+        }
+
+        if (is_array($file)) {
+            if (!is_string($file['tmp_name'])) {
+                return $this->returnFailure('Uploaded file not found', StatusCode::NOT_FOUND);
+            }
+
+            //$fileService->move($file['tmp_name'], $path, $overwrite, $ignore);
+            //$fileService->setPerms($path, 0660);
+        } elseif (!$fileService->isWritable($dir . $filename, $overwrite, $ignore)) {
+            // $this->_Helper->isWritable($dir . $filename, $overwrite, $ignore);
+            // @todo exception erstellen. Alternativ die alte methode in den explorer file service ziehen?
+        }
+
+        //return $this->returnSuccess($this->_Helper->getItem($path));
+        return $this->returnSuccess();
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     * @throws CreateError
+     * @throws DeleteError
+     * @throws FileNotFound
+     * @throws SetError
+     */
+    public function move(CoreFileService $fileService, string $from, string $to, string $name): AjaxResponse
+    {
+        $this->checkPermission(PermissionService::WRITE + PermissionService::DELETE);
+
+        $homePath = $this->getHomePath();
+
+        if (
+            mb_strpos($homePath, $from) === 0 ||
+            mb_strpos($homePath, $to) === 0
+        ) {
+            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+        }
+
+        $fileService->move($from . $name, $to . $name);
+
+        return $this->returnSuccess();
     }
 
     /**
