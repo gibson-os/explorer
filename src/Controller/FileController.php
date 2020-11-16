@@ -189,6 +189,38 @@ class FileController extends AbstractController
     }
 
     /**
+     * @throws CreateError
+     * @throws DateTimeError
+     * @throws DeleteError
+     * @throws FileNotFound
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     * @throws SetError
+     */
+    public function rename(
+        CoreFileService $fileService,
+        DirService $dirService,
+        string $dir,
+        string $oldFilename,
+        string $newFilename
+    ): AjaxResponse {
+        $this->checkPermission(PermissionService::WRITE);
+
+        $dir = $dirService->addEndSlash($dir);
+
+        if (mb_strpos($this->getHomePath(), $dir) === 0) {
+            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+        }
+
+        $path = $dir . $newFilename;
+        $fileService->move($dir . $oldFilename, $path);
+
+        return $this->returnSuccess();
+    }
+
+    /**
      * @throws FactoryError
      * @throws GetError
      * @throws LoginRequired
