@@ -11,6 +11,8 @@ use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\FileExistsError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
+use GibsonOS\Core\Exception\Image\CreateError as ImageCreateError;
+use GibsonOS\Core\Exception\Image\LoadError;
 use GibsonOS\Core\Exception\LoginRequired;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\PermissionDenied;
@@ -22,10 +24,12 @@ use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService as CoreFileService;
+use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
+use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\ResponseInterface;
 use GibsonOS\Core\Service\ServiceManagerService;
 use GibsonOS\Core\Service\SessionService;
@@ -33,6 +37,7 @@ use GibsonOS\Core\Service\TwigService;
 use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\OverwriteException;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
+use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Service\FileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\TrashService;
@@ -243,6 +248,57 @@ class FileController extends AbstractController
         $coreFileService->save($path, null);
 
         return $this->returnSuccess($fileService->get($path));
+    }
+
+    /**
+     * @throws ExecuteError
+     * @throws FactoryError
+     * @throws FileNotFound
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws ReadError
+     * @throws WriteError
+     * @throws ImageCreateError
+     * @throws LoadError
+     */
+    public function image(
+        DirService $dirService,
+        GibsonStoreService $gibsonStoreService,
+        ImageService $imageService,
+        TypeFactory $typeFactory,
+        string $dir,
+        string $filename,
+        int $width,
+        int $height
+    ): ResponseInterface {
+        $this->checkPermission(PermissionService::READ);
+
+        $path = $dirService->addEndSlash($dir) . $filename;
+
+        if (!$gibsonStoreService->hasFileImage($path)) {
+            $fileTypeService = $typeFactory->create($path);
+            $image = $fileTypeService->getImage($path);
+            $gibsonStoreService->setFileImage($path, $image);
+        }
+
+        $image = $gibsonStoreService->getFileImage($path, $width, $height);
+        $body = $imageService->getString($image, 'jpg');
+
+        return new Response(
+            $body,
+            StatusCode::OK,
+            [
+                'Pragma' => 'public',
+                'Expires' => 0,
+                'Accept-Ranges' => 'bytes',
+                'Cache-Control' => ['must-revalidate, post-check=0, pre-check=0', 'private'],
+                'Content-Type' => 'image/jpg',
+                'Content-Length' => strlen($body),
+                'Content-Transfer-Encoding' => 'binary',
+                'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
+            ]
+        );
     }
 
     /**
