@@ -73,6 +73,7 @@ class FileController extends AbstractController
         array $files
     ): AjaxResponse {
         $this->checkPermission(PermissionService::DELETE);
+
         if (mb_strpos($this->getHomePath(), $dir) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
         }
@@ -143,7 +144,7 @@ class FileController extends AbstractController
         $this->checkPermission(PermissionService::WRITE);
 
         $dir = $dirService->addEndSlash($dir);
-        $path = $dir . $file['name'];
+        //$path = $dir . $file['name'];
 
         if (mb_strpos($this->getHomePath(), $dir) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
