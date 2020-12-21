@@ -6,6 +6,7 @@ namespace GibsonOS\Module\Explorer\Service\File\Type;
 use GibsonOS\Core\Dto\Ffmpeg\Media;
 use GibsonOS\Core\Dto\Image;
 use GibsonOS\Core\Exception\DeleteError;
+use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\Ffmpeg\NoVideoError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
@@ -15,14 +16,8 @@ use GibsonOS\Core\Service\Ffmpeg\MediaService;
 
 class VideoService implements FileTypeInterface
 {
-    /**
-     * @var MediaService
-     */
-    private $mediaService;
+    private MediaService $mediaService;
 
-    /**
-     * Video constructor.
-     */
     public function __construct(MediaService $mediaService)
     {
         $this->mediaService = $mediaService;
@@ -35,6 +30,7 @@ class VideoService implements FileTypeInterface
      * @throws LoadError
      * @throws NoVideoError
      * @throws ProcessError
+     * @throws NoAudioError
      */
     public function getImage(string $filename): Image
     {
@@ -57,6 +53,7 @@ class VideoService implements FileTypeInterface
 
     /**
      * @throws FileNotFound
+     * @throws NoAudioError
      * @throws ProcessError
      */
     public function getMetas(string $filename): array

@@ -7,7 +7,6 @@ use Exception;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
-use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\Flock\LockError;
 use GibsonOS\Core\Exception\Flock\UnlockError;
 use GibsonOS\Core\Exception\GetError;
@@ -25,53 +24,27 @@ use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 use GibsonOS\Module\Explorer\Service\FileService as ExplorerFileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
+use Psr\Log\LoggerInterface;
 
 class IndexerCommand extends AbstractCommand
 {
-    /**
-     * @var LockService
-     */
-    private $lockService;
+    private LockService $lockService;
 
-    /**
-     * @var SettingRepository
-     */
-    private $settingRepository;
+    private SettingRepository $settingRepository;
 
-    /**
-     * @var GibsonStoreService
-     */
-    private $gibsonStoreService;
+    private GibsonStoreService $gibsonStoreService;
 
-    /**
-     * @var DirService
-     */
-    private $dirService;
+    private DirService $dirService;
 
-    /**
-     * @var FileService
-     */
-    private $fileService;
+    private FileService $fileService;
 
-    /**
-     * @var EnvService
-     */
-    private $envService;
+    private EnvService $envService;
 
-    /**
-     * @var DescriberFactory
-     */
-    private $describerFactory;
+    private DescriberFactory $describerFactory;
 
-    /**
-     * @var ServiceManagerService
-     */
-    private $serviceManagerService;
+    private ServiceManagerService $serviceManagerService;
 
-    /**
-     * @var ExplorerFileService
-     */
-    private $explorerFileService;
+    private ExplorerFileService $explorerFileService;
 
     public function __construct(
         LockService $lockService,
@@ -82,7 +55,8 @@ class IndexerCommand extends AbstractCommand
         EnvService $envService,
         DescriberFactory $describerFactory,
         ServiceManagerService $serviceManagerService,
-        ExplorerFileService $explorerFileService
+        ExplorerFileService $explorerFileService,
+        LoggerInterface $logger
     ) {
         $this->lockService = $lockService;
         $this->settingRepository = $settingRepository;
@@ -95,12 +69,15 @@ class IndexerCommand extends AbstractCommand
         $this->explorerFileService = $explorerFileService;
 
         $this->setOption('renew');
+
+        parent::__construct($logger);
     }
 
     /**
-     * @throws UnlockError
      * @throws DateTimeError
+     * @throws GetError
      * @throws SelectError
+     * @throws UnlockError
      */
     protected function run(): int
     {
@@ -150,8 +127,6 @@ class IndexerCommand extends AbstractCommand
 
             try {
                 $this->indexFile($path);
-            } catch (FileNotFound $exception) {
-                // File not found
             } catch (Exception $exception) {
                 echo 'FEHLER: ' . $exception->getMessage() . PHP_EOL;
             }
@@ -187,7 +162,7 @@ class IndexerCommand extends AbstractCommand
     }
 
     /**
-     * @var int[]
+     * @throws GetError
      *
      * @return int[]
      */
@@ -216,12 +191,11 @@ class IndexerCommand extends AbstractCommand
     }
 
     /**
-     * @throws FileNotFound
-     * @throws GetError
      * @throws ExecuteError
+     * @throws FactoryError
+     * @throws GetError
      * @throws ReadError
      * @throws WriteError
-     * @throws FactoryError
      */
     private function indexFile(string $path): void
     {

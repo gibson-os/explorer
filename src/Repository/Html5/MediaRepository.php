@@ -5,7 +5,6 @@ namespace GibsonOS\Module\Explorer\Repository\Html5;
 
 use DateTime;
 use GibsonOS\Core\Exception\DateTimeError;
-use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Html5\Media as MediaModel;
@@ -35,6 +34,10 @@ class MediaRepository extends AbstractRepository
         return $model;
     }
 
+    /**
+     * @throws DateTimeError
+     * @throws SelectError
+     */
     public function getByDirAndFilename(string $dir, string $filename): MediaModel
     {
         $table = $this->getTable(MediaModel::getTableName());
@@ -55,9 +58,8 @@ class MediaRepository extends AbstractRepository
     }
 
     /**
-     * @throws SelectError
      * @throws DateTimeError
-     * @throws GetError
+     * @throws SelectError
      *
      * @return MediaModel[]
      */
@@ -90,7 +92,6 @@ class MediaRepository extends AbstractRepository
 
     /**
      * @throws DateTimeError
-     * @throws GetError
      * @throws SelectError
      *
      * @return MediaModel[]

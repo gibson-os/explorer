@@ -18,41 +18,33 @@ use GibsonOS\Core\Service\LockService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
+use Psr\Log\LoggerInterface;
 
 class ConvertCommand extends AbstractCommand
 {
     private const LOCK_NAME = 'html5Convert';
 
-    /**
-     * @var MediaRepository
-     */
-    private $mediaRepository;
+    private MediaRepository $mediaRepository;
 
-    /**
-     * @var MediaService
-     */
-    private $mediaService;
+    private MediaService $mediaService;
 
-    /**
-     * @var SettingRepository
-     */
-    private $settingRepository;
+    private SettingRepository $settingRepository;
 
-    /**
-     * @var LockService
-     */
-    private $lockService;
+    private LockService $lockService;
 
     public function __construct(
         MediaRepository $mediaRepository,
         MediaService $mediaService,
         SettingRepository $settingRepository,
-        LockService $lockService
+        LockService $lockService,
+        LoggerInterface $logger
     ) {
         $this->mediaRepository = $mediaRepository;
         $this->mediaService = $mediaService;
         $this->settingRepository = $settingRepository;
         $this->lockService = $lockService;
+
+        parent::__construct($logger);
     }
 
     /**

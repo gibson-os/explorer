@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Store;
 
+use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
-use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
@@ -16,35 +16,17 @@ use GibsonOS\Module\Explorer\Service\FileService;
 
 class DirStore extends AbstractStore
 {
-    /**
-     * @var string
-     */
-    private $dir;
+    private string $dir;
 
-    /**
-     * @var array
-     */
-    private $list = [];
+    private array $list = [];
 
-    /**
-     * @var array
-     */
-    private $metas = [];
+    private array $metas = [];
 
-    /**
-     * @var CoreDirService
-     */
-    private $coreDirService;
+    private CoreDirService $coreDirService;
 
-    /**
-     * @var DirService
-     */
-    private $dirService;
+    private DirService $dirService;
 
-    /**
-     * @var FileService
-     */
-    private $fileService;
+    private FileService $fileService;
 
     public function __construct(CoreDirService $coreDirService, DirService $dirService, FileService $fileService)
     {
@@ -55,9 +37,8 @@ class DirStore extends AbstractStore
     }
 
     /**
-     * @throws ExecuteError
+     * @throws DateTimeError
      * @throws FactoryError
-     * @throws FileNotFound
      * @throws GetError
      * @throws ReadError
      */
@@ -69,9 +50,8 @@ class DirStore extends AbstractStore
     }
 
     /**
-     * @throws ExecuteError
+     * @throws DateTimeError
      * @throws FactoryError
-     * @throws FileNotFound
      * @throws GetError
      * @throws ReadError
      */
@@ -81,9 +61,8 @@ class DirStore extends AbstractStore
     }
 
     /**
-     * @throws ExecuteError
+     * @throws DateTimeError
      * @throws FactoryError
-     * @throws FileNotFound
      * @throws GetError
      * @throws ReadError
      */
@@ -115,11 +94,10 @@ class DirStore extends AbstractStore
     }
 
     /**
-     * @throws GetError
      * @throws FactoryError
-     * @throws FileNotFound
-     * @throws ExecuteError
+     * @throws GetError
      * @throws ReadError
+     * @throws DateTimeError
      */
     private function generateList(): void
     {

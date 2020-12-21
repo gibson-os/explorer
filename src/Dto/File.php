@@ -7,55 +7,25 @@ use JsonSerializable;
 
 class File implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $name;
+    private string $name;
 
-    /**
-     * @var int
-     */
-    private $size;
+    private int $size;
 
-    /**
-     * @var string
-     */
-    private $type;
+    private string $type;
 
-    /**
-     * @var int
-     */
-    private $category;
+    private int $category;
 
-    /**
-     * @var bool
-     */
-    private $thumbAvailable = false;
+    private bool $thumbAvailable = false;
 
-    /**
-     * @var string|null
-     */
-    private $html5VideoStatus;
+    private ?string $html5VideoStatus;
 
-    /**
-     * @var string|null
-     */
-    private $html5VideoToken;
+    private ?string $html5VideoToken;
 
-    /**
-     * @var int|null
-     */
-    private $accessed;
+    private ?int $accessed;
 
-    /**
-     * @var int|null
-     */
-    private $modified;
+    private ?int $modified;
 
-    /**
-     * @var array
-     */
-    private $metaInfos = [];
+    private array $metaInfos = [];
 
     public function __construct(string $name, string $type, int $size, int $category)
     {
@@ -185,7 +155,7 @@ class File implements JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'name' => $this->getName(),

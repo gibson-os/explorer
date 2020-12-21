@@ -5,7 +5,6 @@ namespace GibsonOS\Module\Explorer\Model\Html5\Media;
 
 use DateTimeInterface;
 use GibsonOS\Core\Exception\DateTimeError;
-use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
@@ -13,35 +12,17 @@ use mysqlDatabase;
 
 class Position extends AbstractModel
 {
-    /**
-     * @var int
-     */
-    private $mediaId;
+    private int $mediaId;
 
-    /**
-     * @var int
-     */
-    private $userId;
+    private int $userId;
 
-    /**
-     * @var int
-     */
-    private $position;
+    private int $position;
 
-    /**
-     * @var DateTimeInterface
-     */
-    private $modified;
+    private DateTimeInterface $modified;
 
-    /**
-     * @var Media
-     */
-    private $media;
+    private Media $media;
 
-    /**
-     * @var User
-     */
-    private $user;
+    private User $user;
 
     public function __construct(mysqlDatabase $database = null)
     {
@@ -118,7 +99,6 @@ class Position extends AbstractModel
     }
 
     /**
-     * @throws SelectError
      * @throws DateTimeError
      */
     public function loadMedia(): Position
@@ -130,7 +110,6 @@ class Position extends AbstractModel
 
     /**
      * @throws DateTimeError
-     * @throws SelectError
      */
     public function getUser(): User
     {

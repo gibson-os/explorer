@@ -13,10 +13,7 @@ use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterf
 
 class DescriberFactory
 {
-    /**
-     * @var ServiceManagerService
-     */
-    private $serviceManagerService;
+    private ServiceManagerService $serviceManagerService;
 
     public function __construct(ServiceManagerService $serviceManagerService)
     {

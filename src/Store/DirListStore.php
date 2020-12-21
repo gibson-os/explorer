@@ -12,30 +12,15 @@ use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 
 class DirListStore extends AbstractStore
 {
-    /**
-     * @var string
-     */
-    private $homePath = DIRECTORY_SEPARATOR;
+    private string $homePath = DIRECTORY_SEPARATOR;
 
-    /**
-     * @var string
-     */
-    private $dir = DIRECTORY_SEPARATOR;
+    private string $dir = DIRECTORY_SEPARATOR;
 
-    /**
-     * @var bool
-     */
-    private $withParents = false;
+    private bool $withParents = false;
 
-    /**
-     * @var DirService
-     */
-    private $dirService;
+    private DirService $dirService;
 
-    /**
-     * @var GibsonStoreService
-     */
-    private $gibsonStoreService;
+    private GibsonStoreService $gibsonStoreService;
 
     public function __construct(DirService $dirService, GibsonStoreService $gibsonStoreService)
     {
@@ -43,6 +28,12 @@ class DirListStore extends AbstractStore
         $this->gibsonStoreService = $gibsonStoreService;
     }
 
+    /**
+     * @throws GetError
+     * @throws ReadError
+     *
+     * @return array[]
+     */
     public function getList(): array
     {
         if ($this->withParents) {
@@ -80,7 +71,6 @@ class DirListStore extends AbstractStore
 
     /**
      * @throws GetError
-     * @throws ExecuteError
      * @throws ReadError
      */
     private function loadDir(string $dir): array
@@ -99,6 +89,12 @@ class DirListStore extends AbstractStore
         return $dirs;
     }
 
+    /**
+     * @throws GetError
+     * @throws ReadError
+     *
+     * @return array[]
+     */
     private function loadParentDir(string $dir, array $data): array
     {
         $dir = $this->dirService->removeEndSlash($dir);
@@ -135,6 +131,9 @@ class DirListStore extends AbstractStore
         return $this->loadParentDir($parentDir, array_values($dirs));
     }
 
+    /**
+     * @throws ReadError
+     */
     private function getItem(string $file): array
     {
         $iconCls = 'icon_dir';

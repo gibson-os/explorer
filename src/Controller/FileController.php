@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Controller;
 
+use Exception;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -44,10 +45,7 @@ use GibsonOS\Module\Explorer\Service\TrashService;
 
 class FileController extends AbstractController
 {
-    /**
-     * @var SettingRepository
-     */
-    private $settingRepository;
+    private SettingRepository $settingRepository;
 
     public function __construct(
         PermissionService $permissionService,
@@ -262,6 +260,7 @@ class FileController extends AbstractController
      * @throws WriteError
      * @throws ImageCreateError
      * @throws LoadError
+     * @throws Exception
      */
     public function image(
         DirService $dirService,
@@ -284,7 +283,7 @@ class FileController extends AbstractController
         }
 
         $image = $gibsonStoreService->getFileImage($path, $width, $height);
-        $body = $imageService->getString($image, 'jpg');
+        $body = $imageService->getString($image);
 
         return new Response(
             $body,

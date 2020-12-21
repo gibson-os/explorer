@@ -10,10 +10,7 @@ use GibsonOS\Core\Service\ImageService as CoreImageService;
 
 class ImageService implements FileTypeInterface
 {
-    /**
-     * @var CoreImageService
-     */
-    private $imageService;
+    private CoreImageService $imageService;
 
     public function __construct(CoreImageService $imageService)
     {

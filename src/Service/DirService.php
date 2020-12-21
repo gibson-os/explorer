@@ -12,15 +12,9 @@ use GibsonOS\Module\Explorer\Dto\Dir;
 
 class DirService
 {
-    /**
-     * @var GibsonStoreService
-     */
-    private $gibsonStoreService;
+    private GibsonStoreService $gibsonStoreService;
 
-    /**
-     * @var CoreDirService
-     */
-    private $coreDirService;
+    private CoreDirService $coreDirService;
 
     public function __construct(GibsonStoreService $gibsonStoreService, CoreDirService $coreDirService)
     {

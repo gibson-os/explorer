@@ -5,41 +5,22 @@ namespace GibsonOS\Module\Explorer\Model;
 
 use DateTimeInterface;
 use GibsonOS\Core\Exception\DateTimeError;
-use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 
 class Trash extends AbstractModel
 {
-    /**
-     * @var string
-     */
-    private $token;
+    private string $token;
 
-    /**
-     * @var string
-     */
-    private $dir;
+    private string $dir;
 
-    /**
-     * @var string|null
-     */
-    private $filename;
+    private ?string $filename;
 
-    /**
-     * @var DateTimeInterface
-     */
-    private $added;
+    private DateTimeInterface $added;
 
-    /**
-     * @var int|null
-     */
-    private $userId;
+    private ?int $userId;
 
-    /**
-     * @var User|null
-     */
-    private $user;
+    private ?User $user;
 
     public static function getTableName(): string
     {
@@ -108,7 +89,6 @@ class Trash extends AbstractModel
 
     /**
      * @throws DateTimeError
-     * @throws SelectError
      */
     public function getUser(): ?User
     {

@@ -8,6 +8,7 @@ use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
+use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\File\OpenError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
@@ -27,34 +28,16 @@ use OutOfRangeException;
 
 class MediaService extends AbstractService
 {
-    /**
-     * @var CoreMediaService
-     */
-    private $mediaService;
+    private CoreMediaService $mediaService;
 
-    /**
-     * @var DirService
-     */
-    private $dirService;
+    private DirService $dirService;
 
-    /**
-     * @var FileService
-     */
-    private $fileService;
+    private FileService $fileService;
 
-    /**
-     * @var MediaRepository
-     */
-    private $mediaRepository;
+    private MediaRepository $mediaRepository;
 
-    /**
-     * @var TypeService
-     */
-    private $typeService;
+    private TypeService $typeService;
 
-    /**
-     * Media constructor.
-     */
     public function __construct(
         CoreMediaService $mediaService,
         DirService $dirService,
@@ -74,6 +57,7 @@ class MediaService extends AbstractService
      * @throws FileNotFound
      * @throws GetError
      * @throws ProcessError
+     * @throws NoAudioError
      */
     public function convertToMp4(Media $media, string $filename)
     {
@@ -110,6 +94,7 @@ class MediaService extends AbstractService
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
+     * @throws NoAudioError
      * @throws ProcessError
      */
     public function convertToWebm(Media $media, string $filename)
@@ -146,6 +131,7 @@ class MediaService extends AbstractService
      * @throws ConvertStatusError
      * @throws DateTimeError
      * @throws FileNotFound
+     * @throws NoAudioError
      * @throws OpenError
      * @throws ProcessError
      * @throws SetError
@@ -167,7 +153,6 @@ class MediaService extends AbstractService
 
     /**
      * @throws DateTimeError
-     * @throws GetError
      * @throws SaveError
      */
     public function savePosition(Media $media, int $currentPosition, int $userId): void

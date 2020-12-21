@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "git@wolli.dyndns.tv:/home/git/gibsonOs/Core.git",
-                "reference": "eb49e50829d76301fe537d5a86b2fcb5614e43e8"
+                "reference": "3460e7ca96cf8e54e8be4e5ce70b7edc67a97086"
             },
             "require": {
                 "ext-fileinfo": "*",
@@ -23,8 +23,8 @@
                 "ext-sqlite3": "*",
                 "ext-zip": "*",
                 "mdo/mdo": "dev-master",
-                "php": " ^7.2",
-                "twig/twig": "^2.12"
+                "php": " ^7.4",
+                "twig/twig": "^3.0"
             },
             "require-dev": {
                 "captainhook/captainhook": "^5.0",
@@ -35,7 +35,7 @@
                 "php-mock/php-mock-phpunit": "^2.5",
                 "phpmd/phpmd": "^2.7",
                 "phpspec/prophecy-phpunit": "^2.0",
-                "vimeo/psalm": "^3.9"
+                "vimeo/psalm": "^4.0"
             },
             "default-branch": true,
             "type": "library",
@@ -69,7 +69,7 @@
                     "php ./vendor/codeception/codeception/codecept generate:test unit"
                 ]
             },
-            "time": "2020-12-19T23:03:05+00:00"
+            "time": "2020-12-21T15:21:48+00:00"
         },
         {
             "name": "mdo/mdo",
@@ -286,16 +286,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.14.1",
+            "version": "v3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "5eb9ac5dfdd20c3f59495c22841adc5da980d312"
+                "reference": "b02fa41f3783a2616eccef7b92fbc2343ffed737"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/5eb9ac5dfdd20c3f59495c22841adc5da980d312",
-                "reference": "5eb9ac5dfdd20c3f59495c22841adc5da980d312",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/b02fa41f3783a2616eccef7b92fbc2343ffed737",
+                "reference": "b02fa41f3783a2616eccef7b92fbc2343ffed737",
                 "shasum": ""
             },
             "require": {
@@ -310,13 +310,10 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.14-dev"
+                    "dev-master": "3.1-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Twig_": "lib/"
-                },
                 "psr-4": {
                     "Twig\\": "src/"
                 }
@@ -349,7 +346,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v2.14.1"
+                "source": "https://github.com/twigphp/Twig/tree/v3.1.1"
             },
             "funding": [
                 {
@@ -361,7 +358,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-27T19:25:29+00:00"
+            "time": "2020-10-27T19:28:23+00:00"
         }
     ],
     "packages-dev": [

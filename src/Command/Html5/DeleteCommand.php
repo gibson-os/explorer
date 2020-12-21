@@ -21,45 +21,29 @@ use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\LockService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
+use Psr\Log\LoggerInterface;
 
 class DeleteCommand extends AbstractCommand
 {
-    /**
-     * @var MediaRepository
-     */
-    private $mediaRepository;
+    private MediaRepository $mediaRepository;
 
-    /**
-     * @var SettingRepository
-     */
-    private $settingRepository;
+    private SettingRepository $settingRepository;
 
-    /**
-     * @var LockService
-     */
-    private $lockService;
+    private LockService $lockService;
 
-    /**
-     * @var DirService
-     */
-    private $dirService;
+    private DirService $dirService;
 
-    /**
-     * @var FileService
-     */
-    private $fileService;
+    private FileService $fileService;
 
-    /**
-     * @var string
-     */
-    private $mediaPath;
+    private string $mediaPath;
 
     public function __construct(
         MediaRepository $mediaRepository,
         SettingRepository $settingRepository,
         LockService $lockService,
         DirService $dirService,
-        FileService $fileService
+        FileService $fileService,
+        LoggerInterface $logger
     ) {
         $this->mediaRepository = $mediaRepository;
         $this->settingRepository = $settingRepository;
@@ -68,6 +52,8 @@ class DeleteCommand extends AbstractCommand
         $this->fileService = $fileService;
 
         $this->setOption('dry');
+
+        parent::__construct($logger);
     }
 
     /**

@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
+use Exception;
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
+use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\File\OpenError;
 use GibsonOS\Core\Exception\FileNotFound;
-use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
@@ -27,20 +28,11 @@ use stdClass;
 
 class ToSeeStore extends AbstractDatabaseStore
 {
-    /**
-     * @var DirService
-     */
-    private $dir;
+    private DirService $dir;
 
-    /**
-     * @var MediaService
-     */
-    private $media;
+    private MediaService $media;
 
-    /**
-     * @var GibsonStoreService
-     */
-    private $gibsonStore;
+    private GibsonStoreService $gibsonStore;
 
     /**
      * @throws CreateError
@@ -67,11 +59,12 @@ class ToSeeStore extends AbstractDatabaseStore
      * @throws DateTimeError
      * @throws ExecuteError
      * @throws FileNotFound
-     * @throws GetError
      * @throws OpenError
      * @throws ProcessError
      * @throws ReadError
      * @throws SetError
+     * @throws NoAudioError
+     * @throws Exception
      *
      * @return array[]
      */

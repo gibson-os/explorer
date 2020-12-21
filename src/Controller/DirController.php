@@ -100,9 +100,11 @@ class DirController extends AbstractController
     }
 
     /**
+     * @throws CreateError
+     * @throws GetError
      * @throws LoginRequired
      * @throws PermissionDenied
-     * @throws CreateError
+     * @throws ReadError
      */
     public function add(DirService $dirService, CoreDirService $coreDirService, string $dir, string $dirname): AjaxResponse
     {

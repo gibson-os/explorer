@@ -6,7 +6,6 @@ namespace GibsonOS\Module\Explorer\Model\Html5;
 use DateTime;
 use DateTimeInterface;
 use GibsonOS\Core\Exception\DateTimeError;
-use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use mysqlDatabase;
@@ -23,60 +22,27 @@ class Media extends AbstractModel
 
     public const STATUS_GENERATED = 'generated';
 
-    /**
-     * @var int
-     */
-    private $id;
+    private int $id;
 
-    /**
-     * @var string
-     */
-    private $token;
+    private string $token;
 
-    /**
-     * @var string
-     */
-    private $dir;
+    private string $dir;
 
-    /**
-     * @var string
-     */
-    private $filename;
+    private string $filename;
 
-    /**
-     * @var string|null
-     */
-    private $audioStream;
+    private ?string $audioStream;
 
-    /**
-     * @var string|null
-     */
-    private $subtitleStream;
+    private ?string $subtitleStream;
 
-    /**
-     * @var string
-     */
-    private $status = self::STATUS_WAIT;
+    private string $status = self::STATUS_WAIT;
 
-    /**
-     * @var int
-     */
-    private $type;
+    private int $type;
 
-    /**
-     * @var DateTimeInterface
-     */
-    private $added;
+    private DateTimeInterface $added;
 
-    /**
-     * @var int
-     */
-    private $userId;
+    private int $userId;
 
-    /**
-     * @var User
-     */
-    private $user;
+    private User $user;
 
     public function __construct(mysqlDatabase $database = null)
     {
@@ -213,7 +179,6 @@ class Media extends AbstractModel
 
     /**
      * @throws DateTimeError
-     * @throws SelectError
      */
     public function getUser(): User
     {

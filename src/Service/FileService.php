@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service;
 
+use Exception;
+use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
@@ -18,25 +20,13 @@ use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 
 class FileService
 {
-    /**
-     * @var GibsonStoreService
-     */
-    private $gibsonStoreService;
+    private GibsonStoreService $gibsonStoreService;
 
-    /**
-     * @var CoreFileService
-     */
-    private $coreFileService;
+    private CoreFileService $coreFileService;
 
-    /**
-     * @var MediaRepository
-     */
-    private $mediaRepository;
+    private MediaRepository $mediaRepository;
 
-    /**
-     * @var DescriberFactory
-     */
-    private $describerFactory;
+    private DescriberFactory $describerFactory;
 
     public function __construct(
         GibsonStoreService $gibsonStoreService,
@@ -54,6 +44,7 @@ class FileService
      * @throws FactoryError
      * @throws GetError
      * @throws ReadError
+     * @throws DateTimeError
      */
     public function get(string $path): File
     {
@@ -107,6 +98,7 @@ class FileService
      * @throws ExecuteError
      * @throws GetError
      * @throws WriteError
+     * @throws Exception
      */
     public function setFileMetas(FileTypeInterface $fileTypeService, string $path): void
     {
@@ -114,11 +106,14 @@ class FileService
         $this->gibsonStoreService->setFileMetas($path, $fileTypeService->getMetas($path), $checkSum ?: null);
     }
 
+    /**
+     * @throws OverwriteException
+     */
     public function isWritable(
         string $path,
         array $overwrite = [],
         array $ignore = []
-    ) {
+    ): bool {
         if (file_exists($path)) {
             if (!is_writable($path)) {
                 return false;

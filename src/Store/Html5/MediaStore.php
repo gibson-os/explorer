@@ -15,20 +15,11 @@ use mysqlDatabase;
 
 class MediaStore extends AbstractDatabaseStore
 {
-    /**
-     * @var ModuleSettingService
-     */
-    private $moduleSetting;
+    private ModuleSettingService $moduleSetting;
 
-    /**
-     * @var TypeService
-     */
-    private $typeService;
+    private TypeService $typeService;
 
-    /**
-     * @var DirService
-     */
-    private $dir;
+    private DirService $dir;
 
     public function __construct(
         mysqlDatabase $database,
@@ -54,9 +45,8 @@ class MediaStore extends AbstractDatabaseStore
     }
 
     /**
-     * @throws SelectError
      * @throws DateTimeError
-     * @throws GetError
+     * @throws SelectError
      */
     public function getList(): array
     {
@@ -100,10 +90,8 @@ class MediaStore extends AbstractDatabaseStore
      * @throws DateTimeError
      * @throws GetError
      * @throws SelectError
-     *
-     * @return int
      */
-    public function getSize()
+    public function getSize(): int
     {
         /** @var Setting $html5MediaPath */
         $html5MediaPath = $this->moduleSetting->getByRegistry('html5_media_path');

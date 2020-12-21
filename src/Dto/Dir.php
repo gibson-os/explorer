@@ -7,55 +7,25 @@ use JsonSerializable;
 
 class Dir implements JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $path;
+    private string $path;
 
-    /**
-     * @var string
-     */
-    private $name;
+    private string $name;
 
-    /**
-     * @var int
-     */
-    private $size = 0;
+    private int $size = 0;
 
-    /**
-     * @var int
-     */
-    private $files = 0;
+    private int $files = 0;
 
-    /**
-     * @var int
-     */
-    private $dirs = 0;
+    private int $dirs = 0;
 
-    /**
-     * @var int
-     */
-    private $dirFiles = 0;
+    private int $dirFiles = 0;
 
-    /**
-     * @var int
-     */
-    private $dirDirs = 0;
+    private int $dirDirs = 0;
 
-    /**
-     * @var string|null
-     */
-    private $icon;
+    private ?string $icon;
 
-    /**
-     * @var int|null
-     */
-    private $accessed;
+    private ?int $accessed;
 
-    /**
-     * @var int|null
-     */
-    private $modified;
+    private ?int $modified;
 
     public function __construct(string $path, string $name)
     {
@@ -183,7 +153,7 @@ class Dir implements JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'path' => $this->getPath(),

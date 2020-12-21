@@ -122,15 +122,14 @@ class Html5Controller extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
-     * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
-     * @throws SelectError
      * @throws ConvertStatusError
+     * @throws DateTimeError
      * @throws FileNotFound
+     * @throws LoginRequired
      * @throws OpenError
+     * @throws PermissionDenied
      * @throws ProcessError
+     * @throws SelectError
      * @throws SetError
      */
     public function convertStatus(
@@ -224,7 +223,6 @@ class Html5Controller extends AbstractController
 
     /**
      * @throws DateTimeError
-     * @throws GetError
      * @throws LoginRequired
      * @throws PermissionDenied
      * @throws SelectError
@@ -272,7 +270,7 @@ class Html5Controller extends AbstractController
         }
 
         $image = $gibsonStoreService->getFileImage($path, $width, $height);
-        $body = $imageService->getString($image, 'jpg');
+        $body = $imageService->getString($image);
 
         return new Response(
             $body,

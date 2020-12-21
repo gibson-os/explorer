@@ -43,26 +43,14 @@ class GibsonStoreService
     /**
      * @var SqLiteService[]
      */
-    private $stores = [];
+    private array $stores = [];
 
-    /**
-     * @var FileService
-     */
-    private $fileService;
+    private FileService $fileService;
 
-    /**
-     * @var DirService
-     */
-    private $dirService;
+    private DirService $dirService;
 
-    /**
-     * @var ThumbnailService
-     */
-    private $thumbnailService;
+    private ThumbnailService $thumbnailService;
 
-    /**
-     * GibsonStoreService constructor.
-     */
     public function __construct(FileService $fileService, DirService $dirService, ThumbnailService $thumbnailService)
     {
         $this->fileService = $fileService;
@@ -512,7 +500,7 @@ class GibsonStoreService
         $query->bindValue(':chksum', $checkSum, SQLITE3_TEXT);
         $query->bindValue(':filename', $filename, SQLITE3_TEXT);
         $query->bindValue(':date', filemtime($path), SQLITE3_INTEGER);
-        $query->bindValue(':image', $this->thumbnailService->getString($image, 'jpg'), SQLITE3_BLOB);
+        $query->bindValue(':image', $this->thumbnailService->getString($image), SQLITE3_BLOB);
 
         if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
@@ -661,7 +649,7 @@ class GibsonStoreService
     {
         $existingFiles = [];
 
-        foreach ($this->dirService->getFiles($dir, '*') as $path) {
+        foreach ($this->dirService->getFiles($dir) as $path) {
             if (is_dir($path)) {
                 continue;
             }
