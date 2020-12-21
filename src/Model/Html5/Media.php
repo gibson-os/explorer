@@ -22,7 +22,7 @@ class Media extends AbstractModel
 
     public const STATUS_GENERATED = 'generated';
 
-    private int $id;
+    private ?int $id = null;
 
     private string $token;
 
