@@ -7,7 +7,6 @@
     "ext-exif": "*",
     "ext-sqlite3": "*",
     "ext-json": "*",
-    "vimeo/psalm": "^3.11",
     "ext-iconv": "*"
   },
   "require-dev": {
@@ -16,7 +15,8 @@
     "phpmd/phpmd": "^2.7",
     "captainhook/captainhook": "^5.0",
     "captainhook/plugin-composer": "^5.0",
-    "codeception/module-asserts": "^1.3"
+    "codeception/module-asserts": "^1.3",
+    "vimeo/psalm": "^4.0"
   },
   "repositories": [
     {
