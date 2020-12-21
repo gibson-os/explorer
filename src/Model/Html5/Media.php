@@ -30,9 +30,9 @@ class Media extends AbstractModel
 
     private string $filename;
 
-    private ?string $audioStream;
+    private ?string $audioStream = null;
 
-    private ?string $subtitleStream;
+    private ?string $subtitleStream = null;
 
     private string $status = self::STATUS_WAIT;
 

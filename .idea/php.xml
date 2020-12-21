@@ -74,7 +74,6 @@
       <path value="$PROJECT_DIR$/vendor/phpunit/phpunit" />
       <path value="$PROJECT_DIR$/vendor/psr/container" />
       <path value="$PROJECT_DIR$/vendor/psr/http-message" />
-      <path value="$PROJECT_DIR$/vendor/codeception/codeception" />
       <path value="$PROJECT_DIR$/vendor/codeception/stub" />
       <path value="$PROJECT_DIR$/vendor/codeception/phpunit-wrapper" />
       <path value="$PROJECT_DIR$/vendor/friendsofphp/php-cs-fixer" />
@@ -83,11 +82,9 @@
       <path value="$PROJECT_DIR$/vendor/symfony/dependency-injection" />
       <path value="$PROJECT_DIR$/vendor/symfony/filesystem" />
       <path value="$PROJECT_DIR$/vendor/symfony/options-resolver" />
-      <path value="$PROJECT_DIR$/vendor/symfony/stopwatch" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php72" />
       <path value="$PROJECT_DIR$/vendor/phpmd/phpmd" />
       <path value="$PROJECT_DIR$/vendor/captainhook/captainhook" />
-      <path value="$PROJECT_DIR$/vendor/nikic/php-parser" />
       <path value="$PROJECT_DIR$/vendor/captainhook/plugin-composer" />
       <path value="$PROJECT_DIR$/vendor/pdepend/pdepend" />
       <path value="$PROJECT_DIR$/vendor/php-cs-fixer/diff" />
@@ -100,17 +97,14 @@
       <path value="$PROJECT_DIR$/vendor/amphp/amp" />
       <path value="$PROJECT_DIR$/vendor/amphp/byte-stream" />
       <path value="$PROJECT_DIR$/vendor/felixfbecker/advanced-json-rpc" />
-      <path value="$PROJECT_DIR$/vendor/vimeo/psalm" />
       <path value="$PROJECT_DIR$/vendor/felixfbecker/language-server-protocol" />
       <path value="$PROJECT_DIR$/vendor/netresearch/jsonmapper" />
-      <path value="$PROJECT_DIR$/vendor/webmozart/glob" />
       <path value="$PROJECT_DIR$/vendor/webmozart/path-util" />
       <path value="$PROJECT_DIR$/vendor/twig/twig" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
       <path value="$PROJECT_DIR$/vendor/symfony/dom-crawler" />
       <path value="$PROJECT_DIR$/vendor/symfony/deprecation-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-intl-normalizer" />
-      <path value="$PROJECT_DIR$/vendor/symfony/string" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-intl-grapheme" />
       <path value="$PROJECT_DIR$/vendor/dnoegel/php-xdg-base-dir" />
       <path value="$PROJECT_DIR$/vendor/psr/event-dispatcher" />
@@ -121,12 +115,17 @@
       <path value="$PROJECT_DIR$/vendor/phpunit/php-invoker" />
       <path value="$PROJECT_DIR$/vendor/codeception/lib-asserts" />
       <path value="$PROJECT_DIR$/vendor/codeception/module-asserts" />
-      <path value="$PROJECT_DIR$/vendor/symfony/css-selector" />
       <path value="$PROJECT_DIR$/vendor/sebastian/recursion-context" />
       <path value="$PROJECT_DIR$/vendor/phpunit/php-text-template" />
-      <path value="$PROJECT_DIR$/vendor/symfony/config" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php70" />
       <path value="$PROJECT_DIR$/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/vendor/symfony/string" />
+      <path value="$PROJECT_DIR$/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/vendor/symfony/css-selector" />
+      <path value="$PROJECT_DIR$/vendor/codeception/codeception" />
+      <path value="$PROJECT_DIR$/vendor/symfony/stopwatch" />
+      <path value="$PROJECT_DIR$/vendor/vimeo/psalm" />
+      <path value="$PROJECT_DIR$/vendor/symfony/config" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />

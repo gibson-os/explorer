@@ -14,13 +14,13 @@ class Trash extends AbstractModel
 
     private string $dir;
 
-    private ?string $filename;
+    private ?string $filename = null;
 
     private DateTimeInterface $added;
 
-    private ?int $userId;
+    private ?int $userId = null;
 
-    private ?User $user;
+    private ?User $user = null;
 
     public static function getTableName(): string
     {

@@ -21,11 +21,11 @@ class Dir implements JsonSerializable
 
     private int $dirDirs = 0;
 
-    private ?string $icon;
+    private ?string $icon = null;
 
-    private ?int $accessed;
+    private ?int $accessed = null;
 
-    private ?int $modified;
+    private ?int $modified = null;
 
     public function __construct(string $path, string $name)
     {

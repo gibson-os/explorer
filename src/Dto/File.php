@@ -17,13 +17,13 @@ class File implements JsonSerializable
 
     private bool $thumbAvailable = false;
 
-    private ?string $html5VideoStatus;
+    private ?string $html5VideoStatus = null;
 
-    private ?string $html5VideoToken;
+    private ?string $html5VideoToken = null;
 
-    private ?int $accessed;
+    private ?int $accessed = null;
 
-    private ?int $modified;
+    private ?int $modified = null;
 
     private array $metaInfos = [];
 
