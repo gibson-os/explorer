@@ -674,6 +674,7 @@ class GibsonStoreService
             } catch (Exception $exception) {
                 throw new ExecuteError(sprintf('Cant create database for %s to write', $dir), 0, $exception);
             }
+
             $this->stores[$dir]->busyTimeout(5000);
         }
 

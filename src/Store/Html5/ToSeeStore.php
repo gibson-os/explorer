@@ -57,7 +57,6 @@ class ToSeeStore extends AbstractDatabaseStore
     /**
      * @throws ConvertStatusError
      * @throws DateTimeError
-     * @throws ExecuteError
      * @throws FileNotFound
      * @throws OpenError
      * @throws ProcessError
@@ -106,11 +105,16 @@ class ToSeeStore extends AbstractDatabaseStore
             $key = $this->dir->escapeForGlob($media->dir) . $filenamePattern;
 
             $media->position = (int) $media->position;
-            $media->duration = (int) $this->gibsonStore->getFileMeta(
-                $media->dir . $media->filename,
-                'duration',
-                0
-            );
+
+            try {
+                $media->duration = (int) $this->gibsonStore->getFileMeta(
+                    $media->dir . $media->filename,
+                    'duration',
+                    0
+                );
+            } catch (ExecuteError $e) {
+                $media->dudation = 0;
+            }
 
             if (isset($medias[$key])) {
                 $oldMedia = $medias[$key];
