@@ -7,12 +7,10 @@ use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
-use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\LoginRequired;
 use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Exception\Repository\SelectError;
-use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService as CoreDirService;
@@ -26,14 +24,12 @@ class DirController extends AbstractController
 {
     /**
      * @throws DateTimeError
+     * @throws FactoryError
+     * @throws GetError
      * @throws LoginRequired
      * @throws PermissionDenied
-     * @throws SelectError
-     * @throws FactoryError
-     * @throws FileNotFound
-     * @throws GetError
-     * @throws ExecuteError
      * @throws ReadError
+     * @throws SelectError
      */
     public function read(?string $dir, SettingRepository $settingRepository, DirStore $dirStore): AjaxResponse
     {

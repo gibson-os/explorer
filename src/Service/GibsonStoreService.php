@@ -19,6 +19,7 @@ use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\Image\ThumbnailService;
 use GibsonOS\Core\Service\SqLiteService;
 use GibsonOS\Core\Utility\JsonUtility;
+use JsonException;
 use SQLite3;
 use SQLite3Result;
 
@@ -197,13 +198,11 @@ class GibsonStoreService
         $row = $query->fetchArray(SQLITE3_ASSOC);
 
         if ($row !== false) {
-            $value = JsonUtility::decode($row['value']);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                return $value;
+            try {
+                return JsonUtility::decode($row['value']);
+            } catch (JsonException $e) {
+                return $row['value'];
             }
-
-            return $row['value'];
         }
 
         return $default;
@@ -251,11 +250,9 @@ class GibsonStoreService
         $returnList = [];
 
         while ($row = $query->fetchArray(SQLITE3_ASSOC)) {
-            $value = JsonUtility::decode($row['value']);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $returnList[$row['key']] = $value;
-            } else {
+            try {
+                $returnList[$row['key']] = JsonUtility::decode($row['value']);
+            } catch (JsonException $e) {
                 $returnList[$row['key']] = $row['value'];
             }
         }
