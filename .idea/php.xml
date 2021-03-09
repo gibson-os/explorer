@@ -47,7 +47,6 @@
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/promises" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-mbstring" />
-      <path value="$PROJECT_DIR$/vendor/symfony/finder" />
       <path value="$PROJECT_DIR$/vendor/phar-io/version" />
       <path value="$PROJECT_DIR$/vendor/symfony/service-contracts" />
       <path value="$PROJECT_DIR$/vendor/phar-io/manifest" />
@@ -72,23 +71,19 @@
       <path value="$PROJECT_DIR$/vendor/hoa/ustring" />
       <path value="$PROJECT_DIR$/vendor/phpspec/prophecy" />
       <path value="$PROJECT_DIR$/vendor/phpunit/phpunit" />
-      <path value="$PROJECT_DIR$/vendor/psr/container" />
       <path value="$PROJECT_DIR$/vendor/psr/http-message" />
       <path value="$PROJECT_DIR$/vendor/codeception/stub" />
       <path value="$PROJECT_DIR$/vendor/codeception/phpunit-wrapper" />
       <path value="$PROJECT_DIR$/vendor/friendsofphp/php-cs-fixer" />
-      <path value="$PROJECT_DIR$/vendor/doctrine/annotations" />
       <path value="$PROJECT_DIR$/vendor/doctrine/lexer" />
       <path value="$PROJECT_DIR$/vendor/symfony/dependency-injection" />
       <path value="$PROJECT_DIR$/vendor/symfony/filesystem" />
       <path value="$PROJECT_DIR$/vendor/symfony/options-resolver" />
-      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php72" />
       <path value="$PROJECT_DIR$/vendor/phpmd/phpmd" />
       <path value="$PROJECT_DIR$/vendor/captainhook/captainhook" />
       <path value="$PROJECT_DIR$/vendor/captainhook/plugin-composer" />
       <path value="$PROJECT_DIR$/vendor/pdepend/pdepend" />
       <path value="$PROJECT_DIR$/vendor/php-cs-fixer/diff" />
-      <path value="$PROJECT_DIR$/vendor/sebastianfeldmann/git" />
       <path value="$PROJECT_DIR$/vendor/sebastianfeldmann/cli" />
       <path value="$PROJECT_DIR$/vendor/sebastianfeldmann/camino" />
       <path value="$PROJECT_DIR$/vendor/psr/log" />
@@ -121,11 +116,16 @@
       <path value="$PROJECT_DIR$/vendor/paragonie/random_compat" />
       <path value="$PROJECT_DIR$/vendor/symfony/string" />
       <path value="$PROJECT_DIR$/vendor/nikic/php-parser" />
-      <path value="$PROJECT_DIR$/vendor/symfony/css-selector" />
       <path value="$PROJECT_DIR$/vendor/codeception/codeception" />
-      <path value="$PROJECT_DIR$/vendor/symfony/stopwatch" />
       <path value="$PROJECT_DIR$/vendor/vimeo/psalm" />
       <path value="$PROJECT_DIR$/vendor/symfony/config" />
+      <path value="$PROJECT_DIR$/vendor/sebastianfeldmann/git" />
+      <path value="$PROJECT_DIR$/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/vendor/symfony/finder" />
+      <path value="$PROJECT_DIR$/vendor/symfony/css-selector" />
+      <path value="$PROJECT_DIR$/vendor/symfony/stopwatch" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php72" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/annotations" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
