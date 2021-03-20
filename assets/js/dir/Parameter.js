@@ -18,5 +18,10 @@ Ext.define('GibsonOS.module.explorer.dir.Parameter', {
         }];
 
         me.callParent();
+    },
+    getValue() {
+        const me = this;
+
+        return me.down('gosFormTextfield').getValue();
     }
 });
