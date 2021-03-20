@@ -5,9 +5,9 @@ namespace GibsonOS\Module\Explorer\Dto\Parameter;
 
 use GibsonOS\Core\Dto\Parameter\AbstractParameter;
 
-class Directory extends AbstractParameter
+class DirectoryParameter extends AbstractParameter
 {
-    public function __construct(string $title)
+    public function __construct(string $title = 'Verzeichnis')
     {
         parent::__construct($title, 'gosModuleExplorerDirParameter');
     }
