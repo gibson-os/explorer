@@ -19,6 +19,9 @@ Ext.define('GibsonOS.module.explorer.dir.Parameter', {
 
         me.callParent();
     },
+    getName() {
+        return this.name;
+    },
     getValue() {
         const me = this;
 
