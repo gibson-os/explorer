@@ -1,17 +1,19 @@
 Ext.define('GibsonOS.module.explorer.dir.Parameter', {
     extend: 'GibsonOS.module.core.component.form.FieldContainer',
     alias: ['widget.gosModuleExplorerDirParameter'],
+    isFormField: true,
     initComponent() {
         const me = this;
 
         me.items = [{
             xtype: 'gosFormTextfield',
-            name: me.name,
-            margins: '0 5 0 0'
+            margins: '0 5 0 0',
+            isFormField: false
         },{
             xtype: 'gosButton',
             text: '...',
             flex: 0,
+            isFormField: false,
             handler: function() {
                 GibsonOS.module.explorer.dir.fn.dialog(me.down('gosFormTextfield'));
             }
@@ -26,5 +28,10 @@ Ext.define('GibsonOS.module.explorer.dir.Parameter', {
         const me = this;
 
         return me.down('gosFormTextfield').getValue();
+    },
+    isValid() {
+        const me = this;
+
+        return me.down('gosFormTextfield').isValid();
     }
 });
