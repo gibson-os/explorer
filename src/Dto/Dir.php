@@ -156,7 +156,7 @@ class Dir implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'path' => $this->getPath() ?: '/',
+            'path' => $this->getPath(),
             'name' => $this->getName(),
             'type' => 'dir',
             'size' => $this->getSize(),
