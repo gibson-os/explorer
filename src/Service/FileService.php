@@ -86,7 +86,7 @@ class FileService
         ;
 
         try {
-            $file->setMetaInfos($this->gibsonStoreService->getFileMetas($path) ?: []);
+            $file->setMetaInfos($this->gibsonStoreService->getFileMetas($path));
         } catch (ExecuteError $e) {
             // Store error
         }

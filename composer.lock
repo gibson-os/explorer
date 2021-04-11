@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "git@wolli.dyndns.tv:/home/git/gibsonOs/Core.git",
-                "reference": "5f49a95fae2b38faadd3b5b7d49e74d9b4a0b24f"
+                "reference": "44c08d5845fd470b4532f8b1059c7954577db019"
             },
             "require": {
                 "ext-curl": "*",
@@ -71,7 +71,7 @@
                     "php ./vendor/codeception/codeception/codecept generate:test unit"
                 ]
             },
-            "time": "2021-04-08T20:41:34+00:00"
+            "time": "2021-04-11T13:39:32+00:00"
         },
         {
             "name": "mdo/mdo",
@@ -4269,16 +4269,16 @@
         },
         {
             "name": "sebastianfeldmann/git",
-            "version": "3.6.0",
+            "version": "3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianfeldmann/git.git",
-                "reference": "426acdd89c4fcf77027c38b44f53625ba90d3439"
+                "reference": "ca827dc741a90043ee46e59a96b1ca88b9ed5264"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianfeldmann/git/zipball/426acdd89c4fcf77027c38b44f53625ba90d3439",
-                "reference": "426acdd89c4fcf77027c38b44f53625ba90d3439",
+                "url": "https://api.github.com/repos/sebastianfeldmann/git/zipball/ca827dc741a90043ee46e59a96b1ca88b9ed5264",
+                "reference": "ca827dc741a90043ee46e59a96b1ca88b9ed5264",
                 "shasum": ""
             },
             "require": {
@@ -4315,7 +4315,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianfeldmann/git/issues",
-                "source": "https://github.com/sebastianfeldmann/git/tree/3.6.0"
+                "source": "https://github.com/sebastianfeldmann/git/tree/3.7.0"
             },
             "funding": [
                 {
@@ -4323,7 +4323,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-04-03T19:19:26+00:00"
+            "time": "2021-04-10T08:31:02+00:00"
         },
         {
             "name": "symfony/config",
