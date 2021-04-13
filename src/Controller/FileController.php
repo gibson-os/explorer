@@ -269,8 +269,8 @@ class FileController extends AbstractController
         TypeFactory $typeFactory,
         string $dir,
         string $filename,
-        int $width,
-        int $height
+        int $width = null,
+        int $height = null
     ): ResponseInterface {
         $this->checkPermission(PermissionService::READ);
 
