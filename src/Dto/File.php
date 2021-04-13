@@ -25,7 +25,7 @@ class File implements JsonSerializable
 
     private ?int $modified = null;
 
-    private array $metaInfos = [];
+    private ?array $metaInfos = null;
 
     public function __construct(string $name, string $type, int $size, int $category)
     {
@@ -143,12 +143,12 @@ class File implements JsonSerializable
         return $this;
     }
 
-    public function getMetaInfos(): array
+    public function getMetaInfos(): ?array
     {
         return $this->metaInfos;
     }
 
-    public function setMetaInfos(array $metaInfos): File
+    public function setMetaInfos(?array $metaInfos): File
     {
         $this->metaInfos = $metaInfos;
 
