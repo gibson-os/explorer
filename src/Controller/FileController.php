@@ -227,12 +227,13 @@ class FileController extends AbstractController
 
     /**
      * @throws CreateError
+     * @throws DateTimeError
      * @throws FactoryError
+     * @throws FileExistsError
      * @throws GetError
      * @throws LoginRequired
      * @throws PermissionDenied
      * @throws ReadError
-     * @throws FileExistsError
      */
     public function add(
         CoreFileService $coreFileService,
@@ -246,7 +247,7 @@ class FileController extends AbstractController
 
         $coreFileService->save($path, null);
 
-        return $this->returnSuccess($fileService->get($path));
+        return $this->returnSuccess($fileService->get($path, $this->sessionService->getUserId()));
     }
 
     /**

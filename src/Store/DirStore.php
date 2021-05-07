@@ -22,6 +22,8 @@ class DirStore extends AbstractStore
 
     private array $metas = [];
 
+    private ?int $userId = null;
+
     private CoreDirService $coreDirService;
 
     private DirService $dirService;
@@ -78,6 +80,11 @@ class DirStore extends AbstractStore
         $this->dir = $dir;
 
         return $this;
+    }
+
+    public function setUserId(?int $user): void
+    {
+        $this->userId = $user;
     }
 
     public function reset(): void
@@ -140,7 +147,7 @@ class DirStore extends AbstractStore
         foreach ($filesLower as $path) {
             $path = $files[$path];
 
-            $item = $this->fileService->get($path);
+            $item = $this->fileService->get($path, $this->userId);
             $this->metas['filesize'] += $item->getSize();
             ++$this->metas['filecount'];
 

@@ -15,6 +15,7 @@ use GibsonOS\Core\Service\FileService as CoreFileService;
 use GibsonOS\Module\Explorer\Dto\File;
 use GibsonOS\Module\Explorer\Exception\OverwriteException;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
+use GibsonOS\Module\Explorer\Repository\Html5\Media\PositionRepository;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 
@@ -26,18 +27,22 @@ class FileService
 
     private MediaRepository $mediaRepository;
 
+    private PositionRepository $positionRepository;
+
     private DescriberFactory $describerFactory;
 
     public function __construct(
         GibsonStoreService $gibsonStoreService,
         CoreFileService $coreFileService,
         MediaRepository $mediaRepository,
+        PositionRepository $positionRepository,
         DescriberFactory $describerFactory
     ) {
         $this->gibsonStoreService = $gibsonStoreService;
         $this->coreFileService = $coreFileService;
         $this->mediaRepository = $mediaRepository;
         $this->describerFactory = $describerFactory;
+        $this->positionRepository = $positionRepository;
     }
 
     /**
@@ -46,7 +51,7 @@ class FileService
      * @throws ReadError
      * @throws DateTimeError
      */
-    public function get(string $path): File
+    public function get(string $path, int $userId = null): File
     {
         $dir = $this->coreFileService->getDir($path);
         $filename = $this->coreFileService->getFilename($path);
@@ -60,14 +65,22 @@ class FileService
         }
 
         $fileSize = filesize($path);
+        $metaInfos = [];
+        $html5Status = null;
+        $html5Token = null;
 
         try {
             $media = $this->mediaRepository->getByDirAndFilename($dir, $filename);
             $html5Status = $media->getStatus();
             $html5Token = $media->getToken();
+
+            if ($userId !== null) {
+                $metaInfos['playedTime'] = $this->positionRepository->getByMediaAndUserId($media->getId() ?? 0, $userId)
+                    ->getPosition()
+                ;
+            }
         } catch (SelectError $e) {
-            $html5Status = null;
-            $html5Token = null;
+            // do nothing
         }
 
         $fileTypeDescriber = $this->describerFactory->create($path);

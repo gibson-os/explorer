@@ -45,7 +45,10 @@ class DirController extends AbstractController
             $dir = $homePath;
         }
 
-        $dirStore->setDir($dir);
+        $dirStore
+            ->setDir($dir)
+            ->setUserId($this->sessionService->getUserId())
+        ;
 
         return new AjaxResponse([
             'success' => true,
