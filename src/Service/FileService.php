@@ -65,9 +65,14 @@ class FileService
         }
 
         $fileSize = filesize($path);
-        $metaInfos = [];
         $html5Status = null;
         $html5Token = null;
+
+        try {
+            $metaInfos = $this->gibsonStoreService->getFileMetas($path);
+        } catch (ExecuteError $e) {
+            $metaInfos = [];
+        }
 
         try {
             $media = $this->mediaRepository->getByDirAndFilename($dir, $filename);
@@ -75,9 +80,10 @@ class FileService
             $html5Token = $media->getToken();
 
             if ($userId !== null) {
-                $metaInfos['playedTime'] = $this->positionRepository->getByMediaAndUserId($media->getId() ?? 0, $userId)
-                    ->getPosition()
-                ;
+                $metaInfos['playedTime'] = $this->positionRepository->getByMediaAndUserId(
+                    $media->getId() ?? 0,
+                    $userId
+                )->getPosition();
             }
         } catch (SelectError $e) {
             // do nothing
@@ -96,13 +102,8 @@ class FileService
             ->setHtml5VideoToken($html5Token)
             ->setAccessed(fileatime($path))
             ->setModified(filemtime($path))
+            ->setMetaInfos($metaInfos)
         ;
-
-        try {
-            $file->setMetaInfos($this->gibsonStoreService->getFileMetas($path));
-        } catch (ExecuteError $e) {
-            // Store error
-        }
 
         return $file;
     }
