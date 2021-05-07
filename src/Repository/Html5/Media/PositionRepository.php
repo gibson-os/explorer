@@ -18,7 +18,7 @@ class PositionRepository extends AbstractRepository
     {
         $table = $this->getTable(Position::getTableName());
         $table
-            ->setWhere('`media_id`=? AND `user_id=?`')
+            ->setWhere('`media_id`=? AND `user_id`=?')
             ->setWhereParameters([$mediaId, $userId])
             ->setLimit(1)
         ;
