@@ -21,6 +21,8 @@ class File implements JsonSerializable
 
     private ?string $html5VideoToken = null;
 
+    private ?int $position = null;
+
     private ?int $accessed = null;
 
     private ?int $modified = null;
@@ -119,6 +121,18 @@ class File implements JsonSerializable
         return $this;
     }
 
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?int $position): File
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
     public function getAccessed(): ?int
     {
         return $this->accessed;
@@ -164,6 +178,7 @@ class File implements JsonSerializable
             'thumbAvailable' => $this->isThumbAvailable(),
             'html5VideoStatus' => $this->getHtml5VideoStatus(),
             'html5VideoToken' => $this->getHtml5VideoToken(),
+            'position' => $this->getPosition(),
             'category' => $this->getCategory(),
             'accessed' => $this->getAccessed(),
             'modified' => $this->getModified(),

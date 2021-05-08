@@ -39,6 +39,7 @@ use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\OverwriteException;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
+use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 use GibsonOS\Module\Explorer\Service\FileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\TrashService;
@@ -324,6 +325,7 @@ class FileController extends AbstractController
             return $this->returnSuccess($gibsonStoreService->getFileMetas($path));
         }
 
+        /** @var FileTypeInterface $fileTypeService */
         $fileTypeService = $serviceManagerService->get($fileTypeDescriber->getServiceClassname());
         $checkSum = md5_file($path);
         $fileMetas = $fileTypeService->getMetas($path);

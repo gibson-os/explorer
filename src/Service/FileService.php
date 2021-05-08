@@ -67,6 +67,7 @@ class FileService
         $fileSize = filesize($path);
         $html5Status = null;
         $html5Token = null;
+        $position = null;
 
         try {
             $metaInfos = $this->gibsonStoreService->getFileMetas($path);
@@ -80,7 +81,7 @@ class FileService
             $html5Token = $media->getToken();
 
             if ($userId !== null) {
-                $metaInfos['playedTime'] = $this->positionRepository->getByMediaAndUserId(
+                $position = $this->positionRepository->getByMediaAndUserId(
                     $media->getId() ?? 0,
                     $userId
                 )->getPosition();
@@ -100,6 +101,7 @@ class FileService
             ->setThumbAvailable($fileTypeDescriber->isImageAvailable())
             ->setHtml5VideoStatus($html5Status)
             ->setHtml5VideoToken($html5Token)
+            ->setPosition($position)
             ->setAccessed(fileatime($path))
             ->setModified(filemtime($path))
             ->setMetaInfos($metaInfos)
