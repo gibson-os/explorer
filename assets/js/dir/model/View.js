@@ -25,6 +25,9 @@ Ext.define('GibsonOS.module.explorer.dir.model.View', {
         name: 'html5VideoToken',
         type: 'string'
     },{
+        name: 'position',
+        type: 'int'
+    },{
         name: 'category',
         type: 'int'
     },{
