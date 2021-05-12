@@ -182,7 +182,7 @@ class File implements JsonSerializable
             'category' => $this->getCategory(),
             'accessed' => $this->getAccessed(),
             'modified' => $this->getModified(),
-            'metaInfos' => $this->getMetaInfos(),
+            'metaInfos' => $this->getMetaInfos() ?: null,
         ];
     }
 }
