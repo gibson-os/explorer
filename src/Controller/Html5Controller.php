@@ -8,6 +8,7 @@ use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
+use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\File\OpenError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
@@ -131,6 +132,7 @@ class Html5Controller extends AbstractController
      * @throws ProcessError
      * @throws SelectError
      * @throws SetError
+     * @throws NoAudioError
      */
     public function convertStatus(
         MediaService $mediaService,
