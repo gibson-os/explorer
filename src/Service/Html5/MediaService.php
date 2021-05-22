@@ -68,10 +68,7 @@ class MediaService extends AbstractService
         $audioStream = $media->getAudioStream();
 
         if ($this->isMp4Video($mediaDto)) {
-            $media
-                ->setGenerationRequired(false)
-                ->setStatus(Media::STATUS_GENERATED)
-            ;
+            $media->setGenerationRequired(false);
 
             return;
         }
@@ -135,6 +132,38 @@ class MediaService extends AbstractService
                 'b:v' => '1500k',
                 'q:a' => 4,
             ]
+        );
+    }
+
+    /**
+     * @throws DeleteError
+     * @throws FileNotFound
+     * @throws GetError
+     * @throws ProcessError
+     * @throws NoAudioError
+     */
+    public function convertToMp3(Media $media, string $filename): void
+    {
+        $mediaDto = $this->mediaService->getMedia(
+            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
+        );
+        $audioStream = $media->getAudioStream();
+
+        if ($this->fileService->getFileEnding($mediaDto->getFilename()) === 'mp3') {
+            $media->setGenerationRequired(false);
+
+            return;
+        }
+
+        if (!empty($audioStream)) {
+            $mediaDto->selectAudioStream($audioStream);
+        }
+
+        $this->mediaService->convert(
+            $mediaDto,
+            $filename,
+            null,
+            'libmp3lame'
         );
     }
 

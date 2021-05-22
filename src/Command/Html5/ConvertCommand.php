@@ -17,6 +17,7 @@ use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\LockService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
+use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use Psr\Log\LoggerInterface;
 
@@ -68,14 +69,23 @@ class ConvertCommand extends AbstractCommand
                 ;
 
                 try {
-                    $this->mediaService->convertToMp4(
-                        $media,
-                        $this->settingRepository->getByKeyAndModuleName(
-                            'explorer',
-                            0,
-                            'html5_media_path'
-                        )->getValue() . $media->getToken() . '.mp4'
-                    );
+                    $filename = $this->settingRepository->getByKeyAndModuleName(
+                        'explorer',
+                        0,
+                        'html5_media_path'
+                    )->getValue() . $media->getToken() . '.';
+
+                    switch ($media->getType()) {
+                        case FileTypeDescriberInterface::CATEGORY_VIDEO:
+                            $this->mediaService->convertToMp4($media, $filename . 'mp4');
+
+                            break;
+                        case FileTypeDescriberInterface::CATEGORY_AUDIO:
+                            $this->mediaService->convertToMp4($media, $filename . 'mp3');
+
+                            break;
+                    }
+
                     $media->setStatus(Media::STATUS_GENERATED);
                 } catch (FileNotFound $e) {
                     $media->setStatus(Media::STATUS_ERROR);

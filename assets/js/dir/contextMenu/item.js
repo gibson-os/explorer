@@ -216,7 +216,10 @@ GibsonOS.define('GibsonOS.module.explorer.dir.contextMenu.item', [{
 
             if (
                 records.length === 1 &&
-                records[0].get('category') === GibsonOS.module.explorer.file.data.categories.VIDEO
+                (
+                    records[0].get('category') === GibsonOS.module.explorer.file.data.categories.VIDEO ||
+                    records[0].get('category') === GibsonOS.module.explorer.file.data.categories.AUDIO
+                )
             ) {
                 let record = records[0];
                 let createSubMenu = function() {
