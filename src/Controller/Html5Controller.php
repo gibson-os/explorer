@@ -24,6 +24,7 @@ use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Repository\SettingRepository;
+use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\RequestService;
@@ -33,6 +34,7 @@ use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\TwigResponse;
 use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
+use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
@@ -150,26 +152,48 @@ class Html5Controller extends AbstractController
      * @throws PermissionDenied
      * @throws SelectError
      */
-    public function video(SettingRepository $settingRepository, string $token): FileResponse
-    {
+    public function video(
+        DirService $dirService,
+        MediaRepository $mediaRepository,
+        SettingRepository $settingRepository,
+        string $token
+    ): FileResponse {
         $this->checkPermission(PermissionService::READ);
 
-        return (new FileResponse(
-            $this->requestService,
-            $settingRepository->getByKeyAndModuleName(
-                $this->requestService->getModuleName(),
-                $this->sessionService->getUserId() ?? 0,
-                'html5_media_path'
-            )->getValue() . $token . '.mp4'
-        ))
-            ->setType('video/mp4')
-            ->setDisposition(null)
-        ;
+        return $this->stream(
+            $dirService,
+            $settingRepository,
+            $mediaRepository->getByToken($token),
+            'mp4',
+            'video/mp4'
+        );
     }
 
     /**
      * @throws DateTimeError
-     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     */
+    public function audio(
+        DirService $dirService,
+        MediaRepository $mediaRepository,
+        SettingRepository $settingRepository,
+        string $token
+    ): FileResponse {
+        $this->checkPermission(PermissionService::READ);
+
+        return $this->stream(
+            $dirService,
+            $settingRepository,
+            $mediaRepository->getByToken($token),
+            'mp3',
+            'audio/mp3'
+        );
+    }
+
+    /**
+     * @throws DateTimeError
      * @throws LoginRequired
      * @throws SaveError
      * @throws PermissionDenied
@@ -288,5 +312,32 @@ class Html5Controller extends AbstractController
                 'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
             ]
         );
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws SelectError
+     */
+    private function stream(
+        DirService $dirService,
+        SettingRepository $settingRepository,
+        Media $media,
+        string $fileEnding,
+        string $type
+    ): FileResponse {
+        $filename = $dirService->addEndSlash($media->getDir()) . $media->getFilename();
+
+        if ($media->isGenerationRequired()) {
+            $filename = $settingRepository->getByKeyAndModuleName(
+                $this->requestService->getModuleName(),
+                $this->sessionService->getUserId() ?? 0,
+                'html5_media_path'
+            )->getValue() . $media->getToken() . '.' . $fileEnding;
+        }
+
+        return (new FileResponse($this->requestService, $filename))
+            ->setType($type)
+            ->setDisposition(null)
+        ;
     }
 }

@@ -5,6 +5,7 @@ namespace GibsonOS\Module\Explorer\Service\Html5;
 
 use DateTime;
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
+use GibsonOS\Core\Dto\Ffmpeg\Media as MediaDto;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
@@ -59,14 +60,24 @@ class MediaService extends AbstractService
      * @throws ProcessError
      * @throws NoAudioError
      */
-    public function convertToMp4(Media $media, string $filename)
+    public function convertToMp4(Media $media, string $filename): void
     {
         $mediaDto = $this->mediaService->getMedia(
             $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
         );
+        $audioStream = $media->getAudioStream();
 
-        if (!empty($media->getAudioStream())) {
-            $mediaDto->selectAudioStream($media->getAudioStream() ?? '');
+        if ($this->isMp4Video($mediaDto)) {
+            $media
+                ->setGenerationRequired(false)
+                ->setStatus(Media::STATUS_GENERATED)
+            ;
+
+            return;
+        }
+
+        if (!empty($audioStream)) {
+            $mediaDto->selectAudioStream($audioStream);
         }
 
         if (!empty($media->getSubtitleStream())) {
@@ -235,5 +246,14 @@ class MediaService extends AbstractService
         }
 
         return $tokens;
+    }
+
+    private function isMp4Video(MediaDto $mediaDto): bool
+    {
+        return
+            $this->fileService->getFileEnding($mediaDto->getFilename()) === 'mp4' &&
+            count($mediaDto->getAudioStreams()) <= 1 &&
+            count($mediaDto->getVideoStreams()) <= 1
+        ;
     }
 }

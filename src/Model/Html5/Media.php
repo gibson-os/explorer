@@ -38,6 +38,10 @@ class Media extends AbstractModel
 
     private int $type;
 
+    private bool $locked = false;
+
+    private bool $generationRequired = true;
+
     private DateTimeInterface $added;
 
     private int $userId;
@@ -149,6 +153,30 @@ class Media extends AbstractModel
     public function setType(int $type): Media
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(bool $locked): Media
+    {
+        $this->locked = $locked;
+
+        return $this;
+    }
+
+    public function isGenerationRequired(): bool
+    {
+        return $this->generationRequired;
+    }
+
+    public function setGenerationRequired(bool $generationRequired): Media
+    {
+        $this->generationRequired = $generationRequired;
 
         return $this;
     }
