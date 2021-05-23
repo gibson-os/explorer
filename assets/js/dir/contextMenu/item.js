@@ -297,7 +297,10 @@ GibsonOS.define('GibsonOS.module.explorer.dir.contextMenu.item', [{
                     disable = false;
                 }
 
-                if (record.get('category') === GibsonOS.module.explorer.file.data.categories.VIDEO) {
+                if (
+                    record.get('category') === GibsonOS.module.explorer.file.data.categories.VIDEO ||
+                    record.get('category') === GibsonOS.module.explorer.file.data.categories.AUDIO
+                ) {
                     button.gos.data.runRefresh = true;
                     button.gos.data.refresh = function() {
                         GibsonOS.Ajax.request({

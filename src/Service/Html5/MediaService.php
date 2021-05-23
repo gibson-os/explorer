@@ -250,7 +250,10 @@ class MediaService extends AbstractService
 
             $category = $this->typeService->getCategory($file);
 
-            if ($category !== TypeService::TYPE_CATEGORY_VIDEO) {
+            if (
+                $category !== TypeService::TYPE_CATEGORY_VIDEO &&
+                $category !== TypeService::TYPE_CATEGORY_AUDIO
+            ) {
                 continue;
             }
 

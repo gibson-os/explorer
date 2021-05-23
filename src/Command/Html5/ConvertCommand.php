@@ -6,6 +6,7 @@ namespace GibsonOS\Module\Explorer\Command\Html5;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
+use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\Flock\LockError;
 use GibsonOS\Core\Exception\Flock\UnlockError;
@@ -56,6 +57,7 @@ class ConvertCommand extends AbstractCommand
      * @throws SaveError
      * @throws SelectError
      * @throws UnlockError
+     * @throws NoAudioError
      */
     protected function run(): int
     {
@@ -81,7 +83,7 @@ class ConvertCommand extends AbstractCommand
 
                             break;
                         case FileTypeDescriberInterface::CATEGORY_AUDIO:
-                            $this->mediaService->convertToMp4($media, $filename . 'mp3');
+                            $this->mediaService->convertToMp3($media, $filename . 'mp3');
 
                             break;
                     }
