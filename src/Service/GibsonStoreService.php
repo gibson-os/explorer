@@ -299,6 +299,7 @@ class GibsonStoreService
      *
      * @throws ExecuteError
      * @throws GetError
+     * @throws JsonException
      * @throws WriteError
      */
     public function setFileMeta(string $path, string $key, $value, string $checkSum = null): GibsonStoreService
@@ -337,6 +338,7 @@ class GibsonStoreService
     /**
      * @throws ExecuteError
      * @throws GetError
+     * @throws JsonException
      * @throws WriteError
      */
     public function setFileMetas(string $dir, array $values, string $checkSum = null): GibsonStoreService
