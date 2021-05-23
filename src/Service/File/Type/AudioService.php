@@ -3,21 +3,24 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service\File\Type;
 
-use Exception;
 use GibsonOS\Core\Dto\Ffmpeg\Media;
 use GibsonOS\Core\Dto\Image;
 use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Service\Ffmpeg\MediaService;
+use GibsonOS\Core\Service\ImageService as CoreImageService;
 
 class AudioService implements FileTypeInterface
 {
     private MediaService $mediaService;
 
-    public function __construct(MediaService $mediaService)
+    private CoreImageService $imageService;
+
+    public function __construct(MediaService $mediaService, CoreImageService $imageService)
     {
         $this->mediaService = $mediaService;
+        $this->imageService = $imageService;
     }
 
     /**
@@ -38,7 +41,16 @@ class AudioService implements FileTypeInterface
 
     public function getImage(string $filename): Image
     {
-        throw new Exception();
+        return $this->imageService->load(
+            realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR .
+            '..' . DIRECTORY_SEPARATOR .
+            '..' . DIRECTORY_SEPARATOR .
+            '..' . DIRECTORY_SEPARATOR .
+            '..' . DIRECTORY_SEPARATOR .
+            'assets' . DIRECTORY_SEPARATOR .
+            'img' . DIRECTORY_SEPARATOR .
+            'audioFile.jpg'
+        );
     }
 
     private function getAudioStreams(Media $media): array
