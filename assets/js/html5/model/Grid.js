@@ -19,7 +19,7 @@ Ext.define('GibsonOS.module.explorer.html5.model.Grid', {
         name: 'dir',
         type: 'string'
     },{
-        name: 'html5VideoToken',
+        name: 'html5MediaToken',
         type: 'string'
     },{
         name: 'added',

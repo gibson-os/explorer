@@ -55,7 +55,7 @@ Ext.define('GibsonOS.module.explorer.dir.Grid', {
         }
     },{
         header: '&nbsp;',
-        dataIndex: 'html5VideoStatus',
+        dataIndex: 'html5MediaStatus',
         width: 30,
         renderer: function(value, metaData, record) {
             return GibsonOS.module.explorer.file.fn.renderBadge(record.getData(), 16);
@@ -87,7 +87,7 @@ Ext.define('GibsonOS.module.explorer.dir.Grid', {
                                 grid: grid,
                                 record: record
                             };
-                            let data = {};
+                            let data;
 
                             if (record.get('type') === 'dir') {
                                 data = {

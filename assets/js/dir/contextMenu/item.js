@@ -136,7 +136,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.contextMenu.item', [{
         beforeshowparentmenu: function(button, menu) {
             var record = menu.getRecord();
 
-            if (record.get('html5VideoStatus') === 'generated') {
+            if (record.get('html5MediaStatus') === 'generated') {
                 button.enable();
             } else {
                 button.disable();
@@ -160,7 +160,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.contextMenu.item', [{
         Ext.iterate(records, function(record) {
             if (
                 record.get('category') === GibsonOS.module.explorer.file.data.categories.VIDEO &&
-                record.get('html5VideoStatus') === null
+                record.get('html5MediaStatus') === null
             ) {
                 return true;
             }
@@ -182,8 +182,8 @@ GibsonOS.define('GibsonOS.module.explorer.dir.contextMenu.item', [{
                     return true;
                 }
 
-                record.set('html5VideoStatus', 'wait');
-                record.set('html5VideoToken', data[dir + record.get('name')]);
+                record.set('html5MediaStatus', 'wait');
+                record.set('html5MediaToken', data[dir + record.get('name')]);
                 record.commit();
             });
 
@@ -306,7 +306,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.contextMenu.item', [{
                         GibsonOS.Ajax.request({
                             url: baseDir + 'explorer/html5/convertStatus',
                             params: {
-                                token: record.get('html5VideoToken')
+                                token: record.get('html5MediaToken')
                             },
                             success: function(response) {
                                 var data = Ext.decode(response.responseText).data;
@@ -337,13 +337,13 @@ GibsonOS.define('GibsonOS.module.explorer.dir.contextMenu.item', [{
                                     }
                                 }
 
-                                record.set('html5VideoStatus', data.status);
+                                record.set('html5MediaStatus', data.status);
                                 record.commit();
                             }
                         });
                     };
 
-                    switch (record.get('html5VideoStatus')) {
+                    switch (record.get('html5MediaStatus')) {
                         case 'error':
                             if (selectionModel.getCount() === 1) {
                                 button.setText(text + '(Fehler)');

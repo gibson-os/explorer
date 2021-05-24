@@ -1,16 +1,14 @@
 GibsonOS.define('GibsonOS.module.explorer.html5.fn.delete', function(records, success) {
-    var msg = 'Möchten Sie die ' + records.length + ' HTML5 Dateien wirklich löschen?';
-    var errorMsg = 'Dateien konnten nicht gelöscht werden!';
+    let msg = 'Möchten Sie die ' + records.length + ' HTML5 Dateien wirklich löschen?';
 
-    if (records.length == 1) {
+    if (records.length === 1) {
         msg = 'Möchten Sie die HTML5 Datei von ' + records[0].get('filename') + ' wirklich löschen?';
-        errorMsg = 'HTML5 Datei von ' + records[0].get('filename') + ' konnte nicht gelöscht werden!';
     }
 
     var tokens = [];
 
     Ext.iterate(records, function(record) {
-        tokens.push(record.get('html5VideoToken'));
+        tokens.push(record.get('html5MediaToken'));
     });
 
     GibsonOS.MessageBox.show({
@@ -28,7 +26,7 @@ GibsonOS.define('GibsonOS.module.explorer.html5.fn.delete', function(records, su
         params: {
             'tokens[]': tokens
         },
-        success: function(response) {
+        success(response) {
             if (success) {
                 success(response);
             }

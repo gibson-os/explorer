@@ -151,6 +151,7 @@ class ToSeeStore extends AbstractDatabaseStore
 
             $listMedia = [
                 'html5VideoToken' => $media->token,
+                'html5MediaToken' => $media->token,
                 'dir' => $media->dir,
                 'filename' => $media->filename,
                 'status' => $media->status,

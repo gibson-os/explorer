@@ -19,10 +19,10 @@ Ext.define('GibsonOS.module.explorer.dir.model.View', {
         name: 'thumbAvailable',
         type: 'bool'
     },{
-        name: 'html5VideoStatus',
+        name: 'html5MediaStatus',
         type: 'string'
     },{
-        name: 'html5VideoToken',
+        name: 'html5MediaToken',
         type: 'string'
     },{
         name: 'position',

@@ -71,6 +71,7 @@ class MediaStore extends AbstractDatabaseStore
 
             $records[] = [
                 'id' => (int) $media->id,
+                'html5MediaToken' => $media->token,
                 'html5VideoToken' => $media->token,
                 'category' => TypeService::TYPE_CATEGORY_VIDEO,
                 'dir' => $media->dir,

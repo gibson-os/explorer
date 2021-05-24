@@ -17,9 +17,9 @@ class File implements JsonSerializable
 
     private bool $thumbAvailable = false;
 
-    private ?string $html5VideoStatus = null;
+    private ?string $html5MediaStatus = null;
 
-    private ?string $html5VideoToken = null;
+    private ?string $html5MediaToken = null;
 
     private ?int $position = null;
 
@@ -97,26 +97,26 @@ class File implements JsonSerializable
         return $this;
     }
 
-    public function getHtml5VideoStatus(): ?string
+    public function getHtml5MediaStatus(): ?string
     {
-        return $this->html5VideoStatus;
+        return $this->html5MediaStatus;
     }
 
-    public function setHtml5VideoStatus(?string $html5VideoStatus): File
+    public function setHtml5MediaStatus(?string $html5MediaStatus): File
     {
-        $this->html5VideoStatus = $html5VideoStatus;
+        $this->html5MediaStatus = $html5MediaStatus;
 
         return $this;
     }
 
-    public function getHtml5VideoToken(): ?string
+    public function getHtml5MediaToken(): ?string
     {
-        return $this->html5VideoToken;
+        return $this->html5MediaToken;
     }
 
-    public function setHtml5VideoToken(?string $html5VideoToken): File
+    public function setHtml5MediaToken(?string $html5MediaToken): File
     {
-        $this->html5VideoToken = $html5VideoToken;
+        $this->html5MediaToken = $html5MediaToken;
 
         return $this;
     }
@@ -176,8 +176,10 @@ class File implements JsonSerializable
             'size' => $this->getSize(),
             'type' => $this->getType(),
             'thumbAvailable' => $this->isThumbAvailable(),
-            'html5VideoStatus' => $this->getHtml5VideoStatus(),
-            'html5VideoToken' => $this->getHtml5VideoToken(),
+            'html5VideoStatus' => $this->getHtml5MediaStatus(),
+            'html5MediaStatus' => $this->getHtml5MediaStatus(),
+            'html5VideoToken' => $this->getHtml5MediaToken(),
+            'html5MediaToken' => $this->getHtml5MediaToken(),
             'position' => $this->getPosition(),
             'category' => $this->getCategory(),
             'accessed' => $this->getAccessed(),
