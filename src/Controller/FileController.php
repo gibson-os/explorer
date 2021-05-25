@@ -43,6 +43,7 @@ use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 use GibsonOS\Module\Explorer\Service\FileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\TrashService;
+use JsonException;
 
 class FileController extends AbstractController
 {
@@ -304,13 +305,14 @@ class FileController extends AbstractController
     }
 
     /**
+     * @throws ExecuteError
      * @throws FactoryError
      * @throws GetError
      * @throws LoginRequired
      * @throws PermissionDenied
-     * @throws ExecuteError
      * @throws ReadError
      * @throws WriteError
+     * @throws JsonException
      */
     public function metaInfos(
         ServiceManagerService $serviceManagerService,

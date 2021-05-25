@@ -21,7 +21,11 @@ class AudioDescriber implements FileTypeDescriberInterface
 
     public function getMetasStructure(): array
     {
-        return [];
+        return [
+            'duration',
+            'bitRate',
+            'audioStreams',
+        ];
     }
 
     public function getServiceClassname(): string
