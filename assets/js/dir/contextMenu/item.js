@@ -223,7 +223,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.contextMenu.item', [{
             ) {
                 let record = records[0];
                 let createSubMenu = function() {
-                    let metaInfos = record.get('metaInfos');
+                    let metaInfos = record.get('metaInfos') ?? {};
 
                     if (metaInfos.audioStreams) {
                         button.menu = new Ext.menu.Menu();
@@ -247,7 +247,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.contextMenu.item', [{
                                 }
                             },('-')];
 
-                            Ext.iterate(metaInfos.subtitleStreams, function(subtitleStreamId, subtitleStream) {
+                            Ext.iterate(metaInfos.subtitleStreams ?? {}, function(subtitleStreamId, subtitleStream) {
                                 subtitleMenu.push({
                                     text: (subtitleStream.language ? subtitleStream.language + ' ' : '')
                                         + (subtitleStream.forced ? '(Forced) ' : '')
