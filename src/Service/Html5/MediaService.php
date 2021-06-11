@@ -67,11 +67,11 @@ class MediaService extends AbstractService
         );
         $audioStream = $media->getAudioStream();
 
-        if ($this->isMp4Video($mediaDto)) {
-            $media->setGenerationRequired(false);
-
-            return;
-        }
+//        if ($this->isMp4Video($mediaDto)) {
+//            $media->setGenerationRequired(false);
+//
+//            return;
+//        }
 
         if (!empty($audioStream)) {
             $mediaDto->selectAudioStream($audioStream);
