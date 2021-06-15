@@ -193,6 +193,8 @@ class Html5Controller extends AbstractController
     }
 
     /**
+     * @param int[] $userIds
+     *
      * @throws DateTimeError
      * @throws LoginRequired
      * @throws SaveError
@@ -203,15 +205,22 @@ class Html5Controller extends AbstractController
         MediaService $mediaService,
         MediaRepository $mediaRepository,
         string $token,
-        int $position
+        int $position,
+        array $userIds
     ): AjaxResponse {
         $this->checkPermission(PermissionService::WRITE);
 
-        $mediaService->savePosition(
-            $mediaRepository->getByToken($token),
-            $position,
-            $this->sessionService->getUserId() ?? 1 // @todo der chromecast hat keine session und keine user id. oAuth?
-        );
+        if (empty($userIds)) {
+            $userIds = [1]; // @todo der chromecast hat keine session und keine user id. oAuth?
+        }
+
+        foreach ($userIds as $userId) {
+            $mediaService->savePosition(
+                $mediaRepository->getByToken($token),
+                $position,
+                $userId
+            );
+        }
 
         return $this->returnSuccess();
     }
