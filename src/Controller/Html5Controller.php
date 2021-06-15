@@ -210,10 +210,6 @@ class Html5Controller extends AbstractController
     ): AjaxResponse {
         $this->checkPermission(PermissionService::WRITE);
 
-        if (empty($userIds)) {
-            $userIds = [1]; // @todo der chromecast hat keine session und keine user id. oAuth?
-        }
-
         foreach ($userIds as $userId) {
             $mediaService->savePosition(
                 $mediaRepository->getByToken($token),
