@@ -233,7 +233,7 @@ class Html5Controller extends AbstractController
     }
 
     /**
-     * @param int[] $userIds
+     * @param int[]|null $userIds
      *
      * @throws ConvertStatusError
      * @throws DateTimeError
@@ -247,11 +247,11 @@ class Html5Controller extends AbstractController
      * @throws ReadError
      * @throws SetError
      */
-    public function toSeeList(ToSeeStore $toSeeStore, array $userIds): AjaxResponse
+    public function toSeeList(ToSeeStore $toSeeStore, ?array $userIds): AjaxResponse
     {
         $this->checkPermission(PermissionService::READ);
 
-        $toSeeStore->setUserIds($userIds);
+        $toSeeStore->setUserIds($userIds ?: [$this->sessionService->getUserId() ?? 0]);
 
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
     }
