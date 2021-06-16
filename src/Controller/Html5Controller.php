@@ -233,21 +233,25 @@ class Html5Controller extends AbstractController
     }
 
     /**
+     * @param int[] $userIds
+     *
      * @throws ConvertStatusError
      * @throws DateTimeError
      * @throws FileNotFound
      * @throws GetError
      * @throws LoginRequired
+     * @throws NoAudioError
      * @throws OpenError
      * @throws PermissionDenied
      * @throws ProcessError
-     * @throws SetError
-     * @throws ExecuteError
      * @throws ReadError
+     * @throws SetError
      */
-    public function toSeeList(ToSeeStore $toSeeStore): AjaxResponse
+    public function toSeeList(ToSeeStore $toSeeStore, array $userIds): AjaxResponse
     {
         $this->checkPermission(PermissionService::READ);
+
+        $toSeeStore->setUserIds($userIds);
 
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
     }

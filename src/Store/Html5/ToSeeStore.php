@@ -35,6 +35,11 @@ class ToSeeStore extends AbstractDatabaseStore
     private GibsonStoreService $gibsonStore;
 
     /**
+     * @var int[]
+     */
+    private array $userIds = [];
+
+    /**
      * @throws CreateError
      */
     public function __construct(
@@ -52,6 +57,16 @@ class ToSeeStore extends AbstractDatabaseStore
         $this->dir = $dir;
         $this->media = $media;
         $this->gibsonStore = $gibsonStore;
+    }
+
+    /**
+     * @param int[] $userIds
+     */
+    public function setUserIds(array $userIds): ToSeeStore
+    {
+        $this->userIds = $userIds;
+
+        return $this;
     }
 
     /**
@@ -77,11 +92,14 @@ class ToSeeStore extends AbstractDatabaseStore
             'position' => 'position',
         ];
 
+        $userIdsIn = implode(',', $this->userIds);
+//        $userIdsIn = implode(',', array_fill(0, count($this->userIds), '?'));
+
         $this->table->setSelectString(array_merge($select, ['orderDate' => 'added` AS `orderDate']));
         $this->table->appendJoinLeft(
             Position::getTableName(),
             '`' . $this->getTableName() . '`.`id`=`explorer_html5_media_position`.`media_id` AND ' .
-            '`explorer_html5_media_position`.`user_id`=1' // @todo user ermitteln
+            '`explorer_html5_media_position`.`user_id` IN (' . $userIdsIn . ')'
         );
         $this->table->setWhere($this->getWhere());
 
@@ -91,12 +109,14 @@ class ToSeeStore extends AbstractDatabaseStore
             $this->getTableName(),
             '`' . $this->getTableName() . '`.`id`=`explorer_html5_media_position`.`media_id`'
         );
-        $positionTable->setWhere('`explorer_html5_media_position`.`user_id`=1');  // @todo user ermitteln
+        $positionTable->setWhere('`explorer_html5_media_position`.`user_id` IN (' . $userIdsIn . ')');
 
-        $this->table->appendUnion();
-        $this->table->appendUnion($positionTable->getSelect());
-        $this->table->setOrderBy('`orderDate` DESC');
-        $this->table->selectUnion(false);
+        $this->table
+            ->appendUnion()
+            ->appendUnion($positionTable->getSelect())
+            ->setOrderBy('`orderDate` DESC')
+            ->selectUnion(false)
+        ;
 
         $medias = [];
 
