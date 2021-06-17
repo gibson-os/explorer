@@ -210,7 +210,7 @@ class Html5Controller extends AbstractController
     ): AjaxResponse {
         $this->checkPermission(PermissionService::WRITE);
 
-        foreach ($userIds as $userId) {
+        foreach (array_unique($userIds) as $userId) {
             $mediaService->savePosition(
                 $mediaRepository->getByToken($token),
                 $position,
@@ -251,7 +251,7 @@ class Html5Controller extends AbstractController
     {
         $this->checkPermission(PermissionService::READ);
 
-        $toSeeStore->setUserIds($userIds ?: [$this->sessionService->getUserId() ?? 0]);
+        $toSeeStore->setUserIds(array_unique($userIds ?: [$this->sessionService->getUserId() ?? 0]));
 
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
     }
