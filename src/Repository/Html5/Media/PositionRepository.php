@@ -16,19 +16,15 @@ class PositionRepository extends AbstractRepository
      */
     public function getByMediaAndUserId(int $mediaId, int $userId): Position
     {
-        $table = $this->getTable(Position::getTableName());
-        $table
-            ->setWhere('`media_id`=? AND `user_id`=?')
-            ->setWhereParameters([$mediaId, $userId])
-            ->setLimit(1)
-        ;
+        $model = $this->fetchOne(
+            '`media_id`=? AND `user_id`=?',
+            [$mediaId, $userId],
+            Position::class
+        );
 
-        if (!$table->selectPrepared()) {
-            throw (new SelectError())->setTable($table);
+        if (!$model instanceof Position) {
+            throw new SelectError();
         }
-
-        $model = new Position();
-        $model->loadFromMysqlTable($table);
 
         return $model;
     }

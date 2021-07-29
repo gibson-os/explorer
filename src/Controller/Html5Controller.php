@@ -15,6 +15,7 @@ use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Image\CreateError;
 use GibsonOS\Core\Exception\Image\LoadError;
 use GibsonOS\Core\Exception\LoginRequired;
+use GibsonOS\Core\Exception\Model\DeleteError;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Exception\ProcessError;
@@ -321,6 +322,24 @@ class Html5Controller extends AbstractController
                 'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
             ]
         );
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws SelectError
+     * @throws DeleteError
+     */
+    public function delete(MediaRepository $mediaRepository, array $tokens): AjaxResponse
+    {
+        $this->checkPermission(PermissionService::DELETE);
+
+        foreach ($mediaRepository->getByTokens($tokens) as $media) {
+            $media->delete();
+        }
+
+        return $this->returnSuccess();
     }
 
     /**

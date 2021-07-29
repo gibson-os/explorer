@@ -9,6 +9,10 @@ use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Html5\Media as MediaModel;
 
+/**
+ * @psalm-suppress MoreSpecificReturnType
+ * @psalm-suppress LessSpecificReturnStatement
+ */
 class MediaRepository extends AbstractRepository
 {
     /**
@@ -17,21 +21,28 @@ class MediaRepository extends AbstractRepository
      */
     public function getByToken(string $token): MediaModel
     {
-        $table = $this->getTable(MediaModel::getTableName());
-        $table->setWhere('`token`=' . $this->escape($token));
-        $table->setLimit(1);
+        $model = $this->fetchOne('`token`=?', [$token], MediaModel::class);
 
-        if (!$table->select()) {
-            $exception = new SelectError('Kein Media mit dem Token ' . $token . ' gefunden!');
-            $exception->setTable($table);
-
-            throw $exception;
+        if (!$model instanceof MediaModel) {
+            throw new SelectError();
         }
 
-        $model = new MediaModel();
-        $model->loadFromMysqlTable($table);
-
         return $model;
+    }
+
+    /**
+     * @throws DateTimeError
+     * @throws SelectError
+     *
+     * @return MediaModel[]
+     */
+    public function getByTokens(array $tokens): array
+    {
+        return $this->fetchAll(
+            '`token` IN (' . implode(', ', array_fill(0, count($tokens), '?')) . ')',
+            $tokens,
+            MediaModel::class
+        );
     }
 
     /**
@@ -40,19 +51,11 @@ class MediaRepository extends AbstractRepository
      */
     public function getByDirAndFilename(string $dir, string $filename): MediaModel
     {
-        $table = $this->getTable(MediaModel::getTableName());
-        $table->setWhere('`dir`=' . $this->escape($dir) . ' AND `filename`=' . $this->escape($filename));
-        $table->setLimit(1);
+        $model = $this->fetchOne('`dir`=? AND `filename`=?', [$dir, $filename]);
 
-        if (!$table->select()) {
-            $exception = new SelectError(sprintf('Media "%s" nicht gefunden!', $dir . $filename));
-            $exception->setTable($table);
-
-            throw $exception;
+        if (!$model instanceof MediaModel) {
+            throw new SelectError();
         }
-
-        $model = new MediaModel();
-        $model->loadFromMysqlTable($table);
 
         return $model;
     }
@@ -65,29 +68,7 @@ class MediaRepository extends AbstractRepository
      */
     public function getAllByStatus(string $status): array
     {
-        $table = $this->getTable(MediaModel::getTableName());
-        $table->setWhere('`status`=' . $this->escape($status));
-
-        if ($table->select() === false) {
-            $exception = new SelectError();
-            $exception->setTable($table);
-
-            throw $exception;
-        }
-
-        $models = [];
-
-        if ($table->countRecords() === 0) {
-            return $models;
-        }
-
-        do {
-            $model = new MediaModel();
-            $model->loadFromMysqlTable($table);
-            $models[] = $model;
-        } while ($table->next());
-
-        return $models;
+        return $this->fetchAll('`status`=?', [$status], MediaModel::class);
     }
 
     /**
@@ -98,40 +79,25 @@ class MediaRepository extends AbstractRepository
      */
     public function getAllOlderThan(DateTime $date): array
     {
-        $table = $this->getTable(MediaModel::getTableName());
-        $table->setWhere('`added`<' . $this->escape($date->format('Y-m-d H:i:s')));
-
-        if ($table->select() === false) {
-            $exception = new SelectError();
-            $exception->setTable($table);
-
-            throw $exception;
-        }
-
-        $models = [];
-
-        if ($table->countRecords() === 0) {
-            return $models;
-        }
-
-        do {
-            $model = new MediaModel();
-            $model->loadFromMysqlTable($table);
-            $models[] = $model;
-        } while ($table->next());
-
-        return $models;
+        return $this->fetchAll(
+            '`added`<?',
+            [$date->format('Y-m-d H:i:s')],
+            MediaModel::class
+        );
     }
 
+    /**
+     * @throws DateTimeError
+     */
     public function getFreeToken(): string
     {
-        $table = $this->getTable(MediaModel::getTableName());
-
-        do {
+        try {
             $token = md5((string) rand());
-            $table->setWhere('`token`=' . $this->escape($token));
-        } while ($table->select());
+            $this->fetchOne('`token`=?', [$token], MediaModel::class);
 
-        return $token;
+            return $token;
+        } catch (SelectError $e) {
+            return $this->getFreeToken();
+        }
     }
 }
