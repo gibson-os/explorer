@@ -15,13 +15,14 @@ class TrashRepository extends AbstractRepository
      */
     public function getFreeToken(): string
     {
+        $token = md5((string) rand());
+
         try {
-            $token = md5((string) rand());
             $this->fetchOne('`token`=?', [$token], Trash::class);
 
-            return $token;
-        } catch (SelectError $e) {
             return $this->getFreeToken();
+        } catch (SelectError $e) {
+            return $token;
         }
     }
 }
