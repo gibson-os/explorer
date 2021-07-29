@@ -51,7 +51,7 @@ class MediaRepository extends AbstractRepository
      */
     public function getByDirAndFilename(string $dir, string $filename): MediaModel
     {
-        $model = $this->fetchOne('`dir`=? AND `filename`=?', [$dir, $filename]);
+        $model = $this->fetchOne('`dir`=? AND `filename`=?', [$dir, $filename], MediaModel::class);
 
         if (!$model instanceof MediaModel) {
             throw new SelectError();
