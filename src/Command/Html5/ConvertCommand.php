@@ -26,26 +26,13 @@ class ConvertCommand extends AbstractCommand
 {
     private const LOCK_NAME = 'html5Convert';
 
-    private MediaRepository $mediaRepository;
-
-    private MediaService $mediaService;
-
-    private SettingRepository $settingRepository;
-
-    private LockService $lockService;
-
     public function __construct(
-        MediaRepository $mediaRepository,
-        MediaService $mediaService,
-        SettingRepository $settingRepository,
-        LockService $lockService,
+        private MediaRepository $mediaRepository,
+        private MediaService $mediaService,
+        private SettingRepository $settingRepository,
+        private LockService $lockService,
         LoggerInterface $logger
     ) {
-        $this->mediaRepository = $mediaRepository;
-        $this->mediaService = $mediaService;
-        $this->settingRepository = $settingRepository;
-        $this->lockService = $lockService;
-
         parent::__construct($logger);
     }
 
@@ -89,7 +76,7 @@ class ConvertCommand extends AbstractCommand
                     }
 
                     $media->setStatus(Media::STATUS_GENERATED);
-                } catch (FileNotFound $e) {
+                } catch (FileNotFound) {
                     $media->setStatus(Media::STATUS_ERROR);
                 }
 
@@ -99,7 +86,7 @@ class ConvertCommand extends AbstractCommand
             }
 
             $this->lockService->unlock(self::LOCK_NAME);
-        } catch (LockError $e) {
+        } catch (LockError) {
             // Convert in progress
         }
 

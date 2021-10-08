@@ -7,14 +7,6 @@ use JsonSerializable;
 
 class File implements JsonSerializable
 {
-    private string $name;
-
-    private int $size;
-
-    private string $type;
-
-    private int $category;
-
     private bool $thumbAvailable = false;
 
     private ?string $html5MediaStatus = null;
@@ -29,12 +21,8 @@ class File implements JsonSerializable
 
     private ?array $metaInfos = null;
 
-    public function __construct(string $name, string $type, int $size, int $category)
+    public function __construct(private string $name, private string $type, private int $size, private int $category)
     {
-        $this->name = $name;
-        $this->type = $type;
-        $this->size = $size;
-        $this->category = $category;
     }
 
     public function getName(): string

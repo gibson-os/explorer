@@ -13,14 +13,8 @@ use GibsonOS\Core\Service\ImageService as CoreImageService;
 
 class AudioService implements FileTypeInterface
 {
-    private MediaService $mediaService;
-
-    private CoreImageService $imageService;
-
-    public function __construct(MediaService $mediaService, CoreImageService $imageService)
+    public function __construct(private MediaService $mediaService, private CoreImageService $imageService)
     {
-        $this->mediaService = $mediaService;
-        $this->imageService = $imageService;
     }
 
     /**

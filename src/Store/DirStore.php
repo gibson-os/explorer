@@ -24,17 +24,8 @@ class DirStore extends AbstractStore
 
     private ?int $userId = null;
 
-    private CoreDirService $coreDirService;
-
-    private DirService $dirService;
-
-    private FileService $fileService;
-
-    public function __construct(CoreDirService $coreDirService, DirService $dirService, FileService $fileService)
+    public function __construct(private CoreDirService $coreDirService, private DirService $dirService, private FileService $fileService)
     {
-        $this->coreDirService = $coreDirService;
-        $this->dirService = $dirService;
-        $this->fileService = $fileService;
         $this->reset();
     }
 
@@ -166,7 +157,7 @@ class DirStore extends AbstractStore
 
         try {
             $this->dirService->set($dir);
-        } catch (ExecuteError | WriteError $e) {
+        } catch (ExecuteError | WriteError) {
             // write error
         }
     }

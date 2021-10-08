@@ -12,14 +12,8 @@ use GibsonOS\Module\Explorer\Dto\Dir;
 
 class DirService
 {
-    private GibsonStoreService $gibsonStoreService;
-
-    private CoreDirService $coreDirService;
-
-    public function __construct(GibsonStoreService $gibsonStoreService, CoreDirService $coreDirService)
+    public function __construct(private GibsonStoreService $gibsonStoreService, private CoreDirService $coreDirService)
     {
-        $this->gibsonStoreService = $gibsonStoreService;
-        $this->coreDirService = $coreDirService;
     }
 
     /**
@@ -45,7 +39,7 @@ class DirService
                 ->setDirDirs((int) $this->gibsonStoreService->getDirMeta($path, 'dirdircount', 0))
                 ->setIcon($this->gibsonStoreService->getDirMeta($path, 'icon'))
             ;
-        } catch (ExecuteError $e) {
+        } catch (ExecuteError) {
             $size = 0;
             $files = 0;
             $dirs = 0;
@@ -77,7 +71,6 @@ class DirService
      * @throws ExecuteError
      * @throws WriteError
      *
-     * @return $this
      */
     public function set(Dir $dir): DirService
     {

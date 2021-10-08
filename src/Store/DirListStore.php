@@ -18,14 +18,8 @@ class DirListStore extends AbstractStore
 
     private bool $withParents = false;
 
-    private DirService $dirService;
-
-    private GibsonStoreService $gibsonStoreService;
-
-    public function __construct(DirService $dirService, GibsonStoreService $gibsonStoreService)
+    public function __construct(private DirService $dirService, private GibsonStoreService $gibsonStoreService)
     {
-        $this->dirService = $dirService;
-        $this->gibsonStoreService = $gibsonStoreService;
     }
 
     /**
@@ -144,7 +138,7 @@ class DirListStore extends AbstractStore
             if (!empty($icon)) {
                 $iconCls = $icon;
             }
-        } catch (ExecuteError $e) {
+        } catch (ExecuteError) {
             // Write error
         }
 

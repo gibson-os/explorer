@@ -21,7 +21,7 @@ class TrashRepository extends AbstractRepository
             $this->fetchOne('`token`=?', [$token], Trash::class);
 
             return $this->getFreeToken();
-        } catch (SelectError $e) {
+        } catch (SelectError) {
             return $token;
         }
     }

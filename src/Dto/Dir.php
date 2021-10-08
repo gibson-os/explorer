@@ -7,10 +7,6 @@ use JsonSerializable;
 
 class Dir implements JsonSerializable
 {
-    private string $path;
-
-    private string $name;
-
     private int $size = 0;
 
     private int $files = 0;
@@ -27,10 +23,8 @@ class Dir implements JsonSerializable
 
     private ?int $modified = null;
 
-    public function __construct(string $path, string $name)
+    public function __construct(private string $path, private string $name)
     {
-        $this->path = $path;
-        $this->name = $name;
     }
 
     public function getPath(): string

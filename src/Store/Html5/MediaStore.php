@@ -15,23 +15,13 @@ use mysqlDatabase;
 
 class MediaStore extends AbstractDatabaseStore
 {
-    private ModuleSettingService $moduleSetting;
-
-    private TypeService $typeService;
-
-    private DirService $dir;
-
     public function __construct(
         mysqlDatabase $database,
-        ModuleSettingService $moduleSetting,
-        TypeService $typeService,
-        DirService $dir
+        private ModuleSettingService $moduleSetting,
+        private TypeService $typeService,
+        private DirService $dir
     ) {
         parent::__construct($database);
-
-        $this->moduleSetting = $moduleSetting;
-        $this->typeService = $typeService;
-        $this->dir = $dir;
     }
 
     protected function getTableName(): string

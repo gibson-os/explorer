@@ -14,24 +14,8 @@ use GibsonOS\Module\Explorer\Repository\TrashRepository;
 
 class TrashService extends AbstractService
 {
-    private DirService $dirService;
-
-    private FileService $fileService;
-
-    private TrashRepository $trashRepository;
-
-    private DateTimeService $dateTimeService;
-
-    public function __construct(
-        DirService $dirService,
-        FileService $fileService,
-        TrashRepository $trashRepository,
-        DateTimeService $dateTimeService
-    ) {
-        $this->dirService = $dirService;
-        $this->fileService = $fileService;
-        $this->trashRepository = $trashRepository;
-        $this->dateTimeService = $dateTimeService;
+    public function __construct(private DirService $dirService, private FileService $fileService, private TrashRepository $trashRepository, private DateTimeService $dateTimeService)
+    {
     }
 
     /**

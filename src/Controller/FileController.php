@@ -47,17 +47,14 @@ use JsonException;
 
 class FileController extends AbstractController
 {
-    private SettingRepository $settingRepository;
-
     public function __construct(
         PermissionService $permissionService,
         RequestService $requestService,
         TwigService $twigService,
         SessionService $sessionService,
-        SettingRepository $settingRepository
+        private SettingRepository $settingRepository
     ) {
         parent::__construct($permissionService, $requestService, $twigService, $sessionService);
-        $this->settingRepository = $settingRepository;
     }
 
     /**

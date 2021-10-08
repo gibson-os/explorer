@@ -16,11 +16,8 @@ use GibsonOS\Core\Service\Ffmpeg\MediaService;
 
 class VideoService implements FileTypeInterface
 {
-    private MediaService $mediaService;
-
-    public function __construct(MediaService $mediaService)
+    public function __construct(private MediaService $mediaService)
     {
-        $this->mediaService = $mediaService;
     }
 
     /**

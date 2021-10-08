@@ -25,32 +25,16 @@ use Psr\Log\LoggerInterface;
 
 class DeleteCommand extends AbstractCommand
 {
-    private MediaRepository $mediaRepository;
-
-    private SettingRepository $settingRepository;
-
-    private LockService $lockService;
-
-    private DirService $dirService;
-
-    private FileService $fileService;
-
     private string $mediaPath;
 
     public function __construct(
-        MediaRepository $mediaRepository,
-        SettingRepository $settingRepository,
-        LockService $lockService,
-        DirService $dirService,
-        FileService $fileService,
+        private MediaRepository $mediaRepository,
+        private SettingRepository $settingRepository,
+        private LockService $lockService,
+        private DirService $dirService,
+        private FileService $fileService,
         LoggerInterface $logger
     ) {
-        $this->mediaRepository = $mediaRepository;
-        $this->settingRepository = $settingRepository;
-        $this->lockService = $lockService;
-        $this->dirService = $dirService;
-        $this->fileService = $fileService;
-
         $this->setOption('dry');
 
         parent::__construct($logger);
@@ -83,7 +67,7 @@ class DeleteCommand extends AbstractCommand
             $this->deleteWhereSizeExceeded();
 
             $this->lockService->unlock();
-        } catch (LockError $e) {
+        } catch (LockError) {
             // Delete in progress
         }
 
@@ -129,7 +113,7 @@ class DeleteCommand extends AbstractCommand
 
             try {
                 $this->mediaRepository->getByToken($token);
-            } catch (SelectError $e) {
+            } catch (SelectError) {
                 try {
                     if ($this->hasOption('dry')) {
                         printf(
@@ -139,7 +123,7 @@ class DeleteCommand extends AbstractCommand
                     } else {
                         $this->fileService->delete($file);
                     }
-                } catch (FileNotFound $e) {
+                } catch (FileNotFound) {
                     // File does not exists
                 }
             }
@@ -181,7 +165,7 @@ class DeleteCommand extends AbstractCommand
                     $media->delete();
                 }
             }
-        } catch (SelectError $e) {
+        } catch (SelectError) {
             return;
         }
     }
@@ -257,7 +241,7 @@ class DeleteCommand extends AbstractCommand
 
                 $deleteSize -= $fileSize;
             }
-        } catch (SelectError $e) {
+        } catch (SelectError) {
             return;
         }
     }

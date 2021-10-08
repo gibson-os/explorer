@@ -28,12 +28,6 @@ use stdClass;
 
 class ToSeeStore extends AbstractDatabaseStore
 {
-    private DirService $dir;
-
-    private MediaService $media;
-
-    private GibsonStoreService $gibsonStore;
-
     /**
      * @var int[]
      */
@@ -44,19 +38,15 @@ class ToSeeStore extends AbstractDatabaseStore
      */
     public function __construct(
         mysqlDatabase $database,
-        DirService $dir,
-        MediaService $media,
-        GibsonStoreService $gibsonStore
+        private DirService $dir,
+        private MediaService $media,
+        private GibsonStoreService $gibsonStore
     ) {
         parent::__construct($database);
 
         $this->where[] = '`' . $this->getTableName() . '`.`status` IN(' .
             $this->database->escape(ConvertStatus::STATUS_GENERATE) . ', ' .
             $this->database->escape(ConvertStatus::STATUS_GENERATED) . ')';
-
-        $this->dir = $dir;
-        $this->media = $media;
-        $this->gibsonStore = $gibsonStore;
     }
 
     /**
@@ -132,7 +122,7 @@ class ToSeeStore extends AbstractDatabaseStore
                     'duration',
                     0
                 );
-            } catch (ExecuteError $e) {
+            } catch (ExecuteError) {
                 $media->dudation = 0;
             }
 

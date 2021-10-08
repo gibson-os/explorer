@@ -11,14 +11,8 @@ use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 
 class TypeFactory
 {
-    private DescriberFactory $describerFactory;
-
-    private ServiceManagerService $serviceManagerService;
-
-    public function __construct(DescriberFactory $describerFactory, ServiceManagerService $serviceManagerService)
+    public function __construct(private DescriberFactory $describerFactory, private ServiceManagerService $serviceManagerService)
     {
-        $this->describerFactory = $describerFactory;
-        $this->serviceManagerService = $serviceManagerService;
     }
 
     /**

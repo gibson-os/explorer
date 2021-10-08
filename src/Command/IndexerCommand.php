@@ -28,46 +28,18 @@ use Psr\Log\LoggerInterface;
 
 class IndexerCommand extends AbstractCommand
 {
-    private LockService $lockService;
-
-    private SettingRepository $settingRepository;
-
-    private GibsonStoreService $gibsonStoreService;
-
-    private DirService $dirService;
-
-    private FileService $fileService;
-
-    private EnvService $envService;
-
-    private DescriberFactory $describerFactory;
-
-    private ServiceManagerService $serviceManagerService;
-
-    private ExplorerFileService $explorerFileService;
-
     public function __construct(
-        LockService $lockService,
-        SettingRepository $settingRepository,
-        GibsonStoreService $gibsonStoreService,
-        DirService $dirService,
-        FileService $fileService,
-        EnvService $envService,
-        DescriberFactory $describerFactory,
-        ServiceManagerService $serviceManagerService,
-        ExplorerFileService $explorerFileService,
+        private LockService $lockService,
+        private SettingRepository $settingRepository,
+        private GibsonStoreService $gibsonStoreService,
+        private DirService $dirService,
+        private FileService $fileService,
+        private EnvService $envService,
+        private DescriberFactory $describerFactory,
+        private ServiceManagerService $serviceManagerService,
+        private ExplorerFileService $explorerFileService,
         LoggerInterface $logger
     ) {
-        $this->lockService = $lockService;
-        $this->settingRepository = $settingRepository;
-        $this->gibsonStoreService = $gibsonStoreService;
-        $this->dirService = $dirService;
-        $this->fileService = $fileService;
-        $this->envService = $envService;
-        $this->describerFactory = $describerFactory;
-        $this->serviceManagerService = $serviceManagerService;
-        $this->explorerFileService = $explorerFileService;
-
         $this->setOption('renew');
 
         parent::__construct($logger);
@@ -88,7 +60,7 @@ class IndexerCommand extends AbstractCommand
             $this->indexDir($homePath->getValue(), false);
 
             $this->lockService->unlock();
-        } catch (LockError $e) {
+        } catch (LockError) {
             // Indexer in progress
         }
 
@@ -177,7 +149,7 @@ class IndexerCommand extends AbstractCommand
             ) {
                 $noStoreDir = true;
             }
-        } catch (Exception $exception) {
+        } catch (Exception) {
             $noStoreDir = true;
         }
 
@@ -219,7 +191,7 @@ class IndexerCommand extends AbstractCommand
                 $checkSum = md5_file($path);
 
                 $this->gibsonStoreService->setFileImage($path, $image, $checkSum ?: null);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 // No Image
             }
         }

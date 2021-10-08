@@ -120,7 +120,7 @@ class MediaRepository extends AbstractRepository
             $this->fetchOne('`token`=?', [$token], Media::class);
 
             return $this->getFreeToken();
-        } catch (SelectError $e) {
+        } catch (SelectError) {
             return $token;
         }
     }

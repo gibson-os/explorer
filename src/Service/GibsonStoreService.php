@@ -46,17 +46,8 @@ class GibsonStoreService
      */
     private array $stores = [];
 
-    private FileService $fileService;
-
-    private DirService $dirService;
-
-    private ThumbnailService $thumbnailService;
-
-    public function __construct(FileService $fileService, DirService $dirService, ThumbnailService $thumbnailService)
+    public function __construct(private FileService $fileService, private DirService $dirService, private ThumbnailService $thumbnailService)
     {
-        $this->fileService = $fileService;
-        $this->dirService = $dirService;
-        $this->thumbnailService = $thumbnailService;
     }
 
     /**
@@ -80,7 +71,7 @@ class GibsonStoreService
                 'SELECT * FROM ' . self::META_TABLE_NAME .
                 " WHERE `key`='" . SQLite3::escapeString($key) . "'"
             );
-        } catch (ExecuteError $exception) {
+        } catch (ExecuteError) {
             return $default;
         }
 
@@ -121,7 +112,7 @@ class GibsonStoreService
 
         try {
             $query = $store->query('SELECT * FROM ' . self::META_TABLE_NAME . $where);
-        } catch (ExecuteError $exception) {
+        } catch (ExecuteError) {
             return $default;
         }
 
@@ -191,7 +182,7 @@ class GibsonStoreService
                 "`filename`='" . SQLite3::escapeString($filename) . "' AND " .
                 "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "' AND `key`='" . SQLite3::escapeString($key) . "'"
             );
-        } catch (ExecuteError $e) {
+        } catch (ExecuteError) {
             return $default;
         }
 
@@ -200,7 +191,7 @@ class GibsonStoreService
         if ($row !== false) {
             try {
                 return JsonUtility::decode($row['value']);
-            } catch (JsonException $e) {
+            } catch (JsonException) {
                 return $row['value'];
             }
         }
@@ -243,7 +234,7 @@ class GibsonStoreService
                 "`filename`='" . SQLite3::escapeString($filename) . "' AND " .
                 "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "'" . $where
             );
-        } catch (ExecuteError $exception) {
+        } catch (ExecuteError) {
             return $default;
         }
 
@@ -252,7 +243,7 @@ class GibsonStoreService
         while ($row = $query->fetchArray(SQLITE3_ASSOC)) {
             try {
                 $returnList[$row['key']] = JsonUtility::decode($row['value']);
-            } catch (JsonException $e) {
+            } catch (JsonException) {
                 $returnList[$row['key']] = $row['value'];
             }
         }
@@ -287,7 +278,7 @@ class GibsonStoreService
 
         try {
             $count = $store->querySingle('SELECT COUNT(`key`) FROM ' . self::FILE_META_TABLE_NAME . $where);
-        } catch (ExecuteError $e) {
+        } catch (ExecuteError) {
             return false;
         }
 
@@ -411,7 +402,7 @@ class GibsonStoreService
                 'SELECT * FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
                 "filename='" . SQLite3::escapeString($filename) . "'"
             );
-        } catch (ExecuteError $e) {
+        } catch (ExecuteError) {
             throw new ReadError();
         }
 
@@ -468,7 +459,7 @@ class GibsonStoreService
                 'SELECT * FROM ' . self::THUMBNAIL_TABLE_NAME . ' WHERE ' .
                 "filename='" . SQLite3::escapeString($filename) . "'"
             );
-        } catch (ExecuteError $e) {
+        } catch (ExecuteError) {
             return null;
         }
 

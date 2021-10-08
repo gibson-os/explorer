@@ -29,28 +29,8 @@ use OutOfRangeException;
 
 class MediaService extends AbstractService
 {
-    private CoreMediaService $mediaService;
-
-    private DirService $dirService;
-
-    private FileService $fileService;
-
-    private MediaRepository $mediaRepository;
-
-    private TypeService $typeService;
-
-    public function __construct(
-        CoreMediaService $mediaService,
-        DirService $dirService,
-        FileService $fileService,
-        MediaRepository $mediaRepository,
-        TypeService $typeService
-    ) {
-        $this->mediaService = $mediaService;
-        $this->fileService = $fileService;
-        $this->dirService = $dirService;
-        $this->mediaRepository = $mediaRepository;
-        $this->typeService = $typeService;
+    public function __construct(private CoreMediaService $mediaService, private DirService $dirService, private FileService $fileService, private MediaRepository $mediaRepository, private TypeService $typeService)
+    {
     }
 
     /**
@@ -260,7 +240,7 @@ class MediaService extends AbstractService
             try {
                 $media = $this->mediaRepository->getByDirAndFilename($dir, $file);
                 $tokens[$media->getDir() . $media->getFilename()] = $media->getToken();
-            } catch (SelectError $e) {
+            } catch (SelectError) {
                 $token = $this->mediaRepository->getFreeToken();
                 $tokens[$dir . $file] = $token;
 

@@ -1,8 +1,9 @@
 {
   "name": "gibson-os/explorer",
   "require": {
-    "mdo/mdo": "dev-master",
-    "gibson-os/core": "dev-master",
+    "php": " ^8.0",
+    "mdo/mdo": "dev-feature/php8.0",
+    "gibson-os/core": "dev-feature/php8.0",
     "ext-mbstring": "*",
     "ext-exif": "*",
     "ext-sqlite3": "*",
@@ -11,12 +12,13 @@
   },
   "require-dev": {
     "codeception/codeception": "^4.0",
-    "friendsofphp/php-cs-fixer": "^2.15",
+    "friendsofphp/php-cs-fixer": "^3.0",
     "phpmd/phpmd": "^2.7",
     "captainhook/captainhook": "^5.0",
     "captainhook/plugin-composer": "^5.0",
     "codeception/module-asserts": "^1.3",
-    "vimeo/psalm": "^4.0"
+    "vimeo/psalm": "^4.0",
+    "rector/rector": "^0.11.57"
   },
   "repositories": [
     {
@@ -34,6 +36,15 @@
     }
   },
   "scripts": {
+    "fix": [
+      "@php-cs"
+    ],
+    "test": [
+      "@php-cs-dry",
+      "@php-psalm",
+      "@php-md",
+      "@php-unit"
+    ],
     "php-cs": "php ./vendor/friendsofphp/php-cs-fixer/php-cs-fixer fix src --verbose",
     "php-cs-dry": "php ./vendor/friendsofphp/php-cs-fixer/php-cs-fixer fix src --verbose --dry-run",
     "php-psalm": "php ./vendor/vimeo/psalm/psalm",

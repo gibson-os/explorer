@@ -21,28 +21,8 @@ use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 
 class FileService
 {
-    private GibsonStoreService $gibsonStoreService;
-
-    private CoreFileService $coreFileService;
-
-    private MediaRepository $mediaRepository;
-
-    private PositionRepository $positionRepository;
-
-    private DescriberFactory $describerFactory;
-
-    public function __construct(
-        GibsonStoreService $gibsonStoreService,
-        CoreFileService $coreFileService,
-        MediaRepository $mediaRepository,
-        PositionRepository $positionRepository,
-        DescriberFactory $describerFactory
-    ) {
-        $this->gibsonStoreService = $gibsonStoreService;
-        $this->coreFileService = $coreFileService;
-        $this->mediaRepository = $mediaRepository;
-        $this->describerFactory = $describerFactory;
-        $this->positionRepository = $positionRepository;
+    public function __construct(private GibsonStoreService $gibsonStoreService, private CoreFileService $coreFileService, private MediaRepository $mediaRepository, private PositionRepository $positionRepository, private DescriberFactory $describerFactory)
+    {
     }
 
     /**
@@ -71,7 +51,7 @@ class FileService
 
         try {
             $metaInfos = $this->gibsonStoreService->getFileMetas($path);
-        } catch (ExecuteError $e) {
+        } catch (ExecuteError) {
             $metaInfos = [];
         }
 
@@ -86,7 +66,7 @@ class FileService
                     $userId
                 )->getPosition();
             }
-        } catch (SelectError $e) {
+        } catch (SelectError) {
             // do nothing
         }
 

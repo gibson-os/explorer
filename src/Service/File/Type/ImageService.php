@@ -10,11 +10,8 @@ use GibsonOS\Core\Service\ImageService as CoreImageService;
 
 class ImageService implements FileTypeInterface
 {
-    private CoreImageService $imageService;
-
-    public function __construct(CoreImageService $imageService)
+    public function __construct(private CoreImageService $imageService)
     {
-        $this->imageService = $imageService;
     }
 
     /**
