@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Controller;
 
+use GibsonOS\Core\Archive\ZipArchive;
 use GibsonOS\Core\Controller\AbstractController;
+use GibsonOS\Core\Exception\ArchiveException;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
@@ -15,7 +17,9 @@ use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Service\PermissionService;
+use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
+use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Module\Explorer\Service\DirService;
 use GibsonOS\Module\Explorer\Store\DirListStore;
 use GibsonOS\Module\Explorer\Store\DirStore;
@@ -115,5 +119,30 @@ class DirController extends AbstractController
         $coreDirService->create($path);
 
         return $this->returnSuccess($dirService->get($path));
+    }
+
+    /**
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws PermissionDenied
+     * @throws ArchiveException
+     */
+    public function download(
+        CoreDirService $dirService,
+        ZipArchive $zipArchive,
+        RequestService $requestService,
+        string $dir
+    ): FileResponse {
+        $this->checkPermission(PermissionService::READ);
+
+        $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5((string) rand()) . '.zip';
+
+        if (file_exists($fileName)) {
+            unlink($fileName);
+        }
+
+        $zipArchive->packFiles($fileName, $dirService->getFiles($dir));
+
+        return new FileResponse($requestService, $fileName);
     }
 }
