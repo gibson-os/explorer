@@ -31,7 +31,7 @@ class DirController extends AbstractController
      * @throws ReadError
      * @throws SelectError
      */
-    public function read(?string $dir, SettingRepository $settingRepository, DirStore $dirStore): AjaxResponse
+    public function read(SettingRepository $settingRepository, DirStore $dirStore, string $dir = ''): AjaxResponse
     {
         $this->checkPermission(PermissionService::READ);
 
@@ -64,15 +64,17 @@ class DirController extends AbstractController
 
     /**
      * @throws DateTimeError
+     * @throws GetError
      * @throws LoginRequired
      * @throws PermissionDenied
+     * @throws ReadError
      * @throws SelectError
      */
     public function dirList(
         DirListStore $dirListStore,
         SettingRepository $settingRepository,
-        ?string $node,
-        ?string $dir
+        string $node = '',
+        string $dir = ''
     ): AjaxResponse {
         $this->checkPermission(PermissionService::READ);
 
@@ -91,7 +93,7 @@ class DirController extends AbstractController
 
         $dirListStore
             ->setHomePath($homePath)
-            ->setDir($dir ?? DIRECTORY_SEPARATOR)
+            ->setDir($dir ?: DIRECTORY_SEPARATOR)
             ->setWithParents($withParents)
         ;
 
