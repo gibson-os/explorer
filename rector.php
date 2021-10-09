@@ -17,7 +17,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 //    ]);
 //
 //    // Define what rule sets will be applied
-//    $containerConfigurator->import(SetList::CODE_QUALITY);
+//    $containerConfigurator->imporat(SetList::CODE_QUALITY);
 //
 //    // get services (needed for register a single rule)
 //    // $services = $containerConfigurator->services();

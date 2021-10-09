@@ -9,10 +9,6 @@ use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 
-/**
- * @psalm-suppress MoreSpecificReturnType
- * @psalm-suppress LessSpecificReturnStatement
- */
 class MediaRepository extends AbstractRepository
 {
     /**
