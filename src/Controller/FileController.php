@@ -58,11 +58,16 @@ class FileController extends AbstractController
     }
 
     /**
+     * @throws CreateError
      * @throws DateTimeError
+     * @throws DeleteError
+     * @throws FileNotFound
+     * @throws GetError
      * @throws LoginRequired
      * @throws PermissionDenied
-     * @throws SelectError
      * @throws SaveError
+     * @throws SelectError
+     * @throws SetError
      */
     public function delete(
         TrashService $trashService,

@@ -36,4 +36,14 @@ class TrashRepository extends AbstractRepository
     {
         return $this->fetchAll('`token`IN (?)', [implode(', ', $tokens)], Trash::class);
     }
+
+    /**
+     * @throws DateTimeError
+     * @throws SelectError
+     * @return Trash[]
+     */
+    public function getOlderThanDays(int $days): array
+    {
+        return $this->fetchAll('`added`<(NOW() - INTERVAL ? DAY)', [$days], Trash::class);
+    }
 }
