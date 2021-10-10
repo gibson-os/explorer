@@ -7,8 +7,11 @@ use DateTimeInterface;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
+use GibsonOS\Core\Service\DateTimeService;
+use JsonSerializable;
+use mysqlDatabase;
 
-class Trash extends AbstractModel
+class Trash extends AbstractModel implements JsonSerializable
 {
     private string $token;
 
@@ -105,8 +108,24 @@ class Trash extends AbstractModel
     public function setUser(?User $user): Trash
     {
         $this->user = $user;
-        $this->setUserId($user === null ? null : $user->getId());
+        $this->setUserId($user?->getId());
 
         return $this;
+    }
+
+    /**
+     * @throws DateTimeError
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'token' => $this->getToken(),
+            'dir' => $this->getDir(),
+            'filename' => $this->getFilename(),
+            'userId' => $this->getUserId(),
+            'username' => $this->getUser()?->getUser(),
+            'added' => $this->getAdded()->format('Y-m-d H:i:s')
+        ];
     }
 }

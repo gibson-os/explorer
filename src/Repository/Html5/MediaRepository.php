@@ -27,7 +27,7 @@ class MediaRepository extends AbstractRepository
     }
 
     /**
-     *@throws SelectError
+     * @throws SelectError
      * @throws DateTimeError
      *
      * @return Media[]

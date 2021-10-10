@@ -25,4 +25,15 @@ class TrashRepository extends AbstractRepository
             return $token;
         }
     }
+
+    /**
+     * @param string[] $tokens
+     * @throws DateTimeError
+     * @throws SelectError
+     * @return Trash[]
+     */
+    public function getByTokens(array $tokens): array
+    {
+        return $this->fetchAll('`token`IN (?)', [implode(', ', $tokens)], Trash::class);
+    }
 }
