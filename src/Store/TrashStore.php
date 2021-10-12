@@ -5,7 +5,6 @@ namespace GibsonOS\Module\Explorer\Store;
 
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
-use GibsonOS\Core\Store\AbstractStore;
 use GibsonOS\Module\Explorer\Model\Trash;
 
 class TrashStore extends AbstractDatabaseStore
@@ -30,7 +29,9 @@ class TrashStore extends AbstractDatabaseStore
      */
     public function getList(): iterable
     {
-        $this->table->select();
+        if (!$this->table->select()) {
+            return [];
+        };
 
         do {
             $model = new Trash();
