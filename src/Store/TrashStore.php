@@ -4,11 +4,18 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Store;
 
 use GibsonOS\Core\Exception\DateTimeError;
+use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Trash;
+use mysqlDatabase;
 
 class TrashStore extends AbstractDatabaseStore
 {
+    public function __construct(private FileService $fileService, mysqlDatabase $database = null)
+    {
+        parent::__construct($database);
+    }
+
     protected function getTableName(): string
     {
         return Trash::getTableName();
@@ -21,7 +28,10 @@ class TrashStore extends AbstractDatabaseStore
 
     protected function getOrderMapping(): array
     {
-        return [];
+        return [
+            'dir' => 'CONCAT(`dir`, `filename`)',
+            'added' => '`added`',
+        ];
     }
 
     /**
@@ -29,6 +39,8 @@ class TrashStore extends AbstractDatabaseStore
      */
     public function getList(): iterable
     {
+        $this->table->setOrderBy($this->getOrderBy() ?? '`added`');
+
         if (!$this->table->select()) {
             return [];
         };
@@ -36,8 +48,14 @@ class TrashStore extends AbstractDatabaseStore
         do {
             $model = new Trash();
             $model->loadFromMysqlTable($this->table);
+            $data = $model->jsonSerialize();
+            $data['type'] = 'dir';
 
-            yield $model;
+            if ($model->getFilename() !== null) {
+                $data['type'] = $this->fileService->getFileEnding($model->getFilename() ?? '');
+            }
+
+            yield $data;
         } while ($this->table->next());
     }
 }

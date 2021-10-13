@@ -34,7 +34,11 @@ class TrashRepository extends AbstractRepository
      */
     public function getByTokens(array $tokens): array
     {
-        return $this->fetchAll('`token`IN (?)', [implode(', ', $tokens)], Trash::class);
+        return $this->fetchAll(
+            '`token` IN (' . implode(', ', array_fill(0, count($tokens), '?')) . ')',
+            $tokens,
+            Trash::class
+        );
     }
 
     /**

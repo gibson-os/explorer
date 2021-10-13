@@ -14,6 +14,6 @@ Ext.define('GibsonOS.module.explorer.trash.model.View', {
         type: 'string'
     },{
         name: 'added',
-        type: 'int'
+        type: 'date'
     }]
 });

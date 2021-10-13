@@ -41,26 +41,19 @@ class TrashController extends AbstractController
 
     /**
      * @throws DateTimeError
-     * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
-     * @throws SaveError
-     * @throws CreateError
      * @throws DeleteError
      * @throws FileNotFound
+     * @throws GetError
+     * @throws LoginRequired
+     * @throws ModelDeleteError
+     * @throws PermissionDenied
      * @throws SelectError
-     * @throws SetError
      */
-    public function delete(
-        TrashService $trashService,
-        SessionService $sessionService,
-        string $dir,
-        array
-        $files = null
-    ): AjaxResponse {
+    public function delete(TrashService $trashService, SessionService $sessionService, array $tokens): AjaxResponse
+    {
         $this->checkPermission(PermissionService::DELETE);
 
-        $trashService->add($dir, $files, $sessionService->getUserId());
+        $trashService->delete($tokens, $sessionService->getUserId());
 
         return $this->returnSuccess();
     }

@@ -89,6 +89,26 @@ class TrashService extends AbstractService
 
     /**
      * @throws DateTimeError
+     * @throws DeleteError
+     * @throws FileNotFound
+     * @throws GetError
+     * @throws ModelDeleteError
+     * @throws SelectError
+     */
+    public function delete(array $tokens, ?int $userId): void
+    {
+        $trashDir = $this->dirService->addEndSlash(
+            $this->settingRepository->getByKeyAndModuleName('explorer', $userId ?? 0, 'trashDir')->getValue()
+        );
+
+        foreach ($this->trashRepository->getByTokens($tokens) as $trash) {
+            $this->fileService->delete($trashDir, $trash->getToken());
+            $trash->delete();
+        }
+    }
+
+    /**
+     * @throws DateTimeError
      * @throws SaveError
      * @throws CreateError
      * @throws DeleteError
@@ -98,11 +118,12 @@ class TrashService extends AbstractService
      */
     private function addElement(string $trashDir, string $dir, ?string $filename, ?int $userId): string
     {
+        $isDir = is_dir($dir . $filename);
         $token = $this->trashRepository->getFreeToken();
         $trash = (new Trash())
             ->setToken($token)
-            ->setDir($dir)
-            ->setFilename($filename)
+            ->setDir($dir . ($isDir ? $filename : ''))
+            ->setFilename($isDir ? null : $filename)
             ->setAdded($this->dateTimeService->get())
             ->setUserId($userId)
         ;

@@ -9,7 +9,7 @@ GibsonOS.define('GibsonOS.module.explorer.trash.fn.delete', function(view, recor
     }
 
     if (records.length === 1) {
-        msg = 'Möchten Sie die Datei ' + records[0].get('name') + ' wirklich endgültig entfernen?';
+        msg = 'Möchten Sie die Datei ' + records[0].get('dir') + records[0].get('filename') + ' wirklich endgültig entfernen?';
     }
 
     Ext.iterate(records, function(record) {

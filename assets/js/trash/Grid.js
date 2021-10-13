@@ -26,9 +26,7 @@ Ext.define('GibsonOS.module.explorer.trash.Grid', {
         dataIndex: 'added',
         width: 120,
         renderer(value) {
-            const date = new Date(value * 1000);
-
-            return Ext.Date.format(date, 'Y-m-d H:i');
+            return Ext.Date.format(value, 'Y-m-d H:i:s');
         }
     }],
     initComponent: function() {
