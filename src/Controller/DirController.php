@@ -35,7 +35,7 @@ class DirController extends AbstractController
      * @throws ReadError
      * @throws SelectError
      */
-    public function read(SettingRepository $settingRepository, DirStore $dirStore, string $dir = ''): AjaxResponse
+    public function read(SettingRepository $settingRepository, DirStore $dirStore, ?string $dir = ''): AjaxResponse
     {
         $this->checkPermission(PermissionService::READ);
 

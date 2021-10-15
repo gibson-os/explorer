@@ -7,9 +7,7 @@ use DateTimeInterface;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
-use GibsonOS\Core\Service\DateTimeService;
 use JsonSerializable;
-use mysqlDatabase;
 
 class Trash extends AbstractModel implements JsonSerializable
 {
