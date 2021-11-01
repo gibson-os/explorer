@@ -26,7 +26,6 @@ use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService as CoreFileService;
 use GibsonOS\Core\Service\ImageService;
-use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
@@ -48,13 +47,12 @@ use JsonException;
 class FileController extends AbstractController
 {
     public function __construct(
-        PermissionService $permissionService,
         RequestService $requestService,
         TwigService $twigService,
         SessionService $sessionService,
         private SettingRepository $settingRepository
     ) {
-        parent::__construct($permissionService, $requestService, $twigService, $sessionService);
+        parent::__construct($requestService, $twigService, $sessionService);
     }
 
     /**
