@@ -52,6 +52,7 @@ class TrashController extends AbstractController
 
     /**
      * @param string[] $tokens
+     *
      * @throws CreateError
      * @throws DateTimeError
      * @throws DeleteError

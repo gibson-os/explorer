@@ -70,7 +70,6 @@ class DirService
     /**
      * @throws ExecuteError
      * @throws WriteError
-     *
      */
     public function set(Dir $dir): DirService
     {

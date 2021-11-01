@@ -11,7 +11,7 @@ use GibsonOS\Module\Explorer\Model\Html5\Media;
 use mysqlTable;
 
 /**
- * @method Media fetchOne(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class)
+ * @method Media   fetchOne(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class)
  * @method Media[] fetchAll(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class, int $limit = null, int $offset = null, string $orderBy = null)
  * @method Media[] getModels(mysqlTable $table, string $abstractModelClassName)
  */

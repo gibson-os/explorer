@@ -9,7 +9,7 @@ use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Trash;
 
 /**
- * @method Trash fetchOne(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class)
+ * @method Trash   fetchOne(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class)
  * @method Trash[] fetchAll(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class, int $limit = null, int $offset = null, string $orderBy = null)
  */
 class TrashRepository extends AbstractRepository
@@ -29,7 +29,9 @@ class TrashRepository extends AbstractRepository
 
     /**
      * @param string[] $tokens
+     *
      * @throws SelectError
+     *
      * @return Trash[]
      */
     public function getByTokens(array $tokens): array
@@ -43,6 +45,7 @@ class TrashRepository extends AbstractRepository
 
     /**
      * @throws SelectError
+     *
      * @return Trash[]
      */
     public function getOlderThanDays(int $days): array

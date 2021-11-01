@@ -25,21 +25,21 @@ use SQLite3Result;
 
 class GibsonStoreService
 {
-    const META_TABLE_NAME = 'meta';
+    public const META_TABLE_NAME = 'meta';
 
-    const META_CREATE_QUERY = 'CREATE TABLE meta (`key` varchar(32), `value` text, PRIMARY KEY (`key`))';
+    public const META_CREATE_QUERY = 'CREATE TABLE meta (`key` varchar(32), `value` text, PRIMARY KEY (`key`))';
 
-    const FILE_META_TABLE_NAME = 'fileMeta';
+    public const FILE_META_TABLE_NAME = 'fileMeta';
 
-    const FILE_META_CREATE_QUERY = 'CREATE TABLE fileMeta (`chksum` varchar(32), `filename` varchar(255), `date` int, `key` varchar(32), `value` text, PRIMARY KEY (`key`, `filename`))';
+    public const FILE_META_CREATE_QUERY = 'CREATE TABLE fileMeta (`chksum` varchar(32), `filename` varchar(255), `date` int, `key` varchar(32), `value` text, PRIMARY KEY (`key`, `filename`))';
 
-    const IMAGE_TABLE_NAME = 'image';
+    public const IMAGE_TABLE_NAME = 'image';
 
-    const IMAGE_CREATE_QUERY = 'CREATE TABLE image (`chksum` varchar(32), `filename` varchar(255), `date` int, `image` blob, PRIMARY KEY (`chksum`))';
+    public const IMAGE_CREATE_QUERY = 'CREATE TABLE image (`chksum` varchar(32), `filename` varchar(255), `date` int, `image` blob, PRIMARY KEY (`chksum`))';
 
-    const THUMBNAIL_TABLE_NAME = 'thumb';
+    public const THUMBNAIL_TABLE_NAME = 'thumb';
 
-    const THUMBNAIL_CREATE_QUERY = 'CREATE TABLE thumb (`chksum` varchar(32), `filename` varchar(255), `date` int, `image` blob, PRIMARY KEY (`chksum`))';
+    public const THUMBNAIL_CREATE_QUERY = 'CREATE TABLE thumb (`chksum` varchar(32), `filename` varchar(255), `date` int, `image` blob, PRIMARY KEY (`chksum`))';
 
     /**
      * @var SqLiteService[]

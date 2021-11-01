@@ -157,7 +157,7 @@ class DirStore extends AbstractStore
 
         try {
             $this->dirService->set($dir);
-        } catch (ExecuteError | WriteError) {
+        } catch (ExecuteError|WriteError) {
             // write error
         }
     }

@@ -113,7 +113,6 @@ class Trash extends AbstractModel implements JsonSerializable
 
     /**
      * @throws DateTimeError
-     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -123,7 +122,7 @@ class Trash extends AbstractModel implements JsonSerializable
             'filename' => $this->getFilename(),
             'userId' => $this->getUserId(),
             'username' => $this->getUser()?->getUser(),
-            'added' => $this->getAdded()->format('Y-m-d H:i:s')
+            'added' => $this->getAdded()->format('Y-m-d H:i:s'),
         ];
     }
 }

@@ -43,7 +43,7 @@ class TrashStore extends AbstractDatabaseStore
 
         if (!$this->table->select()) {
             return [];
-        };
+        }
 
         do {
             $model = new Trash();

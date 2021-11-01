@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Service;
 
 use GibsonOS\Core\Exception\CreateError;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
@@ -33,7 +32,6 @@ class TrashService extends AbstractService
 
     /**
      * @throws CreateError
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
@@ -63,8 +61,8 @@ class TrashService extends AbstractService
 
     /**
      * @param string[] $tokens
+     *
      * @throws CreateError
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
@@ -88,7 +86,6 @@ class TrashService extends AbstractService
     }
 
     /**
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
@@ -108,7 +105,6 @@ class TrashService extends AbstractService
     }
 
     /**
-     * @throws DateTimeError
      * @throws SaveError
      * @throws CreateError
      * @throws DeleteError
