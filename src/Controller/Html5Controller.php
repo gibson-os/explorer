@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Controller;
 
 use Exception;
+use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
@@ -14,20 +15,18 @@ use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Image\CreateError;
 use GibsonOS\Core\Exception\Image\LoadError;
-use GibsonOS\Core\Exception\LoginRequired;
 use GibsonOS\Core\Exception\Model\DeleteError;
 use GibsonOS\Core\Exception\Model\SaveError;
-use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
+use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\ImageService;
-use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
@@ -47,10 +46,9 @@ class Html5Controller extends AbstractController
     /**
      * @throws DateTimeError
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      */
+    #[CheckPermission(Permission::READ)]
     public function index(
         RequestService $requestService,
         SettingRepository $settingRepository,
@@ -59,8 +57,6 @@ class Html5Controller extends AbstractController
         int $limit = 100,
         array $sort = []
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::READ);
-
         $settingModels = $settingRepository->getAllByModuleName(
             $requestService->getModuleName(),
             $this->sessionService->getUserId() ?? 0
@@ -91,11 +87,10 @@ class Html5Controller extends AbstractController
     /**
      * @throws DateTimeError
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SaveError
      * @throws SelectError
      */
+    #[CheckPermission(Permission::WRITE + Permission::MANAGE)]
     public function convert(
         SettingRepository $settingRepository,
         MediaService $mediaService,
@@ -104,8 +99,6 @@ class Html5Controller extends AbstractController
         string $audioStream = null,
         string $subtitleStream = null
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::WRITE + PermissionService::MANAGE);
-
         $userId = $this->sessionService->getUserId() ?? 0;
         $homPath = $settingRepository->getByKeyAndModuleName(
             $this->requestService->getModuleName(),
@@ -129,38 +122,31 @@ class Html5Controller extends AbstractController
      * @throws ConvertStatusError
      * @throws DateTimeError
      * @throws FileNotFound
-     * @throws LoginRequired
      * @throws OpenError
-     * @throws PermissionDenied
      * @throws ProcessError
      * @throws SelectError
      * @throws SetError
      * @throws NoAudioError
      */
+    #[CheckPermission(Permission::READ)]
     public function convertStatus(
         MediaService $mediaService,
         MediaRepository $mediaRepository,
         string $token
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::READ);
-
         return $this->returnSuccess($mediaService->getConvertStatus($mediaRepository->getByToken($token)));
     }
 
     /**
-     * @throws DateTimeError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      */
+    #[CheckPermission(Permission::READ)]
     public function video(
         DirService $dirService,
         MediaRepository $mediaRepository,
         SettingRepository $settingRepository,
         string $token
     ): FileResponse {
-        $this->checkPermission(PermissionService::READ);
-
         return $this->stream(
             $dirService,
             $settingRepository,
@@ -171,19 +157,15 @@ class Html5Controller extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      */
+    #[CheckPermission(Permission::READ)]
     public function audio(
         DirService $dirService,
         MediaRepository $mediaRepository,
         SettingRepository $settingRepository,
         string $token
     ): FileResponse {
-        $this->checkPermission(PermissionService::READ);
-
         return $this->stream(
             $dirService,
             $settingRepository,
@@ -197,11 +179,10 @@ class Html5Controller extends AbstractController
      * @param int[] $userIds
      *
      * @throws DateTimeError
-     * @throws LoginRequired
      * @throws SaveError
-     * @throws PermissionDenied
      * @throws SelectError
      */
+    #[CheckPermission(Permission::WRITE)]
     public function savePosition(
         MediaService $mediaService,
         MediaRepository $mediaRepository,
@@ -209,8 +190,6 @@ class Html5Controller extends AbstractController
         int $position,
         array $userIds
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::WRITE);
-
         foreach (array_unique($userIds) as $userId) {
             $mediaService->savePosition(
                 $mediaRepository->getByToken($token),
@@ -222,14 +201,9 @@ class Html5Controller extends AbstractController
         return $this->returnSuccess();
     }
 
-    /**
-     * @throws LoginRequired
-     * @throws PermissionDenied
-     */
+    #[CheckPermission(Permission::READ)]
     public function chromecast(): TwigResponse
     {
-        $this->checkPermission(PermissionService::READ);
-
         return $this->renderTemplate('@explorer/chromecast.html.twig');
     }
 
@@ -240,43 +214,33 @@ class Html5Controller extends AbstractController
      * @throws DateTimeError
      * @throws FileNotFound
      * @throws GetError
-     * @throws LoginRequired
      * @throws NoAudioError
      * @throws OpenError
-     * @throws PermissionDenied
      * @throws ProcessError
      * @throws ReadError
      * @throws SetError
      */
+    #[CheckPermission(Permission::READ)]
     public function toSeeList(ToSeeStore $toSeeStore, ?array $userIds): AjaxResponse
     {
-        $this->checkPermission(PermissionService::READ);
-
         $toSeeStore->setUserIds(array_unique($userIds ?: [$this->sessionService->getUserId() ?? 0]));
 
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
     }
 
     /**
-     * @throws DateTimeError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      */
+    #[CheckPermission(Permission::READ)]
     public function get(MediaRepository $mediaRepository, string $token): AjaxResponse
     {
-        $this->checkPermission(PermissionService::READ);
-
         return $this->returnSuccess($mediaRepository->getByToken($token));
     }
 
     /**
-     * @throws DateTimeError
      * @throws ExecuteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws ReadError
      * @throws SelectError
      * @throws CreateError
@@ -285,6 +249,7 @@ class Html5Controller extends AbstractController
      * @throws FactoryError
      * @throws Exception
      */
+    #[CheckPermission(Permission::READ)]
     public function image(
         MediaRepository $mediaRepository,
         GibsonStoreService $gibsonStoreService,
@@ -294,8 +259,6 @@ class Html5Controller extends AbstractController
         int $width = null,
         int $height = null
     ): Response {
-        $this->checkPermission(PermissionService::READ);
-
         $media = $mediaRepository->getByToken($token);
         $path = $media->getDir() . $media->getFilename();
 
@@ -325,16 +288,12 @@ class Html5Controller extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      * @throws DeleteError
      */
+    #[CheckPermission(Permission::DELETE)]
     public function delete(MediaRepository $mediaRepository, array $tokens): AjaxResponse
     {
-        $this->checkPermission(PermissionService::DELETE);
-
         foreach ($mediaRepository->getByTokens($tokens) as $media) {
             $media->delete();
         }
@@ -343,7 +302,6 @@ class Html5Controller extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
      * @throws SelectError
      */
     private function stream(

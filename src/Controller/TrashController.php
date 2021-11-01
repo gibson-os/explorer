@@ -3,19 +3,17 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Controller;
 
+use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
-use GibsonOS\Core\Exception\LoginRequired;
 use GibsonOS\Core\Exception\Model\DeleteError as ModelDeleteError;
-use GibsonOS\Core\Exception\Model\SaveError;
-use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
-use GibsonOS\Core\Service\PermissionService;
+use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\SessionService;
 use GibsonOS\Module\Explorer\Service\TrashService;
@@ -24,15 +22,12 @@ use GibsonOS\Module\Explorer\Store\TrashStore;
 class TrashController extends AbstractController
 {
     /**
-     * @throws DateTimeError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws GetError
+     * @throws DateTimeError
      */
+    #[CheckPermission(Permission::READ)]
     public function read(TrashStore $trashStore, int $start = 0, int $limit = 25, array $sort = []): AjaxResponse
     {
-        $this->checkPermission(PermissionService::READ);
-
         $trashStore->setLimit($limit, $start);
         $trashStore->setSortByExt($sort);
 
@@ -44,15 +39,12 @@ class TrashController extends AbstractController
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws LoginRequired
      * @throws ModelDeleteError
-     * @throws PermissionDenied
      * @throws SelectError
      */
+    #[CheckPermission(Permission::DELETE)]
     public function delete(TrashService $trashService, SessionService $sessionService, array $tokens): AjaxResponse
     {
-        $this->checkPermission(PermissionService::DELETE);
-
         $trashService->delete($tokens, $sessionService->getUserId());
 
         return $this->returnSuccess();
@@ -65,16 +57,13 @@ class TrashController extends AbstractController
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws LoginRequired
      * @throws ModelDeleteError
-     * @throws PermissionDenied
      * @throws SelectError
      * @throws SetError
      */
+    #[CheckPermission(Permission::WRITE)]
     public function restore(TrashService $trashService, SessionService $sessionService, array $tokens): AjaxResponse
     {
-        $this->checkPermission(PermissionService::WRITE);
-
         $trashService->restore($tokens, $sessionService->getUserId());
 
         return $this->returnSuccess();

@@ -4,19 +4,18 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Controller;
 
 use GibsonOS\Core\Archive\ZipArchive;
+use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\ArchiveException;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\GetError;
-use GibsonOS\Core\Exception\LoginRequired;
-use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
+use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService as CoreDirService;
-use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
@@ -30,15 +29,12 @@ class DirController extends AbstractController
      * @throws DateTimeError
      * @throws FactoryError
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws ReadError
      * @throws SelectError
      */
+    #[CheckPermission(Permission::READ)]
     public function read(SettingRepository $settingRepository, DirStore $dirStore, ?string $dir): AjaxResponse
     {
-        $this->checkPermission(PermissionService::READ);
-
         $homePath = $settingRepository->getByKeyAndModuleName(
             'explorer',
             $this->sessionService->getUserId() ?? 0,
@@ -67,21 +63,17 @@ class DirController extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws ReadError
      * @throws SelectError
      */
+    #[CheckPermission(Permission::READ)]
     public function dirList(
         DirListStore $dirListStore,
         SettingRepository $settingRepository,
         ?string $node,
         ?string $dir
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::READ);
-
         $homePath = $settingRepository->getByKeyAndModuleName(
             'explorer',
             $this->sessionService->getUserId() ?? 0,
@@ -107,14 +99,11 @@ class DirController extends AbstractController
     /**
      * @throws CreateError
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws ReadError
      */
+    #[CheckPermission(Permission::WRITE)]
     public function add(DirService $dirService, CoreDirService $coreDirService, string $dir, string $dirname): AjaxResponse
     {
-        $this->checkPermission(PermissionService::WRITE);
-
         $path = $coreDirService->addEndSlash($dir) . $dirname;
         $coreDirService->create($path);
 
@@ -123,18 +112,15 @@ class DirController extends AbstractController
 
     /**
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws ArchiveException
      */
+    #[CheckPermission(Permission::READ)]
     public function download(
         CoreDirService $dirService,
         ZipArchive $zipArchive,
         RequestService $requestService,
         string $dir
     ): FileResponse {
-        $this->checkPermission(PermissionService::READ);
-
         $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5((string) rand()) . '.zip';
 
         if (file_exists($fileName)) {

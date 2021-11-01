@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Controller;
 
 use Exception;
+use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -14,14 +15,13 @@ use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Image\CreateError as ImageCreateError;
 use GibsonOS\Core\Exception\Image\LoadError;
-use GibsonOS\Core\Exception\LoginRequired;
 use GibsonOS\Core\Exception\Model\SaveError;
-use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
+use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService as CoreFileService;
@@ -63,19 +63,16 @@ class FileController extends AbstractController
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SaveError
      * @throws SelectError
      * @throws SetError
      */
+    #[CheckPermission(Permission::DELETE)]
     public function delete(
         TrashService $trashService,
         string $dir,
         array $files
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::DELETE);
-
         if (mb_strpos($this->getHomePath(), $dir) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
         }
@@ -86,15 +83,11 @@ class FileController extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      */
+    #[CheckPermission(Permission::READ)]
     public function download(RequestService $requestService): ResponseInterface
     {
-        $this->checkPermission(PermissionService::READ);
-
         $filename = '/' . urldecode($requestService->getQueryString());
 
         if (mb_strpos($this->getHomePath(), $filename) === 0) {
@@ -105,15 +98,11 @@ class FileController extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      */
+    #[CheckPermission(Permission::READ)]
     public function show(RequestService $requestService): ResponseInterface
     {
-        $this->checkPermission(PermissionService::READ);
-
         $filename = '/' . urldecode($requestService->getQueryString());
 
         if (mb_strpos($this->getHomePath(), $filename) === 0) {
@@ -126,12 +115,10 @@ class FileController extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      * @throws OverwriteException
      */
+    #[CheckPermission(Permission::WRITE)]
     public function upload(
         DirService $dirService,
         FileService $fileService,
@@ -143,8 +130,6 @@ class FileController extends AbstractController
         bool $overwriteAll = false,
         bool $ignoreAll = false
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::WRITE);
-
         $dir = $dirService->addEndSlash($dir);
         //$path = $dir . $file['name'];
 
@@ -169,20 +154,16 @@ class FileController extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      * @throws CreateError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws SetError
      */
+    #[CheckPermission(Permission::WRITE + Permission::DELETE)]
     public function move(CoreFileService $fileService, string $from, string $to, string $name): AjaxResponse
     {
-        $this->checkPermission(PermissionService::WRITE + PermissionService::DELETE);
-
         $homePath = $this->getHomePath();
 
         if (
@@ -199,15 +180,13 @@ class FileController extends AbstractController
 
     /**
      * @throws CreateError
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws SelectError
      * @throws SetError
      */
+    #[CheckPermission(Permission::WRITE)]
     public function rename(
         CoreFileService $fileService,
         DirService $dirService,
@@ -215,8 +194,6 @@ class FileController extends AbstractController
         string $oldFilename,
         string $newFilename
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::WRITE);
-
         $dir = $dirService->addEndSlash($dir);
 
         if (mb_strpos($this->getHomePath(), $dir) === 0) {
@@ -235,18 +212,15 @@ class FileController extends AbstractController
      * @throws FactoryError
      * @throws FileExistsError
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws ReadError
      */
+    #[CheckPermission(Permission::WRITE)]
     public function add(
         CoreFileService $coreFileService,
         FileService $fileService,
         string $dir,
         string $filename
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::WRITE);
-
         $path = $dir . $filename;
 
         $coreFileService->save($path, null);
@@ -259,14 +233,13 @@ class FileController extends AbstractController
      * @throws FactoryError
      * @throws FileNotFound
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws ReadError
      * @throws WriteError
      * @throws ImageCreateError
      * @throws LoadError
      * @throws Exception
      */
+    #[CheckPermission(Permission::READ)]
     public function image(
         DirService $dirService,
         GibsonStoreService $gibsonStoreService,
@@ -277,8 +250,6 @@ class FileController extends AbstractController
         int $width = null,
         int $height = null
     ): ResponseInterface {
-        $this->checkPermission(PermissionService::READ);
-
         $path = $dirService->addEndSlash($dir) . $filename;
 
         if (!$gibsonStoreService->hasFileImage($path)) {
@@ -310,19 +281,18 @@ class FileController extends AbstractController
      * @throws ExecuteError
      * @throws FactoryError
      * @throws GetError
-     * @throws LoginRequired
-     * @throws PermissionDenied
      * @throws ReadError
      * @throws WriteError
      * @throws JsonException
+     * @throws Exception
      */
+    #[CheckPermission(Permission::WRITE)]
     public function metaInfos(
         ServiceManagerService $serviceManagerService,
         DescriberFactory $describerFactory,
         GibsonStoreService $gibsonStoreService,
         string $path
     ): AjaxResponse {
-        $this->checkPermission(PermissionService::WRITE);
         $fileTypeDescriber = $describerFactory->create($path);
 
         if ($gibsonStoreService->hasFileMetas($path, $fileTypeDescriber->getMetasStructure())) {
@@ -339,7 +309,6 @@ class FileController extends AbstractController
     }
 
     /**
-     * @throws DateTimeError
      * @throws SelectError
      */
     private function getHomePath(): string
