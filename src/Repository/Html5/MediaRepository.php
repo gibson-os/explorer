@@ -4,15 +4,20 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Repository\Html5;
 
 use DateTime;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Repository\SelectError;
+use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
+use mysqlTable;
 
+/**
+ * @method Media fetchOne(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class)
+ * @method Media[] fetchAll(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class, int $limit = null, int $offset = null, string $orderBy = null)
+ * @method Media[] getModels(mysqlTable $table, string $abstractModelClassName)
+ */
 class MediaRepository extends AbstractRepository
 {
     /**
-     * @throws DateTimeError
      * @throws SelectError
      */
     public function getByToken(string $token): Media
@@ -28,7 +33,6 @@ class MediaRepository extends AbstractRepository
 
     /**
      * @throws SelectError
-     * @throws DateTimeError
      *
      * @return Media[]
      */
@@ -42,7 +46,6 @@ class MediaRepository extends AbstractRepository
     }
 
     /**
-     * @throws DateTimeError
      * @throws SelectError
      */
     public function getByDirAndFilename(string $dir, string $filename): Media
@@ -57,8 +60,7 @@ class MediaRepository extends AbstractRepository
     }
 
     /**
-     *@throws SelectError
-     * @throws DateTimeError
+     * @throws SelectError
      *
      * @return Media[]
      */
@@ -69,7 +71,6 @@ class MediaRepository extends AbstractRepository
 
     /**
      * @throws SelectError
-     * @throws DateTimeError
      *
      * @return Media[]
      */
@@ -91,8 +92,7 @@ class MediaRepository extends AbstractRepository
     }
 
     /**
-     *@throws SelectError
-     * @throws DateTimeError
+     * @throws SelectError
      *
      * @return Media[]
      */
@@ -105,9 +105,6 @@ class MediaRepository extends AbstractRepository
         );
     }
 
-    /**
-     * @throws DateTimeError
-     */
     public function getFreeToken(): string
     {
         $token = md5((string) rand());
