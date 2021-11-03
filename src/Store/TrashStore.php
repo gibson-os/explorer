@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Store;
 
 use GibsonOS\Core\Exception\DateTimeError;
+use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Trash;
@@ -16,14 +17,19 @@ class TrashStore extends AbstractDatabaseStore
         parent::__construct($database);
     }
 
-    protected function getTableName(): string
+    protected function getModelClassName(): string
     {
-        return Trash::getTableName();
+        return Trash::class;
     }
 
     protected function getCountField(): string
     {
         return '`token`';
+    }
+
+    protected function getDefaultOrder(): string
+    {
+        return '`added`';
     }
 
     protected function getOrderMapping(): array
@@ -36,26 +42,20 @@ class TrashStore extends AbstractDatabaseStore
 
     /**
      * @throws DateTimeError
+     * @throws SelectError
      */
     public function getList(): iterable
     {
-        $this->table->setOrderBy($this->getOrderBy() ?? '`added`');
-
-        if (!$this->table->select()) {
-            return [];
-        }
-
-        do {
-            $model = new Trash();
-            $model->loadFromMysqlTable($this->table);
-            $data = $model->jsonSerialize();
+        /** @var Trash $trash */
+        foreach (parent::getList() as $trash) {
+            $data = $trash->jsonSerialize();
             $data['type'] = 'dir';
 
-            if ($model->getFilename() !== null) {
-                $data['type'] = $this->fileService->getFileEnding($model->getFilename() ?? '');
+            if ($trash->getFilename() !== null) {
+                $data['type'] = $this->fileService->getFileEnding($trash->getFilename() ?? '');
             }
 
             yield $data;
-        } while ($this->table->next());
+        }
     }
 }

@@ -22,8 +22,9 @@ use GibsonOS\Module\Explorer\Store\TrashStore;
 class TrashController extends AbstractController
 {
     /**
-     * @throws GetError
      * @throws DateTimeError
+     * @throws GetError
+     * @throws SelectError
      */
     #[CheckPermission(Permission::READ)]
     public function read(TrashStore $trashStore, int $start = 0, int $limit = 25, array $sort = []): AjaxResponse
@@ -31,11 +32,10 @@ class TrashController extends AbstractController
         $trashStore->setLimit($limit, $start);
         $trashStore->setSortByExt($sort);
 
-        return $this->returnSuccess([...$trashStore->getList()], $trashStore->getCount());
+        return $this->returnSuccess($trashStore->getList(), $trashStore->getCount());
     }
 
     /**
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
@@ -54,7 +54,6 @@ class TrashController extends AbstractController
      * @param string[] $tokens
      *
      * @throws CreateError
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError

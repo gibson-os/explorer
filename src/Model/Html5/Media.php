@@ -8,9 +8,10 @@ use DateTimeInterface;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
+use JsonSerializable;
 use mysqlDatabase;
 
-class Media extends AbstractModel
+class Media extends AbstractModel implements JsonSerializable
 {
     public const SUBTITLE_NONE = 'none';
 
@@ -221,5 +222,18 @@ class Media extends AbstractModel
         $this->setUserId($user->getId() ?? 0);
 
         return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'html5MediaToken' => $this->getToken(),
+            'html5VideoToken' => $this->getToken(),
+            'dir' => $this->getDir(),
+            'filename' => $this->getFilename(),
+            'status' => $this->getStatus(),
+            'added' => $this->getAdded()->format('Y-m-d H:i:s'),
+        ];
     }
 }

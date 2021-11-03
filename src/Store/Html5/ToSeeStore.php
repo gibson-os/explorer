@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
-use Exception;
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -15,6 +14,7 @@ use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
+use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
@@ -43,10 +43,18 @@ class ToSeeStore extends AbstractDatabaseStore
         private GibsonStoreService $gibsonStore
     ) {
         parent::__construct($database);
+    }
 
-        $this->where[] = '`' . $this->getTableName() . '`.`status` IN(' .
-            $this->database->escape(ConvertStatus::STATUS_GENERATE) . ', ' .
-            $this->database->escape(ConvertStatus::STATUS_GENERATED) . ')';
+    protected function setWheres(): void
+    {
+        $this->addWhere('`status IN (?, ?)', [ConvertStatus::STATUS_GENERATE, ConvertStatus::STATUS_GENERATED]);
+
+        if (count($this->userIds) > 0) {
+            $this->addWhere(
+                '`user_id` IN (' . $this->table->getParametersString($this->userIds) . ')',
+                $this->userIds
+            );
+        }
     }
 
     /**
@@ -66,13 +74,10 @@ class ToSeeStore extends AbstractDatabaseStore
      * @throws OpenError
      * @throws ProcessError
      * @throws ReadError
-     * @throws SetError
      * @throws NoAudioError
-     * @throws Exception
-     *
-     * @return array[]
+     * @throws SetError
      */
-    public function getList(): array
+    public function getList(): iterable
     {
         $select = [
             'token' => 'token',
@@ -86,18 +91,21 @@ class ToSeeStore extends AbstractDatabaseStore
 //        $userIdsIn = implode(',', array_fill(0, count($this->userIds), '?'));
 
         $this->table->setSelectString(array_merge($select, ['orderDate' => 'added` AS `orderDate']));
+        /** @var AbstractModel $modelClassName */
+        $modelClassName = $this->getModelClassName();
+        $tableName = $modelClassName::getTableName();
         $this->table->appendJoinLeft(
             Position::getTableName(),
-            '`' . $this->getTableName() . '`.`id`=`explorer_html5_media_position`.`media_id` AND ' .
+            '`' . $tableName . '`.`id`=`explorer_html5_media_position`.`media_id` AND ' .
             '`explorer_html5_media_position`.`user_id` IN (' . $userIdsIn . ')'
         );
-        $this->table->setWhere($this->getWhere());
+        $this->table->setWhere($this->getWhereString());
 
         $positionTable = new mysqlTable($this->database, Position::getTableName());
         $positionTable->setSelectString(array_merge($select, ['orderDate' => 'modified` AS `orderDate']));
         $positionTable->appendJoin(
-            $this->getTableName(),
-            '`' . $this->getTableName() . '`.`id`=`explorer_html5_media_position`.`media_id`'
+            $tableName,
+            '`' . $tableName . '`.`id`=`explorer_html5_media_position`.`media_id`'
         );
         $positionTable->setWhere('`explorer_html5_media_position`.`user_id` IN (' . $userIdsIn . ')');
 
@@ -147,8 +155,6 @@ class ToSeeStore extends AbstractDatabaseStore
             }
         }
 
-        $list = [];
-
         foreach ($medias as $pattern => $media) {
             $nextFiles = $this->getNextFiles($media, $pattern);
 
@@ -191,13 +197,11 @@ class ToSeeStore extends AbstractDatabaseStore
                 ;
             }
 
-            $list[] = $listMedia;
+            yield $listMedia;
         }
-
-        return $list;
     }
 
-    private function generateFilenamePattern($filename)
+    private function generateFilenamePattern($filename): string
     {
         return preg_replace('/(s?)\d{1,3}e?\d.*/i', '$1*', $this->dir->escapeForGlob($filename));
     }
@@ -224,21 +228,8 @@ class ToSeeStore extends AbstractDatabaseStore
         return $filesWithBiggerNumbers;
     }
 
-    protected function getTableName(): string
+    protected function getModelClassName(): string
     {
-        return 'explorer_html5_media';
-    }
-
-    protected function getCountField(): string
-    {
-        return '`id`';
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function getOrderMapping(): array
-    {
-        return [];
+        return Media::class;
     }
 }

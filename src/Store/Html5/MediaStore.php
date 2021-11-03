@@ -11,6 +11,7 @@ use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Service\ModuleSettingService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
+use GibsonOS\Module\Explorer\Model\Html5\Media;
 use mysqlDatabase;
 
 class MediaStore extends AbstractDatabaseStore
@@ -24,57 +25,39 @@ class MediaStore extends AbstractDatabaseStore
         parent::__construct($database);
     }
 
-    protected function getTableName(): string
+    protected function getModelClassName(): string
     {
-        return 'explorer_html5_media';
-    }
-
-    protected function getCountField(): string
-    {
-        return '`id`';
+        return Media::class;
     }
 
     /**
      * @throws DateTimeError
      * @throws SelectError
      */
-    public function getList(): array
+    public function getList(): iterable
     {
         /** @var Setting $html5MediaPath */
         $html5MediaPath = $this->moduleSetting->getByRegistry('html5_media_path');
         $mediaPath = $html5MediaPath->getValue();
 
-        $this->table->setOrderBy($this->getOrderBy());
-        $this->table->select(false);
-        $records = [];
-
-        foreach ($this->table->connection->fetchObjectList() as $media) {
-            $path = $media->dir . $media->filename;
-            $size = 0;
+        /** @var Media $media */
+        foreach (parent::getList() as $media) {
+            $path = $media->getDir() . $media->getFilename();
+            $data = $media->jsonSerialize();
 
             if (
-                $media->status == 'generate' ||
-                $media->status == 'generated'
+                $media->getStatus() == 'generate' ||
+                $media->getStatus() == 'generated'
             ) {
-                $size = filesize($mediaPath . $media->token . '.mp4');
+                $data['size'] = filesize($mediaPath . $media->getToken() . '.mp4');
             }
 
-            $records[] = [
-                'id' => (int) $media->id,
-                'html5MediaToken' => $media->token,
-                'html5VideoToken' => $media->token,
-                'category' => TypeService::TYPE_CATEGORY_VIDEO,
-                'dir' => $media->dir,
-                'filename' => $media->filename,
-                'status' => $media->status,
-                'added' => $media->added,
-                'size' => $size,
-                'type' => $this->typeService->getFileType($path),
-                'thumbAvailable' => $this->typeService->getThumbType($path) ? true : false,
-            ];
-        }
+            $data['category'] = TypeService::TYPE_CATEGORY_VIDEO;
+            $data['type'] = $this->typeService->getFileType($path);
+            $data['thumbAvailable'] = $this->typeService->getThumbType($path) ? true : false;
 
-        return $records;
+            yield $data;
+        }
     }
 
     /**
