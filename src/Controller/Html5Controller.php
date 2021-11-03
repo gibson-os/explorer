@@ -77,7 +77,7 @@ class Html5Controller extends AbstractController
         return new AjaxResponse([
             'success' => true,
             'failure' => false,
-            'data' => $mediaStore->getList(),
+            'data' => [...$mediaStore->getList()],
             'total' => $mediaStore->getCount(),
             'settings' => $settings,
             'size' => $mediaStore->getSize(),

@@ -47,7 +47,7 @@ class ToSeeStore extends AbstractDatabaseStore
 
     protected function setWheres(): void
     {
-        $this->addWhere('`status IN (?, ?)', [ConvertStatus::STATUS_GENERATE, ConvertStatus::STATUS_GENERATED]);
+        $this->addWhere('`status` IN (?, ?)', [ConvertStatus::STATUS_GENERATE, ConvertStatus::STATUS_GENERATED]);
 
         if (count($this->userIds) > 0) {
             $this->addWhere(
@@ -100,6 +100,7 @@ class ToSeeStore extends AbstractDatabaseStore
             '`explorer_html5_media_position`.`user_id` IN (' . $userIdsIn . ')'
         );
         $this->table->setWhere($this->getWhereString());
+        $this->table->setWhereParameters($this->getWhereParameters());
 
         $positionTable = new mysqlTable($this->database, Position::getTableName());
         $positionTable->setSelectString(array_merge($select, ['orderDate' => 'modified` AS `orderDate']));

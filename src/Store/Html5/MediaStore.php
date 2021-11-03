@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
+use Generator;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
@@ -34,7 +35,7 @@ class MediaStore extends AbstractDatabaseStore
      * @throws DateTimeError
      * @throws SelectError
      */
-    public function getList(): iterable
+    public function getList(): Generator
     {
         /** @var Setting $html5MediaPath */
         $html5MediaPath = $this->moduleSetting->getByRegistry('html5_media_path');
