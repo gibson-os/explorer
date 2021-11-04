@@ -5,15 +5,14 @@ namespace GibsonOS\Module\Explorer\Repository\Html5;
 
 use DateTime;
 use GibsonOS\Core\Exception\Repository\SelectError;
-use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use mysqlTable;
 
 /**
- * @method Media   fetchOne(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class)
- * @method Media[] fetchAll(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class, int $limit = null, int $offset = null, string $orderBy = null)
- * @method Media[] getModels(mysqlTable $table, string $abstractModelClassName)
+ * @method Media   fetchOne(string $where, array $parameters, string $modelClassName)
+ * @method Media[] fetchAll(string $where, array $parameters, string $modelClassName, int $limit = null, int $offset = null, string $orderBy = null)
+ * @method Media[] getModels(mysqlTable $table, string $modelClassName)
  */
 class MediaRepository extends AbstractRepository
 {

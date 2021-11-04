@@ -4,13 +4,12 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Repository;
 
 use GibsonOS\Core\Exception\Repository\SelectError;
-use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Trash;
 
 /**
- * @method Trash   fetchOne(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class)
- * @method Trash[] fetchAll(string $where, array $parameters, string $abstractModelClassName = AbstractModel::class, int $limit = null, int $offset = null, string $orderBy = null)
+ * @method Trash   fetchOne(string $where, array $parameters, string $modelClassName)
+ * @method Trash[] fetchAll(string $where, array $parameters, string $modelClassName, int $limit = null, int $offset = null, string $orderBy = null)
  */
 class TrashRepository extends AbstractRepository
 {
