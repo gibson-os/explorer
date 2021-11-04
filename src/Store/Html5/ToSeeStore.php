@@ -14,7 +14,6 @@ use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
-use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
@@ -47,11 +46,15 @@ class ToSeeStore extends AbstractDatabaseStore
 
     protected function setWheres(): void
     {
-        $this->addWhere('`status` IN (?, ?)', [ConvertStatus::STATUS_GENERATE, ConvertStatus::STATUS_GENERATED]);
+        $tableName = $this->getTableName();
+        $this->addWhere(
+            '`' . $tableName . '`.`status` IN (?, ?)',
+            [ConvertStatus::STATUS_GENERATE, ConvertStatus::STATUS_GENERATED]
+        );
 
         if (count($this->userIds) > 0) {
             $this->addWhere(
-                '`user_id` IN (' . $this->table->getParametersString($this->userIds) . ')',
+                '`' . $tableName . '`.`user_id` IN (' . $this->table->getParametersString($this->userIds) . ')',
                 $this->userIds
             );
         }
@@ -65,6 +68,13 @@ class ToSeeStore extends AbstractDatabaseStore
         $this->userIds = $userIds;
 
         return $this;
+    }
+
+    protected function initTable(): void
+    {
+        parent::initTable();
+
+        $this->table->appendJoinLeft(Position::getTableName(), '`' . $this->getTableName() . '`.`id`=`explorer_html5_media_position`.`media_id`');
     }
 
     /**
@@ -87,28 +97,16 @@ class ToSeeStore extends AbstractDatabaseStore
             'position' => 'position',
         ];
 
-        $userIdsIn = implode(',', $this->userIds);
-//        $userIdsIn = implode(',', array_fill(0, count($this->userIds), '?'));
-
+        $this->initTable();
         $this->table->setSelectString(array_merge($select, ['orderDate' => 'added` AS `orderDate']));
-        /** @var AbstractModel $modelClassName */
-        $modelClassName = $this->getModelClassName();
-        $tableName = $modelClassName::getTableName();
-        $this->table->appendJoinLeft(
-            Position::getTableName(),
-            '`' . $tableName . '`.`id`=`explorer_html5_media_position`.`media_id` AND ' .
-            '`explorer_html5_media_position`.`user_id` IN (' . $userIdsIn . ')'
-        );
-        $this->table->setWhere($this->getWhereString());
-        $this->table->setWhereParameters($this->getWhereParameters());
 
+        $tableName = $this->getTableName();
         $positionTable = new mysqlTable($this->database, Position::getTableName());
         $positionTable->setSelectString(array_merge($select, ['orderDate' => 'modified` AS `orderDate']));
         $positionTable->appendJoin(
             $tableName,
             '`' . $tableName . '`.`id`=`explorer_html5_media_position`.`media_id`'
         );
-        $positionTable->setWhere('`explorer_html5_media_position`.`user_id` IN (' . $userIdsIn . ')');
 
         $this->table
             ->appendUnion()
