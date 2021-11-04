@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "git@wolli.dyndns.tv:/home/git/gibsonOs/Core.git",
-                "reference": "ad33fd70c07bd16272021ea803181524a268dc2d"
+                "reference": "70e7d8ca05f3e0dd1fc3e22c2e7114bc05993336"
             },
             "require": {
                 "ext-curl": "*",
@@ -81,7 +81,7 @@
                     "php ./vendor/codeception/codeception/codecept generate:test unit"
                 ]
             },
-            "time": "2021-11-04T12:50:27+00:00"
+            "time": "2021-11-04T12:58:44+00:00"
         },
         {
             "name": "mdo/mdo",
@@ -89,7 +89,7 @@
             "source": {
                 "type": "git",
                 "url": "git@wolli.dyndns.tv:/home/git/mdo.git",
-                "reference": "c6902bfe97ab806071fcc1f47eab7612abf266d1"
+                "reference": "f4f49288b962c066f985d982bf72bdc44c33d740"
             },
             "require": {
                 "ext-mbstring": "*",
@@ -145,7 +145,7 @@
                     "php ./vendor/codeception/codeception/codecept generate:test unit"
                 ]
             },
-            "time": "2021-11-02T20:39:15+00:00"
+            "time": "2021-11-04T12:54:27+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
