@@ -5,6 +5,7 @@ namespace GibsonOS\Module\Explorer\Controller;
 
 use GibsonOS\Core\Archive\ZipArchive;
 use GibsonOS\Core\Attribute\CheckPermission;
+use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\ArchiveException;
 use GibsonOS\Core\Exception\CreateError;
@@ -13,6 +14,7 @@ use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
+use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService as CoreDirService;
@@ -30,19 +32,16 @@ class DirController extends AbstractController
      * @throws FactoryError
      * @throws GetError
      * @throws ReadError
-     * @throws SelectError
      */
     #[CheckPermission(Permission::READ)]
-    public function read(SettingRepository $settingRepository, DirStore $dirStore, ?string $dir): AjaxResponse
-    {
-        $homePath = $settingRepository->getByKeyAndModuleName(
-            'explorer',
-            $this->sessionService->getUserId() ?? 0,
-            'home_path'
-        )->getValue();
-
-        if (empty($dir) || mb_strpos($dir, $homePath) !== 0) {
-            $dir = $homePath;
+    #[GetSetting('home_path')]
+    public function read(
+        DirStore $dirStore,
+        Setting $homePath,
+        ?string $dir
+    ): AjaxResponse {
+        if (empty($dir) || mb_strpos($dir, $homePath->getValue()) !== 0) {
+            $dir = $homePath->getValue();
         }
 
         $dirStore

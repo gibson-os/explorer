@@ -4,9 +4,8 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Factory\File\Type;
 
 use GibsonOS\Core\Exception\FactoryError;
-use GibsonOS\Core\Exception\GetError;
-use GibsonOS\Core\Factory\DirFactory;
-use GibsonOS\Core\Factory\FileFactory;
+use GibsonOS\Core\Service\DirService;
+use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\ServiceManagerService;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\DefaultDescriber;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
@@ -18,13 +17,12 @@ class DescriberFactory
     }
 
     /**
-     * @throws GetError
      * @throws FactoryError
      */
     public function create(string $filename): FileTypeDescriberInterface
     {
-        $fileService = FileFactory::create();
-        $dirService = DirFactory::create();
+        $fileService = $this->serviceManagerService->get(FileService::class);
+        $dirService = $this->serviceManagerService->get(DirService::class);
 
         $namespace = '\\GibsonOS\\Module\\Explorer\\Service\\File\\Type\\Describer\\';
         $classPath =

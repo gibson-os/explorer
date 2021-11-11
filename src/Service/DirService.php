@@ -25,9 +25,11 @@ class DirService
         $pathParts = explode(DIRECTORY_SEPARATOR, $this->coreDirService->removeEndSlash($path));
         $name = array_pop($pathParts);
 
+        $fileatime = fileatime($path);
+        $filemtime = filemtime($path);
         $dir = (new Dir(implode(DIRECTORY_SEPARATOR, $pathParts), $name))
-            ->setAccessed(fileatime($path))
-            ->setModified(filemtime($path))
+            ->setAccessed($fileatime === false ? 0 : $fileatime)
+            ->setModified($filemtime === false ? 0 : $filemtime)
         ;
 
         try {

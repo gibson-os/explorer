@@ -46,8 +46,12 @@ class GibsonStoreService
      */
     private array $stores = [];
 
-    public function __construct(private FileService $fileService, private DirService $dirService, private ThumbnailService $thumbnailService)
-    {
+    public function __construct(
+        private FileService $fileService,
+        private DirService $dirService,
+        private ThumbnailService $thumbnailService,
+        private SqLiteFactory $sqLiteFactory
+    ) {
     }
 
     /**
@@ -660,7 +664,7 @@ class GibsonStoreService
 
         if (!isset($this->stores[$dir])) {
             try {
-                $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
+                $this->stores[$dir] = $this->sqLiteFactory->create($dir . '.gibsonStore');
             } catch (Exception $exception) {
                 throw new ExecuteError(sprintf('Cant create database for %s to write', $dir), 0, $exception);
             }
@@ -685,7 +689,7 @@ class GibsonStoreService
 
         if (!isset($this->stores[$dir])) {
             try {
-                $this->stores[$dir] = SqLiteFactory::create($dir . '.gibsonStore');
+                $this->stores[$dir] = $this->sqLiteFactory->create($dir . '.gibsonStore');
             } catch (Exception $exception) {
                 throw new ExecuteError(sprintf('Cant create database for %s to read', $dir), 0, $exception);
             }
