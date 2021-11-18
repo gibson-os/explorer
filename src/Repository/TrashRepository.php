@@ -7,10 +7,6 @@ use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Trash;
 
-/**
- * @method Trash   fetchOne(string $where, array $parameters, string $modelClassName)
- * @method Trash[] fetchAll(string $where, array $parameters, string $modelClassName, int $limit = null, int $offset = null, string $orderBy = null)
- */
 class TrashRepository extends AbstractRepository
 {
     public function getFreeToken(): string
