@@ -31,6 +31,9 @@ interface FileTypeDescriberInterface
      */
     public function getMetasStructure(): array;
 
+    /**
+     * @return class-string
+     */
     public function getServiceClassname(): string;
 
     public function isImageAvailable(): bool;

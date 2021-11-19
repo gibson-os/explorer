@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Command\Html5;
 
 use GibsonOS\Core\Command\AbstractCommand;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\FileNotFound;
@@ -37,7 +36,6 @@ class ConvertCommand extends AbstractCommand
     }
 
     /**
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws GetError
      * @throws ProcessError

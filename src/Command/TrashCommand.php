@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Command;
 
 use GibsonOS\Core\Command\AbstractCommand;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
@@ -30,7 +29,6 @@ class TrashCommand extends AbstractCommand
     }
 
     /**
-     * @throws DateTimeError
      * @throws SelectError
      */
     protected function run(): int

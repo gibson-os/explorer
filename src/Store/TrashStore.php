@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Store;
 
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
@@ -41,7 +40,6 @@ class TrashStore extends AbstractDatabaseStore
     }
 
     /**
-     * @throws DateTimeError
      * @throws SelectError
      */
     public function getList(): iterable

@@ -5,7 +5,6 @@ namespace GibsonOS\Module\Explorer\Command;
 
 use Exception;
 use GibsonOS\Core\Command\AbstractCommand;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\Flock\LockError;
 use GibsonOS\Core\Exception\Flock\UnlockError;
@@ -46,7 +45,6 @@ class IndexerCommand extends AbstractCommand
     }
 
     /**
-     * @throws DateTimeError
      * @throws GetError
      * @throws SelectError
      * @throws UnlockError

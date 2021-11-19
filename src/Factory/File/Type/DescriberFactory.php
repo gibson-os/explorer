@@ -43,6 +43,7 @@ class DescriberFactory
                 continue;
             }
 
+            /** @var class-string $className */
             $className = $namespace . str_replace('.php', '', $classFilename);
             $fileTypeDescriberService = $this->serviceManagerService->get($className);
 

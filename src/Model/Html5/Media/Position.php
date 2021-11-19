@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Model\Html5\Media;
 
 use DateTimeInterface;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
@@ -98,9 +97,6 @@ class Position extends AbstractModel
         return $this;
     }
 
-    /**
-     * @throws DateTimeError
-     */
     public function loadMedia(): Position
     {
         $this->loadForeignRecord($this->getMedia(), $this->getMediaId());
@@ -108,9 +104,6 @@ class Position extends AbstractModel
         return $this;
     }
 
-    /**
-     * @throws DateTimeError
-     */
     public function getUser(): User
     {
         $this->loadForeignRecord($this->user, $this->getUserId());

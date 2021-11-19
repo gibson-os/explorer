@@ -7,7 +7,6 @@ use DateTime;
 use Exception;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\ArgumentError;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\Flock\LockError;
@@ -41,7 +40,6 @@ class DeleteCommand extends AbstractCommand
     }
 
     /**
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
@@ -75,8 +73,6 @@ class DeleteCommand extends AbstractCommand
     }
 
     /**
-     * @throws DateTimeError
-     * @throws GetError
      * @throws SelectError
      * @throws ModelDeleteError
      * @throws ArgumentError
@@ -100,7 +96,6 @@ class DeleteCommand extends AbstractCommand
     }
 
     /**
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws GetError
      * @throws ArgumentError
@@ -131,7 +126,6 @@ class DeleteCommand extends AbstractCommand
     }
 
     /**
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
@@ -171,7 +165,6 @@ class DeleteCommand extends AbstractCommand
     }
 
     /**
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError

@@ -5,7 +5,6 @@ namespace GibsonOS\Module\Explorer\Model\Html5;
 
 use DateTime;
 use DateTimeInterface;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use JsonSerializable;
@@ -206,9 +205,6 @@ class Media extends AbstractModel implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @throws DateTimeError
-     */
     public function getUser(): User
     {
         $this->loadForeignRecord($this->user, $this->getUserId());

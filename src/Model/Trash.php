@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Model;
 
 use DateTimeInterface;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use JsonSerializable;
@@ -88,16 +87,15 @@ class Trash extends AbstractModel implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @throws DateTimeError
-     */
     public function getUser(): ?User
     {
-        if ($this->getUserId() === null) {
+        $userId = $this->getUserId();
+
+        if ($userId === null) {
             $this->user = null;
         } else {
             $this->user = new User();
-            $this->loadForeignRecord($this->user, $this->getUserId());
+            $this->loadForeignRecord($this->user, $userId);
         }
 
         return $this->user;
@@ -111,9 +109,6 @@ class Trash extends AbstractModel implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @throws DateTimeError
-     */
     public function jsonSerialize(): array
     {
         return [
