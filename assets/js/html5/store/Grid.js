@@ -55,7 +55,7 @@ Ext.define('GibsonOS.module.explorer.html5.store.Grid', {
                             return false;
                         }
 
-                        records[i].set('thumb', Ext.decode(response.responseText).data.thumb);
+                        records[i].set('thumb', response.responseText);
                         store.gos.data.loadThumbnailsPointer = i+1;
                         window.setTimeout(function () {
                             store.fireEvent('loadThumbnails', store)
