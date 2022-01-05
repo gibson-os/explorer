@@ -94,7 +94,7 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                         if (!store.gos.data.runLoadThumbnails) {
                             return false;
                         }
-console.log(response.responseText);
+
                         records[i].set('thumb', response.responseText);
                         store.gos.data.loadThumbnailsPointer = i+1;
 
