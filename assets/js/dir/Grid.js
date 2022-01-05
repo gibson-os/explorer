@@ -12,7 +12,12 @@ Ext.define('GibsonOS.module.explorer.dir.Grid', {
         width: 25,
         renderer: function(value, metaData, record) {
             if (record.get('thumb')) {
-                return '<div class="icon icon16" style="background-image: url(data:image/png;base64,' + record.get('thumb') + ');"></div>';
+                return '<div class="icon icon16" style="' +
+                    'background-image: url(data:image/png;base64,' + record.get('thumb') + '); ' +
+                    'background-repeat: no-repeat; ' +
+                    'background-size: contain; ' +
+                    'background-position: center !important;' +
+                '"></div>';
             }
 
             var icon = 'icon_' + value;

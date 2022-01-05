@@ -246,7 +246,8 @@ class FileController extends AbstractController
         string $dir,
         string $filename,
         int $width = null,
-        int $height = null
+        int $height = null,
+        bool $base64 = false
     ): ResponseInterface {
         $path = $dirService->addEndSlash($dir) . $filename;
 
@@ -259,6 +260,10 @@ class FileController extends AbstractController
         $image = $gibsonStoreService->getFileImage($path, $width, $height);
         $body = $imageService->getString($image);
 
+        if ($base64) {
+            $body = base64_encode($body);
+        }
+
         return new Response(
             $body,
             StatusCode::OK,
@@ -269,7 +274,7 @@ class FileController extends AbstractController
                 'Cache-Control' => ['must-revalidate, post-check=0, pre-check=0', 'private'],
                 'Content-Type' => 'image/jpg',
                 'Content-Length' => strlen($body),
-                'Content-Transfer-Encoding' => 'binary',
+                'Content-Transfer-Encoding' => $base64 ? 'base64' : 'binary',
                 'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
             ]
         );

@@ -40,12 +40,15 @@ Ext.define('GibsonOS.module.explorer.html5.store.Grid', {
                 }
 
                 GibsonOS.Ajax.request({
-                    url: baseDir + 'explorer/file/thumb',
+                    url: baseDir + 'explorer/file/image',
                     withoutFailure: true,
                     timeout: 120000,
                     params: {
                         dir: records[i].get('dir'),
-                        filename: records[i].get('filename')
+                        filename: records[i].get('filename'),
+                        width: 16,
+                        height: 16,
+                        base64: true
                     },
                     success: function(response) {
                         if (!store.gos.data.runLoadThumbnails) {

@@ -80,19 +80,22 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                 }
 
                 GibsonOS.Ajax.request({
-                    url: baseDir + 'explorer/file/thumb',
+                    url: baseDir + 'explorer/file/image',
                     withoutFailure: true,
                     timeout: 120000,
                     params: {
                         dir: store.getProxy().getReader().jsonData.dir,
-                        filename: records[i].get('name')
+                        filename: records[i].get('name'),
+                        width: 256,
+                        height: 256,
+                        base64: true
                     },
                     success: function(response) {
                         if (!store.gos.data.runLoadThumbnails) {
                             return false;
                         }
-
-                        records[i].set('thumb', Ext.decode(response.responseText).data.thumb);
+console.log(response.responseText);
+                        records[i].set('thumb', response.responseText);
                         store.gos.data.loadThumbnailsPointer = i+1;
 
                         window.setTimeout(function () {

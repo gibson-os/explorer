@@ -24,7 +24,12 @@ Ext.define('GibsonOS.module.explorer.html5.Grid', {
             width: 25,
             renderer: function(value, metaData, record) {
                 if (record.get('thumb')) {
-                    return '<div class="icon icon16" style="background-image: url(data:image/png;base64,' + record.get('thumb') + ');"></div>';
+                    return '<div class="icon icon16" style="' +
+                        'background-image: url(data:image/png;base64,' + record.get('thumb') + '); ' +
+                        'background-repeat: no-repeat; ' +
+                        'background-size: contain; ' +
+                        'background-position: center !important;' +
+                    '"></div>';
                 }
 
                 return '<div class="icon icon16 icon_default icon_' + value + '"></div>';

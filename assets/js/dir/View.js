@@ -26,13 +26,18 @@ Ext.define('GibsonOS.module.explorer.dir.View', {
         this.tpl = new Ext.XTemplate(
             '<tpl for=".">',
             '<div class="explorerViewItem explorerViewItem' + iconSize + '<tpl if="hidden"> hideItem</tpl>" title="{name}">',
-            '<tpl if="thumb">',
-            '<div class="explorerViewItemIcon icon' + iconSize + '" style="background-image: url(data:image/png;base64,{thumb});"></div>',
-            '<tpl else>',
-            '<div class="explorerViewItemIcon icon_default icon' + iconSize + ' <tpl if="icon &gt; 0">customIcon{icon}<tpl else>icon_{type}</tpl>"></div>',
-            '</tpl>',
-            '<div class="explorerViewItemBadge">{[GibsonOS.module.explorer.file.fn.renderBadge(values, ' + badgeSize + ')]}</div>',
-            '<div class="explorerViewItemName">{name}</div>',
+                '<tpl if="thumb">',
+                '<div class="explorerViewItemIcon icon' + iconSize + '" style="' +
+                    'background-image: url(data:image/png;base64,{thumb}); ' +
+                    'background-repeat: no-repeat; ' +
+                    'background-size: contain; ' +
+                    'background-position: center !important;' +
+                '"></div>',
+                '<tpl else>',
+                '<div class="explorerViewItemIcon icon_default icon' + iconSize + ' <tpl if="icon &gt; 0">customIcon{icon}<tpl else>icon_{type}</tpl>"></div>',
+                '</tpl>',
+                '<div class="explorerViewItemBadge">{[GibsonOS.module.explorer.file.fn.renderBadge(values, ' + badgeSize + ')]}</div>',
+                '<div class="explorerViewItemName">{name}</div>',
             '</div>',
             '</tpl>'
         );
