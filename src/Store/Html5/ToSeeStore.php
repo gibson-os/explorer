@@ -109,10 +109,9 @@ class ToSeeStore extends AbstractDatabaseStore
         );
 
         $this->table
-            ->appendUnion()
             ->appendUnion($positionTable->getSelect())
             ->setOrderBy('`orderDate` DESC')
-            ->selectUnion(false)
+            ->selectPrepared(false)
         ;
 
         $medias = [];
@@ -130,7 +129,7 @@ class ToSeeStore extends AbstractDatabaseStore
                     0
                 );
             } catch (ExecuteError) {
-                $media->dudation = 0;
+                $media->duration = 0;
             }
 
             if (isset($medias[$key])) {
