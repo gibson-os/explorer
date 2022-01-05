@@ -221,7 +221,7 @@ class FileController extends AbstractController
     ): AjaxResponse {
         $path = $dir . $filename;
 
-        $coreFileService->save($path, null);
+        $coreFileService->save($path, '');
 
         return $this->returnSuccess($fileService->get($path, $this->sessionService->getUserId()));
     }
