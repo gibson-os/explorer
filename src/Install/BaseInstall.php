@@ -8,6 +8,9 @@ use GibsonOS\Core\Service\Install\RequiredExtensionInterface;
 
 class BaseInstall implements RequiredExtensionInterface
 {
+    /**
+     * @throws InstallException
+     */
     public function checkRequiredExtensions(): void
     {
         if (!class_exists('ZipArchive')) {
