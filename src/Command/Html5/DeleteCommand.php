@@ -5,6 +5,7 @@ namespace GibsonOS\Module\Explorer\Command\Html5;
 
 use DateTime;
 use Exception;
+use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\ArgumentError;
 use GibsonOS\Core\Exception\DeleteError;
@@ -22,6 +23,7 @@ use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use Psr\Log\LoggerInterface;
 
+#[Cronjob(minutes: '5', seconds: '0', user: 'root')]
 class DeleteCommand extends AbstractCommand
 {
     private string $mediaPath;

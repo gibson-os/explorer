@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Command\Html5;
 
+use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
@@ -21,6 +22,7 @@ use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterf
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use Psr\Log\LoggerInterface;
 
+#[Cronjob(user: 'root')]
 class ConvertCommand extends AbstractCommand
 {
     private const LOCK_NAME = 'html5Convert';
