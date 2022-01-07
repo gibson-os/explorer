@@ -34,10 +34,9 @@ class DirController extends AbstractController
      * @throws ReadError
      */
     #[CheckPermission(Permission::READ)]
-    #[GetSetting('home_path')]
     public function read(
         DirStore $dirStore,
-        Setting $homePath,
+        #[GetSetting('home_path')] Setting $homePath,
         ?string $dir
     ): AjaxResponse {
         if (empty($dir) || mb_strpos($dir, $homePath->getValue()) !== 0) {
