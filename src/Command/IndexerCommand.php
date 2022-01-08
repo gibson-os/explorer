@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Command;
 
 use Exception;
+use GibsonOS\Core\Attribute\Command\Option;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\Flock\LockError;
@@ -30,6 +31,9 @@ use Psr\Log\LoggerInterface;
  */
 class IndexerCommand extends AbstractCommand
 {
+    #[Option('Renew index databases')]
+    private bool $renew = false;
+
     public function __construct(
         private LockService $lockService,
         private SettingRepository $settingRepository,
@@ -42,8 +46,6 @@ class IndexerCommand extends AbstractCommand
         private ExplorerFileService $explorerFileService,
         LoggerInterface $logger
     ) {
-        $this->setOption('renew');
-
         parent::__construct($logger);
     }
 
@@ -65,7 +67,7 @@ class IndexerCommand extends AbstractCommand
             // Indexer in progress
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -174,7 +176,6 @@ class IndexerCommand extends AbstractCommand
     {
         $fileTypeDescriber = $this->describerFactory->create($path);
         $fileTypeService = null;
-        $checkSum = null;
 
         if (!$this->gibsonStoreService->hasFileMetas($path, $fileTypeDescriber->getMetasStructure())) {
             /** @var FileTypeInterface $fileTypeService */
@@ -196,5 +197,10 @@ class IndexerCommand extends AbstractCommand
                 // No Image
             }
         }
+    }
+
+    public function setRenew(bool $renew): void
+    {
+        $this->renew = $renew;
     }
 }

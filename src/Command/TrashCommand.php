@@ -50,7 +50,7 @@ class TrashCommand extends AbstractCommand
             $this->deleteItem($trash, $trashDir);
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 
     private function deleteItem(Trash $trash, string $trashDir): void

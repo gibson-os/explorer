@@ -5,9 +5,9 @@ namespace GibsonOS\Module\Explorer\Command\Html5;
 
 use DateTime;
 use Exception;
+use GibsonOS\Core\Attribute\Command\Option;
 use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
-use GibsonOS\Core\Exception\ArgumentError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\Flock\LockError;
@@ -29,6 +29,9 @@ use Psr\Log\LoggerInterface;
 #[Cronjob(minutes: '5', seconds: '0', user: 'root')]
 class DeleteCommand extends AbstractCommand
 {
+    #[Option('Run dry. Files are not deleted')]
+    private bool $dry = false;
+
     private string $mediaPath;
 
     public function __construct(
@@ -39,8 +42,6 @@ class DeleteCommand extends AbstractCommand
         private FileService $fileService,
         LoggerInterface $logger
     ) {
-        $this->setOption('dry');
-
         parent::__construct($logger);
     }
 
@@ -50,7 +51,6 @@ class DeleteCommand extends AbstractCommand
      * @throws GetError
      * @throws ModelDeleteError
      * @throws SelectError
-     * @throws ArgumentError
      * @throws UnlockError
      */
     protected function run(): int
@@ -74,13 +74,12 @@ class DeleteCommand extends AbstractCommand
             // Delete in progress
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
      * @throws SelectError
      * @throws ModelDeleteError
-     * @throws ArgumentError
      */
     private function deleteWhereFileNotExists(): void
     {
@@ -89,7 +88,7 @@ class DeleteCommand extends AbstractCommand
                 continue;
             }
 
-            if ($this->hasOption('dry')) {
+            if ($this->dry) {
                 printf(
                     'Media %s deleted because file does not exist.' . PHP_EOL,
                     $media->getDir() . $media->getFilename()
@@ -103,7 +102,6 @@ class DeleteCommand extends AbstractCommand
     /**
      * @throws DeleteError
      * @throws GetError
-     * @throws ArgumentError
      */
     private function deleteWhereMediaNotExists(): void
     {
@@ -115,7 +113,7 @@ class DeleteCommand extends AbstractCommand
                 $this->mediaRepository->getByToken($token);
             } catch (SelectError) {
                 try {
-                    if ($this->hasOption('dry')) {
+                    if ($this->dry) {
                         printf(
                             'Generated Video %s deleted because media entity does not exist.' . PHP_EOL,
                             $this->mediaPath . $filename
@@ -135,7 +133,6 @@ class DeleteCommand extends AbstractCommand
      * @throws FileNotFound
      * @throws GetError
      * @throws ModelDeleteError
-     * @throws ArgumentError
      * @throws Exception
      */
     private function deleteWhereLifetimeExpired(): void
@@ -152,7 +149,7 @@ class DeleteCommand extends AbstractCommand
             }
 
             foreach ($this->mediaRepository->getAllOlderThan(new DateTime('-' . $lifetime . ' days')) as $media) {
-                if ($this->hasOption('dry')) {
+                if ($this->dry) {
                     printf(
                         'Media %s deleted because generate date %s is older than %s.' . PHP_EOL,
                         $media->getDir() . $media->getFilename(),
@@ -173,7 +170,6 @@ class DeleteCommand extends AbstractCommand
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws ArgumentError
      * @throws ModelDeleteError
      */
     private function deleteWhereSizeExceeded(): void
@@ -225,7 +221,7 @@ class DeleteCommand extends AbstractCommand
 
                 $fileSize = filesize($this->mediaPath . $media->getToken() . '.mp4');
 
-                if ($this->hasOption('dry')) {
+                if ($this->dry) {
                     printf(
                         'Media %s deleted because folder size is %d Bytes bigger as %d Bytes.' . PHP_EOL,
                         $media->getDir() . $media->getFilename(),
@@ -242,5 +238,10 @@ class DeleteCommand extends AbstractCommand
         } catch (SelectError) {
             return;
         }
+    }
+
+    public function setDry(bool $dry): void
+    {
+        $this->dry = $dry;
     }
 }

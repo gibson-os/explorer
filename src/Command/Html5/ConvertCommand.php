@@ -93,6 +93,6 @@ class ConvertCommand extends AbstractCommand
             // Convert in progress
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }
