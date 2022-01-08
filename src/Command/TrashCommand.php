@@ -16,6 +16,9 @@ use GibsonOS\Module\Explorer\Model\Trash;
 use GibsonOS\Module\Explorer\Repository\TrashRepository;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @description Remove files in trash
+ */
 class TrashCommand extends AbstractCommand
 {
     public function __construct(

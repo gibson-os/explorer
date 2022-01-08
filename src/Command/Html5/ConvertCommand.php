@@ -22,6 +22,9 @@ use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterf
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @description Convert queued medias
+ */
 #[Cronjob(user: 'root')]
 class ConvertCommand extends AbstractCommand
 {

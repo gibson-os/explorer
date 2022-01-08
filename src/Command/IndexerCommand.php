@@ -25,6 +25,9 @@ use GibsonOS\Module\Explorer\Service\FileService as ExplorerFileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @description Index all files in `home_path`
+ */
 class IndexerCommand extends AbstractCommand
 {
     public function __construct(

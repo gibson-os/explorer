@@ -23,6 +23,9 @@ use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @description Delete converted files
+ */
 #[Cronjob(minutes: '5', seconds: '0', user: 'root')]
 class DeleteCommand extends AbstractCommand
 {
