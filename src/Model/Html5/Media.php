@@ -56,7 +56,7 @@ class Media extends AbstractModel implements JsonSerializable
     #[Column]
     private bool $generationRequired = true;
 
-    #[Column(default: Column::DEFAULT_CURRENT_TIMESTAMP)]
+    #[Column(type: Column::TYPE_TIMESTAMP, default: Column::DEFAULT_CURRENT_TIMESTAMP)]
     private DateTimeInterface $added;
 
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]

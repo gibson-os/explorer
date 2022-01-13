@@ -20,10 +20,10 @@ class Position extends AbstractModel
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], primary: true)]
     private int $userId;
 
-    #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], primary: true)]
+    #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private int $position;
 
-    #[Column(default: Column::DEFAULT_CURRENT_TIMESTAMP, attributes: [Column::ATTRIBUTE_CURRENT_TIMESTAMP])]
+    #[Column(type: Column::TYPE_TIMESTAMP, default: Column::DEFAULT_CURRENT_TIMESTAMP, attributes: [Column::ATTRIBUTE_CURRENT_TIMESTAMP])]
     private DateTimeInterface $modified;
 
     private Media $media;

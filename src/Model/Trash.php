@@ -22,7 +22,7 @@ class Trash extends AbstractModel implements JsonSerializable
     #[Column(length: 128)]
     private ?string $filename = null;
 
-    #[Column(default: Column::DEFAULT_CURRENT_TIMESTAMP)]
+    #[Column(type: Column::TYPE_TIMESTAMP, default: Column::DEFAULT_CURRENT_TIMESTAMP)]
     private DateTimeInterface $added;
 
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
