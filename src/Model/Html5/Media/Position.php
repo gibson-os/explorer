@@ -4,19 +4,26 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Model\Html5\Media;
 
 use DateTimeInterface;
+use GibsonOS\Core\Attribute\Install\Database\Column;
+use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use mysqlDatabase;
 
+#[Table]
 class Position extends AbstractModel
 {
+    #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], primary: true)]
     private int $mediaId;
 
+    #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], primary: true)]
     private int $userId;
 
+    #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], primary: true)]
     private int $position;
 
+    #[Column(default: Column::DEFAULT_CURRENT_TIMESTAMP, attributes: [Column::ATTRIBUTE_CURRENT_TIMESTAMP])]
     private DateTimeInterface $modified;
 
     private Media $media;

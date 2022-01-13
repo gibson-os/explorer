@@ -4,20 +4,28 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Model;
 
 use DateTimeInterface;
+use GibsonOS\Core\Attribute\Install\Database\Column;
+use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use JsonSerializable;
 
+#[Table]
 class Trash extends AbstractModel implements JsonSerializable
 {
+    #[Column(length: 32, primary: true)]
     private string $token;
 
+    #[Column(length: 255)]
     private string $dir;
 
+    #[Column(length: 128)]
     private ?string $filename = null;
 
+    #[Column(default: Column::DEFAULT_CURRENT_TIMESTAMP)]
     private DateTimeInterface $added;
 
+    #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private ?int $userId = null;
 
     private ?User $user = null;
