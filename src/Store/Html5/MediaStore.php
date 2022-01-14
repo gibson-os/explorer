@@ -4,13 +4,14 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
 use Generator;
+use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\Setting;
+use GibsonOS\Core\Service\AttributeService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
-use GibsonOS\Core\Service\ModuleSettingService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use mysqlDatabase;
@@ -19,11 +20,12 @@ class MediaStore extends AbstractDatabaseStore
 {
     public function __construct(
         mysqlDatabase $database,
-        private ModuleSettingService $moduleSetting,
+        AttributeService $attributeService,
         private TypeService $typeService,
-        private DirService $dir
+        private DirService $dir,
+        #[GetSetting('html5_media_path')] private Setting $html5MediaPath
     ) {
-        parent::__construct($database);
+        parent::__construct($attributeService, $database);
     }
 
     protected function getModelClassName(): string
@@ -37,9 +39,7 @@ class MediaStore extends AbstractDatabaseStore
      */
     public function getList(): Generator
     {
-        /** @var Setting $html5MediaPath */
-        $html5MediaPath = $this->moduleSetting->getByRegistry('html5_media_path');
-        $mediaPath = $html5MediaPath->getValue();
+        $mediaPath = $this->html5MediaPath->getValue();
 
         /** @var Media $media */
         foreach (parent::getList() as $media) {
@@ -68,12 +68,9 @@ class MediaStore extends AbstractDatabaseStore
      */
     public function getSize(): int
     {
-        /** @var Setting $html5MediaPath */
-        $html5MediaPath = $this->moduleSetting->getByRegistry('html5_media_path');
-        $mediaPath = $html5MediaPath->getValue();
         $size = 0;
 
-        foreach ($this->dir->getFiles($mediaPath) as $file) {
+        foreach ($this->dir->getFiles($this->html5MediaPath->getValue()) as $file) {
             $size += filesize($file);
         }
 

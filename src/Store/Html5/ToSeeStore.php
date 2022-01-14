@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
+use GibsonOS\Core\Attribute\GetTableName;
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -14,6 +15,7 @@ use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
+use GibsonOS\Core\Service\AttributeService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
@@ -37,24 +39,25 @@ class ToSeeStore extends AbstractDatabaseStore
      */
     public function __construct(
         mysqlDatabase $database,
+        AttributeService $attributeService,
         private DirService $dir,
         private MediaService $media,
-        private GibsonStoreService $gibsonStore
+        private GibsonStoreService $gibsonStore,
+        #[GetTableName(Position::class)] private string $positionTableName
     ) {
-        parent::__construct($database);
+        parent::__construct($attributeService, $database);
     }
 
     protected function setWheres(): void
     {
-        $tableName = $this->getTableName();
         $this->addWhere(
-            '`' . $tableName . '`.`status` IN (?, ?)',
+            '`' . $this->tableName . '`.`status` IN (?, ?)',
             [ConvertStatus::STATUS_GENERATE, ConvertStatus::STATUS_GENERATED]
         );
 
         if (count($this->userIds) > 0) {
             $this->addWhere(
-                '`' . $tableName . '`.`user_id` IN (' . $this->table->getParametersString($this->userIds) . ')',
+                '`' . $this->tableName . '`.`user_id` IN (' . $this->table->getParametersString($this->userIds) . ')',
                 $this->userIds
             );
         }
@@ -74,7 +77,7 @@ class ToSeeStore extends AbstractDatabaseStore
     {
         parent::initTable();
 
-        $this->table->appendJoinLeft(Position::getTableName(), '`' . $this->getTableName() . '`.`id`=`explorer_html5_media_position`.`media_id`');
+        $this->table->appendJoinLeft($this->positionTableName, '`' . $this->tableName . '`.`id`=`explorer_html5_media_position`.`media_id`');
     }
 
     /**
@@ -100,8 +103,8 @@ class ToSeeStore extends AbstractDatabaseStore
         $this->initTable();
         $this->table->setSelectString(array_merge($select, ['orderDate' => 'added` AS `orderDate']));
 
-        $tableName = $this->getTableName();
-        $positionTable = new mysqlTable($this->database, Position::getTableName());
+        $tableName = $this->tableName;
+        $positionTable = new mysqlTable($this->database, $this->positionTableName);
         $positionTable->setSelectString(array_merge($select, ['orderDate' => 'modified` AS `orderDate']));
         $positionTable->appendJoin(
             $tableName,

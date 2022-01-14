@@ -5,11 +5,15 @@ namespace GibsonOS\Module\Explorer\Model;
 
 use DateTimeInterface;
 use GibsonOS\Core\Attribute\Install\Database\Column;
+use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use JsonSerializable;
 
+/**
+ * @method ?User getUser()
+ */
 #[Table]
 class Trash extends AbstractModel implements JsonSerializable
 {
@@ -28,12 +32,8 @@ class Trash extends AbstractModel implements JsonSerializable
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private ?int $userId = null;
 
-    private ?User $user = null;
-
-    public static function getTableName(): string
-    {
-        return 'explorer_trash';
-    }
+    #[Constraint]
+    protected ?User $user = null;
 
     public function getToken(): string
     {
@@ -93,20 +93,6 @@ class Trash extends AbstractModel implements JsonSerializable
         $this->userId = $userId;
 
         return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        $userId = $this->getUserId();
-
-        if ($userId === null) {
-            $this->user = null;
-        } else {
-            $this->user = new User();
-            $this->loadForeignRecord($this->user, $userId);
-        }
-
-        return $this->user;
     }
 
     public function setUser(?User $user): Trash

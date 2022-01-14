@@ -6,6 +6,7 @@ namespace GibsonOS\Module\Explorer\Model\Html5;
 use DateTime;
 use DateTimeInterface;
 use GibsonOS\Core\Attribute\Install\Database\Column;
+use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
@@ -13,6 +14,9 @@ use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterf
 use JsonSerializable;
 use mysqlDatabase;
 
+/**
+ * @method User getUser()
+ */
 #[Table]
 class Media extends AbstractModel implements JsonSerializable
 {
@@ -62,19 +66,14 @@ class Media extends AbstractModel implements JsonSerializable
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private int $userId;
 
-    private User $user;
+    #[Constraint]
+    protected User $user;
 
     public function __construct(mysqlDatabase $database = null)
     {
         parent::__construct($database);
 
-        $this->user = new User();
         $this->added = new DateTime();
-    }
-
-    public static function getTableName(): string
-    {
-        return 'explorer_html5_media';
     }
 
     public function getId(): ?int
@@ -219,13 +218,6 @@ class Media extends AbstractModel implements JsonSerializable
         $this->userId = $userId;
 
         return $this;
-    }
-
-    public function getUser(): User
-    {
-        $this->loadForeignRecord($this->user, $this->getUserId());
-
-        return $this->user;
     }
 
     public function setUser(User $user): Media
