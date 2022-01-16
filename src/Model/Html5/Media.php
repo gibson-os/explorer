@@ -15,7 +15,8 @@ use JsonSerializable;
 use mysqlDatabase;
 
 /**
- * @method User getUser()
+ * @method User  getUser()
+ * @method Media setUser(User $user)
  */
 #[Table]
 class Media extends AbstractModel implements JsonSerializable
@@ -216,14 +217,6 @@ class Media extends AbstractModel implements JsonSerializable
     public function setUserId(int $userId): Media
     {
         $this->userId = $userId;
-
-        return $this;
-    }
-
-    public function setUser(User $user): Media
-    {
-        $this->user = $user;
-        $this->setUserId($user->getId() ?? 0);
 
         return $this;
     }

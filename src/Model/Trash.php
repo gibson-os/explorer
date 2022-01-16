@@ -12,7 +12,8 @@ use GibsonOS\Core\Model\User;
 use JsonSerializable;
 
 /**
- * @method ?User getUser()
+ * @method User|null getUser()
+ * @method Trash     setUser(?User $user)
  */
 #[Table]
 class Trash extends AbstractModel implements JsonSerializable
@@ -91,14 +92,6 @@ class Trash extends AbstractModel implements JsonSerializable
     public function setUserId(?int $userId): Trash
     {
         $this->userId = $userId;
-
-        return $this;
-    }
-
-    public function setUser(?User $user): Trash
-    {
-        $this->user = $user;
-        $this->setUserId($user?->getId());
 
         return $this;
     }

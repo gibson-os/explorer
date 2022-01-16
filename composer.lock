@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "git@wolli.dyndns.tv:/home/git/gibsonOs/Core.git",
-                "reference": "fcdd24b0b628e9a3372ba3d13ed743497d928492"
+                "reference": "b1e470a26e4a7c805d2b85436bdbf385891e95dc"
             },
             "require": {
                 "ext-curl": "*",
@@ -81,7 +81,7 @@
                     "php ./vendor/codeception/codeception/codecept generate:test unit"
                 ]
             },
-            "time": "2022-01-14T21:41:05+00:00"
+            "time": "2022-01-16T17:21:20+00:00"
         },
         {
             "name": "mdo/mdo",
