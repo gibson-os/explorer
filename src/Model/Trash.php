@@ -6,6 +6,7 @@ namespace GibsonOS\Module\Explorer\Model;
 use DateTimeInterface;
 use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
+use GibsonOS\Core\Attribute\Install\Database\Key;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
@@ -16,6 +17,7 @@ use JsonSerializable;
  * @method Trash     setUser(?User $user)
  */
 #[Table]
+#[Key(columns: ['dir', 'filename'])]
 class Trash extends AbstractModel implements JsonSerializable
 {
     #[Column(length: 32, primary: true)]

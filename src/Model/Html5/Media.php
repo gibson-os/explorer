@@ -7,6 +7,7 @@ use DateTime;
 use DateTimeInterface;
 use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
+use GibsonOS\Core\Attribute\Install\Database\Key;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
@@ -19,6 +20,7 @@ use mysqlDatabase;
  * @method Media setUser(User $user)
  */
 #[Table]
+#[Key(columns: ['dir', 'filename'])]
 class Media extends AbstractModel implements JsonSerializable
 {
     public const SUBTITLE_NONE = 'none';
@@ -35,6 +37,7 @@ class Media extends AbstractModel implements JsonSerializable
     private ?int $id = null;
 
     #[Column(length: 32)]
+    #[Key(true)]
     private string $token;
 
     #[Column(length: 255)]
@@ -50,6 +53,7 @@ class Media extends AbstractModel implements JsonSerializable
     private ?string $subtitleStream = null;
 
     #[Column(type: Column::TYPE_ENUM, values: ['error', 'wait', 'generate', 'generated'])]
+    #[Key]
     private string $status = self::STATUS_WAIT;
 
     #[Column(type: Column::TYPE_TINYINT, attributes: [Column::ATTRIBUTE_UNSIGNED])]
