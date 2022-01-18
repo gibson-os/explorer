@@ -35,7 +35,7 @@ class Trash extends AbstractModel implements JsonSerializable
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private ?int $userId = null;
 
-    #[Constraint]
+    #[Constraint(onDelete: Constraint::RULE_SET_NULL)]
     protected ?User $user = null;
 
     public function getToken(): string

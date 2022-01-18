@@ -5,6 +5,7 @@ namespace GibsonOS\Module\Explorer\Command;
 
 use Exception;
 use GibsonOS\Core\Attribute\Command\Option;
+use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\Flock\LockError;
@@ -29,6 +30,7 @@ use Psr\Log\LoggerInterface;
 /**
  * @description Index all files in `home_path`
  */
+#[Cronjob(hours: '3', minutes: '30', daysOfWeek: '3')]
 class IndexerCommand extends AbstractCommand
 {
     #[Option('Renew index databases')]

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Command;
 
+use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
@@ -19,6 +20,7 @@ use Psr\Log\LoggerInterface;
 /**
  * @description Remove files in trash
  */
+#[Cronjob(minutes: '0', seconds: '0')]
 class TrashCommand extends AbstractCommand
 {
     public function __construct(
