@@ -78,6 +78,11 @@ class TrashInstall extends AbstractInstall implements PriorityInterface
         return InstallService::PART_CONFIG;
     }
 
+    public function getModule(): string
+    {
+        return 'explorer';
+    }
+
     public function getPriority(): int
     {
         return 500;

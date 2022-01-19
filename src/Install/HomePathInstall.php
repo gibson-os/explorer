@@ -24,7 +24,7 @@ class HomePathInstall extends AbstractInstall implements PriorityInterface
         yield $homePathInput = $this->getSettingInput(
             'explorer',
             'home_path',
-            'What is the root directory for Explorer?'
+            'What is the root directory for explorer?'
         );
         $value = $homePathInput->getValue() ?? '';
 

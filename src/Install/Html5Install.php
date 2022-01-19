@@ -77,9 +77,9 @@ class Html5Install extends AbstractInstall implements PriorityInterface
         return InstallService::PART_CONFIG;
     }
 
-    public function getModule(): ?string
+    public function getModule(): string
     {
-        return 'core';
+        return 'explorer';
     }
 
     public function getPriority(): int
