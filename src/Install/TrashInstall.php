@@ -28,7 +28,7 @@ class TrashInstall extends AbstractInstall implements PriorityInterface
             'trashDir',
             'What is the directory for the trash?'
         );
-        $dir = $trashDirInput->getValue() ?? '';
+        $dir = $this->dirService->addEndSlash($trashDirInput->getValue() ?? '');
 
         if (!file_exists($dir)) {
             $this->dirService->create($dir);

@@ -26,7 +26,7 @@ class HomePathInstall extends AbstractInstall implements PriorityInterface
             'home_path',
             'What is the root directory for explorer?'
         );
-        $value = $homePathInput->getValue() ?? '';
+        $value = $this->dirService->addEndSlash($homePathInput->getValue() ?? '');
 
         if (!file_exists($value)) {
             $this->dirService->create($value);

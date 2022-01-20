@@ -28,7 +28,7 @@ class Html5Install extends AbstractInstall implements PriorityInterface
             'html5_media_path',
             'What is the directory for HTML5 medias?'
         );
-        $mediaPath = $html5MediaPathInput->getValue() ?? '';
+        $mediaPath = $this->dirService->addEndSlash($html5MediaPathInput->getValue() ?? '');
 
         if (!file_exists($mediaPath)) {
             $this->dirService->create($mediaPath);
