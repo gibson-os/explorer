@@ -65,7 +65,7 @@ class TrashInstall extends AbstractInstall implements PriorityInterface
         $count = $trashCountInput->getValue() ?? '';
 
         if (!is_numeric($count)) {
-            throw new InstallException(sprintf('"%s" is no numeric value!', $lifeTime));
+            throw new InstallException(sprintf('"%s" is no numeric value!', $count));
         }
 
         $this->setSetting('explorer', 'explorer_trash_count', $count);
