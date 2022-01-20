@@ -38,14 +38,14 @@ class Html5Install extends AbstractInstall implements PriorityInterface
 
         yield $html5MediaSizeInput = $this->getSettingInput(
             'explorer',
-            'explorer_html5_media_size',
+            'html5_media_size',
             'How big should the folder for HTML5 media be? (Possible specifications: 1024, 1kb, 1mb, 1gb, 0 = infinite)'
         );
-        $this->setSetting('explorer', 'explorer_html5_media_size', $this->checkSizeInput($html5MediaSizeInput));
+        $this->setSetting('explorer', 'html5_media_size', $this->checkSizeInput($html5MediaSizeInput));
 
         yield $html5MediaLifetimeInput = $this->getSettingInput(
             'explorer',
-            'explorer_html5_media_lifetime',
+            'html5_media_lifetime',
             'How long should the HTML5 media be stored? (In days. 0 = infinite)'
         );
         $lifeTime = $html5MediaLifetimeInput->getValue() ?? '';
@@ -54,11 +54,11 @@ class Html5Install extends AbstractInstall implements PriorityInterface
             throw new InstallException(sprintf('"%s" is no numeric value!', $lifeTime));
         }
 
-        $this->setSetting('explorer', 'explorer_html5_media_lifetime', $lifeTime);
+        $this->setSetting('explorer', 'html5_media_lifetime', $lifeTime);
 
         yield $html5MediaCountInput = $this->getSettingInput(
             'explorer',
-            'explorer_html5_media_count',
+            'html5_media_count',
             'How many HTML5 media should be created? (0 = infinite)'
         );
         $count = $html5MediaCountInput->getValue() ?? '';
@@ -67,7 +67,7 @@ class Html5Install extends AbstractInstall implements PriorityInterface
             throw new InstallException(sprintf('"%s" is no numeric value!', $lifeTime));
         }
 
-        $this->setSetting('explorer', 'explorer_html5_media_count', $count);
+        $this->setSetting('explorer', 'html5_media_count', $count);
 
         yield new Success('HTML5 settings set!');
     }
