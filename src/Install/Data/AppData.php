@@ -9,7 +9,7 @@ use GibsonOS\Core\Install\AbstractInstall;
 use GibsonOS\Core\Service\InstallService;
 use GibsonOS\Core\Service\PriorityInterface;
 
-class AppsData extends AbstractInstall implements PriorityInterface
+class AppData extends AbstractInstall implements PriorityInterface
 {
     public function install(string $module): Generator
     {
