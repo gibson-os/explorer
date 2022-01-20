@@ -5,12 +5,20 @@ namespace GibsonOS\Module\Explorer\Install\Data;
 
 use Generator;
 use GibsonOS\Core\Dto\Install\Success;
+use GibsonOS\Core\Exception\Model\SaveError;
+use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Install\AbstractInstall;
 use GibsonOS\Core\Service\InstallService;
 use GibsonOS\Core\Service\PriorityInterface;
+use JsonException;
 
 class AppData extends AbstractInstall implements PriorityInterface
 {
+    /**
+     * @throws SaveError
+     * @throws SelectError
+     * @throws JsonException
+     */
     public function install(string $module): Generator
     {
         $this
