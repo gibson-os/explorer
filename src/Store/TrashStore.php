@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Store;
 
 use GibsonOS\Core\Exception\Repository\SelectError;
-use GibsonOS\Core\Service\AttributeService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Trash;
@@ -14,10 +13,9 @@ class TrashStore extends AbstractDatabaseStore
 {
     public function __construct(
         private FileService $fileService,
-        AttributeService $attributeService,
         mysqlDatabase $database = null
     ) {
-        parent::__construct($attributeService, $database);
+        parent::__construct($database);
     }
 
     protected function getModelClassName(): string

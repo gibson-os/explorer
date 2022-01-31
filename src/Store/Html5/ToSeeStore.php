@@ -15,7 +15,6 @@ use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
-use GibsonOS\Core\Service\AttributeService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
@@ -39,13 +38,12 @@ class ToSeeStore extends AbstractDatabaseStore
      */
     public function __construct(
         mysqlDatabase $database,
-        AttributeService $attributeService,
         private DirService $dir,
         private MediaService $media,
         private GibsonStoreService $gibsonStore,
         #[GetTableName(Position::class)] private string $positionTableName
     ) {
-        parent::__construct($attributeService, $database);
+        parent::__construct($database);
     }
 
     protected function setWheres(): void

@@ -9,7 +9,6 @@ use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\Setting;
-use GibsonOS\Core\Service\AttributeService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
@@ -20,12 +19,11 @@ class MediaStore extends AbstractDatabaseStore
 {
     public function __construct(
         mysqlDatabase $database,
-        AttributeService $attributeService,
         private TypeService $typeService,
         private DirService $dir,
         #[GetSetting('html5_media_path')] private Setting $html5MediaPath
     ) {
-        parent::__construct($attributeService, $database);
+        parent::__construct($database);
     }
 
     protected function getModelClassName(): string
