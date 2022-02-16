@@ -7,19 +7,19 @@ use Generator;
 use GibsonOS\Core\Dto\Install\Success;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Install\AbstractInstall;
+use GibsonOS\Core\Manager\ServiceManager;
 use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\User\PermissionRepository;
 use GibsonOS\Core\Service\InstallService;
 use GibsonOS\Core\Service\PriorityInterface;
-use GibsonOS\Core\Service\ServiceManagerService;
 
 class GeneralPermissionData extends AbstractInstall implements PriorityInterface
 {
     public function __construct(
-        ServiceManagerService $serviceManagerService,
+        ServiceManager $ServiceManager,
         private PermissionRepository $permissionRepository
     ) {
-        parent::__construct($serviceManagerService);
+        parent::__construct($ServiceManager);
     }
 
     public function install(string $module): Generator

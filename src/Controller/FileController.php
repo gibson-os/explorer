@@ -21,6 +21,7 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
+use GibsonOS\Core\Manager\ServiceManager;
 use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
@@ -31,7 +32,6 @@ use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\ResponseInterface;
-use GibsonOS\Core\Service\ServiceManagerService;
 use GibsonOS\Core\Service\SessionService;
 use GibsonOS\Core\Service\TwigService;
 use GibsonOS\Core\Utility\StatusCode;
@@ -291,7 +291,7 @@ class FileController extends AbstractController
      */
     #[CheckPermission(Permission::WRITE)]
     public function metaInfos(
-        ServiceManagerService $serviceManagerService,
+        ServiceManager $ServiceManager,
         DescriberFactory $describerFactory,
         GibsonStoreService $gibsonStoreService,
         string $path
@@ -303,7 +303,7 @@ class FileController extends AbstractController
         }
 
         /** @var FileTypeInterface $fileTypeService */
-        $fileTypeService = $serviceManagerService->get($fileTypeDescriber->getServiceClassname());
+        $fileTypeService = $ServiceManager->get($fileTypeDescriber->getServiceClassname());
         $checkSum = md5_file($path);
         $fileMetas = $fileTypeService->getMetas($path);
         $gibsonStoreService->setFileMetas($path, $fileMetas, $checkSum ?: null);

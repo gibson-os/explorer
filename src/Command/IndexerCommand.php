@@ -15,12 +15,12 @@ use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
+use GibsonOS\Core\Manager\ServiceManager;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\EnvService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\LockService;
-use GibsonOS\Core\Service\ServiceManagerService;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 use GibsonOS\Module\Explorer\Service\FileService as ExplorerFileService;
@@ -44,7 +44,7 @@ class IndexerCommand extends AbstractCommand
         private FileService $fileService,
         private EnvService $envService,
         private DescriberFactory $describerFactory,
-        private ServiceManagerService $serviceManagerService,
+        private ServiceManager $ServiceManager,
         private ExplorerFileService $explorerFileService,
         LoggerInterface $logger
     ) {
@@ -181,13 +181,13 @@ class IndexerCommand extends AbstractCommand
 
         if (!$this->gibsonStoreService->hasFileMetas($path, $fileTypeDescriber->getMetasStructure())) {
             /** @var FileTypeInterface $fileTypeService */
-            $fileTypeService = $this->serviceManagerService->get($fileTypeDescriber->getServiceClassname());
+            $fileTypeService = $this->ServiceManager->get($fileTypeDescriber->getServiceClassname());
             $this->explorerFileService->setFileMetas($fileTypeService, $path);
         }
 
         if (!$this->gibsonStoreService->hasFileImage($path)) {
             if ($fileTypeService === null) {
-                $fileTypeService = $this->serviceManagerService->get($fileTypeDescriber->getServiceClassname());
+                $fileTypeService = $this->ServiceManager->get($fileTypeDescriber->getServiceClassname());
             }
 
             try {

@@ -4,15 +4,15 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Factory\File\Type;
 
 use GibsonOS\Core\Exception\FactoryError;
+use GibsonOS\Core\Manager\ServiceManager;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
-use GibsonOS\Core\Service\ServiceManagerService;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\DefaultDescriber;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 
 class DescriberFactory
 {
-    public function __construct(private ServiceManagerService $serviceManagerService)
+    public function __construct(private ServiceManager $ServiceManager)
     {
     }
 
@@ -21,8 +21,8 @@ class DescriberFactory
      */
     public function create(string $filename): FileTypeDescriberInterface
     {
-        $fileService = $this->serviceManagerService->get(FileService::class);
-        $dirService = $this->serviceManagerService->get(DirService::class);
+        $fileService = $this->ServiceManager->get(FileService::class);
+        $dirService = $this->ServiceManager->get(DirService::class);
 
         $namespace = '\\GibsonOS\\Module\\Explorer\\Service\\File\\Type\\Describer\\';
         $classPath =
@@ -45,7 +45,7 @@ class DescriberFactory
 
             /** @var class-string $className */
             $className = $namespace . str_replace('.php', '', $classFilename);
-            $fileTypeDescriberService = $this->serviceManagerService->get($className);
+            $fileTypeDescriberService = $this->ServiceManager->get($className);
 
             if (!$fileTypeDescriberService instanceof FileTypeDescriberInterface) {
                 continue;

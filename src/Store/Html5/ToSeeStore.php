@@ -21,7 +21,7 @@ use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
-use GibsonOS\Module\Explorer\Service\Html5\MediaService as MediaService;
+use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use mysqlDatabase;
 use mysqlTable;
 use stdClass;
