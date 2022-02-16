@@ -6,7 +6,6 @@ namespace GibsonOS\Module\Explorer\Controller;
 use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\CreateError;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
@@ -22,8 +21,6 @@ use GibsonOS\Module\Explorer\Store\TrashStore;
 class TrashController extends AbstractController
 {
     /**
-     * @throws DateTimeError
-     * @throws GetError
      * @throws SelectError
      */
     #[CheckPermission(Permission::READ)]

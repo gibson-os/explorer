@@ -16,7 +16,6 @@ use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User\Permission;
-use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
@@ -68,16 +67,10 @@ class DirController extends AbstractController
     #[CheckPermission(Permission::READ)]
     public function dirList(
         DirListStore $dirListStore,
-        SettingRepository $settingRepository,
+        #[GetSetting('home_path')] Setting $homePath,
         ?string $node,
         ?string $dir
     ): AjaxResponse {
-        $homePath = $settingRepository->getByKeyAndModuleName(
-            'explorer',
-            $this->sessionService->getUserId() ?? 0,
-            'home_path'
-        )->getValue();
-
         $withParents = true;
 
         if (!empty($node) && $node !== 'root') {
@@ -86,7 +79,7 @@ class DirController extends AbstractController
         }
 
         $dirListStore
-            ->setHomePath($homePath)
+            ->setHomePath($homePath->getValue())
             ->setDir($dir ?: DIRECTORY_SEPARATOR)
             ->setWithParents($withParents)
         ;

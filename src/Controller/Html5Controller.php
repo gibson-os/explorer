@@ -5,6 +5,8 @@ namespace GibsonOS\Module\Explorer\Controller;
 
 use Exception;
 use GibsonOS\Core\Attribute\CheckPermission;
+use GibsonOS\Core\Attribute\GetModel;
+use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
@@ -23,6 +25,7 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
+use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
@@ -92,7 +95,7 @@ class Html5Controller extends AbstractController
      */
     #[CheckPermission(Permission::WRITE + Permission::MANAGE)]
     public function convert(
-        SettingRepository $settingRepository,
+        #[GetSetting('home_path')] Setting $homePath,
         MediaService $mediaService,
         string $dir,
         array $files = [],
@@ -100,13 +103,8 @@ class Html5Controller extends AbstractController
         string $subtitleStream = null
     ): AjaxResponse {
         $userId = $this->sessionService->getUserId() ?? 0;
-        $homPath = $settingRepository->getByKeyAndModuleName(
-            $this->requestService->getModuleName(),
-            $userId,
-            'home_path'
-        );
 
-        if (mb_strpos($homPath->getValue(), $dir) === 0) {
+        if (mb_strpos($homePath->getValue(), $dir) === 0) {
             $this->returnFailure(
                 sprintf('Zugriff auf das Verzeichnis %s ist nicht gestattet!', $dir),
                 StatusCode::FORBIDDEN
@@ -124,52 +122,42 @@ class Html5Controller extends AbstractController
      * @throws FileNotFound
      * @throws OpenError
      * @throws ProcessError
-     * @throws SelectError
      * @throws SetError
      * @throws NoAudioError
      */
     #[CheckPermission(Permission::READ)]
     public function convertStatus(
         MediaService $mediaService,
-        MediaRepository $mediaRepository,
-        string $token
+        #[GetModel(['token' => 'token'])] Media $media
     ): AjaxResponse {
-        return $this->returnSuccess($mediaService->getConvertStatus($mediaRepository->getByToken($token)));
+        return $this->returnSuccess($mediaService->getConvertStatus($media));
     }
 
-    /**
-     * @throws SelectError
-     */
     #[CheckPermission(Permission::READ)]
     public function video(
         DirService $dirService,
-        MediaRepository $mediaRepository,
-        SettingRepository $settingRepository,
-        string $token
+        #[GetSetting('html5_media_path')] Setting $html5MediaPath,
+        #[GetModel(['token' => 'token'])] Media $media
     ): FileResponse {
         return $this->stream(
             $dirService,
-            $settingRepository,
-            $mediaRepository->getByToken($token),
+            $html5MediaPath,
+            $media,
             'mp4',
             'video/mp4'
         );
     }
 
-    /**
-     * @throws SelectError
-     */
     #[CheckPermission(Permission::READ)]
     public function audio(
         DirService $dirService,
-        MediaRepository $mediaRepository,
-        SettingRepository $settingRepository,
-        string $token
+        #[GetSetting('html5_media_path')] Setting $html5MediaPath,
+        #[GetModel(['token' => 'token'])] Media $media
     ): FileResponse {
         return $this->stream(
             $dirService,
-            $settingRepository,
-            $mediaRepository->getByToken($token),
+            $html5MediaPath,
+            $media,
             'mp3',
             'audio/mp3'
         );
@@ -180,19 +168,17 @@ class Html5Controller extends AbstractController
      *
      * @throws DateTimeError
      * @throws SaveError
-     * @throws SelectError
      */
     #[CheckPermission(Permission::WRITE)]
     public function savePosition(
         MediaService $mediaService,
-        MediaRepository $mediaRepository,
-        string $token,
+        #[GetModel(['token' => 'token'])] Media $media,
         int $position,
         array $userIds
     ): AjaxResponse {
         foreach (array_unique($userIds) as $userId) {
             $mediaService->savePosition(
-                $mediaRepository->getByToken($token),
+                $media,
                 $position,
                 $userId
             );
@@ -226,13 +212,10 @@ class Html5Controller extends AbstractController
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
     }
 
-    /**
-     * @throws SelectError
-     */
     #[CheckPermission(Permission::READ)]
-    public function get(MediaRepository $mediaRepository, string $token): AjaxResponse
+    public function get(#[GetModel(['token' => 'token'])] Media $media): AjaxResponse
     {
-        return $this->returnSuccess($mediaRepository->getByToken($token));
+        return $this->returnSuccess($media);
     }
 
     /**
@@ -249,15 +232,13 @@ class Html5Controller extends AbstractController
      */
     #[CheckPermission(Permission::READ)]
     public function image(
-        MediaRepository $mediaRepository,
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
         TypeFactory $typeFactory,
-        string $token,
+        #[GetModel(['token' => 'token'])] Media $media,
         int $width = null,
         int $height = null
     ): Response {
-        $media = $mediaRepository->getByToken($token);
         $path = $media->getDir() . $media->getFilename();
 
         if (!$gibsonStoreService->hasFileImage($path)) {
@@ -299,12 +280,9 @@ class Html5Controller extends AbstractController
         return $this->returnSuccess();
     }
 
-    /**
-     * @throws SelectError
-     */
     private function stream(
         DirService $dirService,
-        SettingRepository $settingRepository,
+        Setting $htmlMediaPath,
         Media $media,
         string $fileEnding,
         string $type
@@ -312,11 +290,7 @@ class Html5Controller extends AbstractController
         $filename = $dirService->addEndSlash($media->getDir()) . $media->getFilename();
 
         if ($media->isGenerationRequired()) {
-            $filename = $settingRepository->getByKeyAndModuleName(
-                $this->requestService->getModuleName(),
-                $this->sessionService->getUserId() ?? 0,
-                'html5_media_path'
-            )->getValue() . $media->getToken() . '.' . $fileEnding;
+            $filename = $htmlMediaPath->getValue() . $media->getToken() . '.' . $fileEnding;
         }
 
         return (new FileResponse($this->requestService, $filename))

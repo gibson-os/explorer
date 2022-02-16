@@ -17,7 +17,6 @@ use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
-use GibsonOS\Core\Service\AbstractService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\Ffmpeg\MediaService as CoreMediaService;
 use GibsonOS\Core\Service\File\TypeService;
@@ -27,7 +26,7 @@ use GibsonOS\Module\Explorer\Model\Html5\Media\Position as PositionModel;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use OutOfRangeException;
 
-class MediaService extends AbstractService
+class MediaService
 {
     public function __construct(private CoreMediaService $mediaService, private DirService $dirService, private FileService $fileService, private MediaRepository $mediaRepository, private TypeService $typeService)
     {

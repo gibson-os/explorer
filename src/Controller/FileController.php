@@ -57,7 +57,6 @@ class FileController extends AbstractController
 
     /**
      * @throws CreateError
-     * @throws DateTimeError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
