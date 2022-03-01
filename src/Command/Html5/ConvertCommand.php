@@ -14,13 +14,16 @@ use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
+use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\LockService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
+use JsonException;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 
 /**
  * @description Convert queued medias
@@ -35,6 +38,7 @@ class ConvertCommand extends AbstractCommand
         private MediaService $mediaService,
         private SettingRepository $settingRepository,
         private LockService $lockService,
+        private ModelManager $modelManager,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -43,11 +47,13 @@ class ConvertCommand extends AbstractCommand
     /**
      * @throws DeleteError
      * @throws GetError
+     * @throws NoAudioError
      * @throws ProcessError
      * @throws SaveError
      * @throws SelectError
      * @throws UnlockError
-     * @throws NoAudioError
+     * @throws JsonException
+     * @throws ReflectionException
      */
     protected function run(): int
     {
@@ -55,10 +61,7 @@ class ConvertCommand extends AbstractCommand
             $this->lockService->lock(self::LOCK_NAME);
 
             foreach ($this->mediaRepository->getAllByStatus(Media::STATUS_WAIT) as $media) {
-                $media
-                    ->setStatus(Media::STATUS_GENERATE)
-                    ->save()
-                ;
+                $this->modelManager->save($media->setStatus(Media::STATUS_GENERATE));
 
                 try {
                     $filename = $this->settingRepository->getByKeyAndModuleName(
@@ -83,7 +86,7 @@ class ConvertCommand extends AbstractCommand
                     $media->setStatus(Media::STATUS_ERROR);
                 }
 
-                $media->save();
+                $this->modelManager->save($media);
 
                 // @todo c2dm muss noch rein
             }

@@ -12,7 +12,6 @@ use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\GetError;
-use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User\Permission;
@@ -62,7 +61,6 @@ class DirController extends AbstractController
     /**
      * @throws GetError
      * @throws ReadError
-     * @throws SelectError
      */
     #[CheckPermission(Permission::READ)]
     public function dirList(
@@ -93,8 +91,12 @@ class DirController extends AbstractController
      * @throws ReadError
      */
     #[CheckPermission(Permission::WRITE)]
-    public function add(DirService $dirService, CoreDirService $coreDirService, string $dir, string $dirname): AjaxResponse
-    {
+    public function add(
+        DirService $dirService,
+        CoreDirService $coreDirService,
+        string $dir,
+        string $dirname
+    ): AjaxResponse {
         $path = $coreDirService->addEndSlash($dir) . $dirname;
         $coreDirService->create($path);
 

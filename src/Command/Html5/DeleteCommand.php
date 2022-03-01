@@ -15,6 +15,7 @@ use GibsonOS\Core\Exception\Flock\UnlockError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\DeleteError as ModelDeleteError;
 use GibsonOS\Core\Exception\Repository\SelectError;
+use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
@@ -40,6 +41,7 @@ class DeleteCommand extends AbstractCommand
         private LockService $lockService,
         private DirService $dirService,
         private FileService $fileService,
+        private ModelManager $modelManager,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -94,7 +96,7 @@ class DeleteCommand extends AbstractCommand
                     $media->getDir() . $media->getFilename()
                 );
             } else {
-                $media->delete();
+                $this->modelManager->delete($media);
             }
         }
     }
@@ -158,7 +160,7 @@ class DeleteCommand extends AbstractCommand
                     );
                 } else {
                     $this->fileService->delete($this->mediaPath . $media->getToken() . '.mp4');
-                    $media->delete();
+                    $this->modelManager->delete($media);
                 }
             }
         } catch (SelectError) {
@@ -230,7 +232,7 @@ class DeleteCommand extends AbstractCommand
                     );
                 } else {
                     $this->fileService->delete($this->mediaPath . $media->getToken() . '.mp4');
-                    $media->delete();
+                    $this->modelManager->delete($media);
                 }
 
                 $deleteSize -= $fileSize;

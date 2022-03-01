@@ -25,6 +25,7 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
+use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\SettingRepository;
@@ -43,6 +44,8 @@ use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use GibsonOS\Module\Explorer\Store\Html5\MediaStore;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
+use JsonException;
+use ReflectionException;
 
 class Html5Controller extends AbstractController
 {
@@ -90,8 +93,9 @@ class Html5Controller extends AbstractController
     /**
      * @throws DateTimeError
      * @throws GetError
+     * @throws JsonException
      * @throws SaveError
-     * @throws SelectError
+     * @throws ReflectionException
      */
     #[CheckPermission(Permission::WRITE + Permission::MANAGE)]
     public function convert(
@@ -164,9 +168,11 @@ class Html5Controller extends AbstractController
     }
 
     /**
+     * @param int   $position
      * @param int[] $userIds
      *
-     * @throws DateTimeError
+     * @throws JsonException
+     * @throws ReflectionException
      * @throws SaveError
      */
     #[CheckPermission(Permission::WRITE)]
@@ -223,7 +229,6 @@ class Html5Controller extends AbstractController
      * @throws FileNotFound
      * @throws GetError
      * @throws ReadError
-     * @throws SelectError
      * @throws CreateError
      * @throws LoadError
      * @throws WriteError
@@ -269,12 +274,16 @@ class Html5Controller extends AbstractController
     /**
      * @throws SelectError
      * @throws DeleteError
+     * @throws JsonException
      */
     #[CheckPermission(Permission::DELETE)]
-    public function delete(MediaRepository $mediaRepository, array $tokens): AjaxResponse
-    {
+    public function delete(
+        MediaRepository $mediaRepository,
+        ModelManager $modelManager,
+        array $tokens
+    ): AjaxResponse {
         foreach ($mediaRepository->getByTokens($tokens) as $media) {
-            $media->delete();
+            $modelManager->delete($media);
         }
 
         return $this->returnSuccess();

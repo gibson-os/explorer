@@ -10,11 +10,13 @@ use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\DeleteError as ModelDeleteError;
 use GibsonOS\Core\Exception\Repository\SelectError;
+use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Module\Explorer\Model\Trash;
 use GibsonOS\Module\Explorer\Repository\TrashRepository;
+use JsonException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -28,6 +30,7 @@ class TrashCommand extends AbstractCommand
         private TrashRepository $trashRepository,
         private DirService $dirService,
         private FileService $fileService,
+        private ModelManager $modelManager,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -35,6 +38,7 @@ class TrashCommand extends AbstractCommand
 
     /**
      * @throws SelectError
+     * @throws JsonException
      */
     protected function run(): int
     {
@@ -55,6 +59,9 @@ class TrashCommand extends AbstractCommand
         return self::SUCCESS;
     }
 
+    /**
+     * @throws JsonException
+     */
     private function deleteItem(Trash $trash, string $trashDir): void
     {
         $filename = $this->dirService->addEndSlash($trash->getDir()) . $trash->getFilename();
@@ -75,7 +82,7 @@ class TrashCommand extends AbstractCommand
         }
 
         try {
-            $trash->delete();
+            $this->modelManager->delete($trash);
         } catch (ModelDeleteError) {
             $this->logger->warning(sprintf('Record %s delete error!', $filename));
         }

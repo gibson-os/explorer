@@ -5,6 +5,7 @@ namespace GibsonOS\Module\Explorer\Install\Data;
 
 use Generator;
 use GibsonOS\Core\Dto\Install\Success;
+use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Install\AbstractInstall;
 use GibsonOS\Core\Manager\ServiceManager;
@@ -12,6 +13,8 @@ use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\User\PermissionRepository;
 use GibsonOS\Core\Service\InstallService;
 use GibsonOS\Core\Service\PriorityInterface;
+use JsonException;
+use ReflectionException;
 
 class GeneralPermissionData extends AbstractInstall implements PriorityInterface
 {
@@ -22,6 +25,11 @@ class GeneralPermissionData extends AbstractInstall implements PriorityInterface
         parent::__construct($ServiceManager);
     }
 
+    /**
+     * @throws JsonException
+     * @throws ReflectionException
+     * @throws SaveError
+     */
     public function install(string $module): Generator
     {
         $this
@@ -37,18 +45,23 @@ class GeneralPermissionData extends AbstractInstall implements PriorityInterface
         yield new Success('Set general permission for explorer!');
     }
 
+    /**
+     * @throws SaveError
+     * @throws JsonException
+     * @throws ReflectionException
+     */
     private function setPermission(string $action): GeneralPermissionData
     {
         try {
             $this->permissionRepository->getByModuleTaskAndAction('explorer', 'html5', $action);
         } catch (SelectError) {
-            (new Permission())
-                ->setModule('explorer')
-                ->setTask('html5')
-                ->setAction($action)
-                ->setPermission(Permission::READ)
-                ->save()
-            ;
+            $this->modelManager->save(
+                (new Permission())
+                    ->setModule('explorer')
+                    ->setTask('html5')
+                    ->setAction($action)
+                    ->setPermission(Permission::READ)
+            );
         }
 
         return $this;

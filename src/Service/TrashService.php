@@ -11,12 +11,15 @@ use GibsonOS\Core\Exception\Model\DeleteError as ModelDeleteError;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
+use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DateTimeService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Module\Explorer\Model\Trash;
 use GibsonOS\Module\Explorer\Repository\TrashRepository;
+use JsonException;
+use ReflectionException;
 
 class TrashService
 {
@@ -25,7 +28,8 @@ class TrashService
         private FileService $fileService,
         private SettingRepository $settingRepository,
         private TrashRepository $trashRepository,
-        private DateTimeService $dateTimeService
+        private DateTimeService $dateTimeService,
+        private ModelManager $modelManager
     ) {
     }
 
@@ -34,9 +38,11 @@ class TrashService
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
+     * @throws JsonException
+     * @throws ReflectionException
      * @throws SaveError
-     * @throws SetError
      * @throws SelectError
+     * @throws SetError
      */
     public function add(string $dir, array $files = null, int $userId = null): array
     {
@@ -68,6 +74,7 @@ class TrashService
      * @throws SelectError
      * @throws SetError
      * @throws ModelDeleteError
+     * @throws JsonException
      */
     public function restore(array $tokens, ?int $userId): void
     {
@@ -80,7 +87,7 @@ class TrashService
                 $trashDir . $trash->getToken(),
                 $this->dirService->addEndSlash($trash->getDir()) . ($trash->getFilename() ?? '')
             );
-            $trash->delete();
+            $this->modelManager->delete($trash);
         }
     }
 
@@ -90,6 +97,7 @@ class TrashService
      * @throws GetError
      * @throws ModelDeleteError
      * @throws SelectError
+     * @throws JsonException
      */
     public function delete(array $tokens, ?int $userId): void
     {
@@ -99,17 +107,19 @@ class TrashService
 
         foreach ($this->trashRepository->getByTokens($tokens) as $trash) {
             $this->fileService->delete($trashDir, $trash->getToken());
-            $trash->delete();
+            $this->modelManager->delete($trash);
         }
     }
 
     /**
-     * @throws SaveError
      * @throws CreateError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
+     * @throws JsonException
+     * @throws SaveError
      * @throws SetError
+     * @throws ReflectionException
      */
     private function addElement(string $trashDir, string $dir, ?string $filename, ?int $userId): string
     {
@@ -124,7 +134,7 @@ class TrashService
         ;
 
         $this->fileService->move($dir . ($filename ?? ''), $trashDir . $token);
-        $trash->save();
+        $this->modelManager->save($trash);
 
         return $token;
     }

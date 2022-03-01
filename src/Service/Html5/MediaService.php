@@ -17,6 +17,7 @@ use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
+use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\Ffmpeg\MediaService as CoreMediaService;
 use GibsonOS\Core\Service\File\TypeService;
@@ -24,12 +25,20 @@ use GibsonOS\Core\Service\FileService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position as PositionModel;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
+use JsonException;
 use OutOfRangeException;
+use ReflectionException;
 
 class MediaService
 {
-    public function __construct(private CoreMediaService $mediaService, private DirService $dirService, private FileService $fileService, private MediaRepository $mediaRepository, private TypeService $typeService)
-    {
+    public function __construct(
+        private CoreMediaService $mediaService,
+        private DirService $dirService,
+        private FileService $fileService,
+        private MediaRepository $mediaRepository,
+        private TypeService $typeService,
+        private ModelManager $modelManager
+    ) {
     }
 
     /**
@@ -171,8 +180,9 @@ class MediaService
     }
 
     /**
-     * @throws DateTimeError
      * @throws SaveError
+     * @throws JsonException
+     * @throws ReflectionException
      */
     public function savePosition(Media $media, int $currentPosition, int $userId): void
     {
@@ -180,18 +190,20 @@ class MediaService
             throw new OutOfRangeException('Position 0 ist nicht gültig!');
         }
 
-        (new PositionModel())
-            ->setMediaId($media->getId() ?? 0)
-            ->setPosition($currentPosition)
-            ->setUserId($userId)
-            ->setModified(new DateTime())
-            ->save()
-        ;
+        $this->modelManager->save(
+            (new PositionModel())
+                ->setMediaId($media->getId() ?? 0)
+                ->setPosition($currentPosition)
+                ->setUserId($userId)
+                ->setModified(new DateTime())
+        );
     }
 
     /**
      * @throws DateTimeError
      * @throws GetError
+     * @throws JsonException
+     * @throws ReflectionException
      * @throws SaveError
      */
     public function scheduleConvert(
@@ -243,16 +255,16 @@ class MediaService
                 $token = $this->mediaRepository->getFreeToken();
                 $tokens[$dir . $file] = $token;
 
-                (new Media())
-                    ->setToken($token)
-                    ->setDir($dir)
-                    ->setFilename($file)
-                    ->setAudioStream($audioStream)
-                    ->setSubtitleStream($subtitleStream)
-                    ->setType($category)
-                    ->setUserId($userId)
-                    ->save()
-                ;
+                $this->modelManager->save(
+                    (new Media())
+                        ->setToken($token)
+                        ->setDir($dir)
+                        ->setFilename($file)
+                        ->setAudioStream($audioStream)
+                        ->setSubtitleStream($subtitleStream)
+                        ->setType($category)
+                        ->setUserId($userId)
+                );
             }
         }
 
