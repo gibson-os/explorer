@@ -145,7 +145,7 @@ class ToSeeStore extends AbstractDatabaseStore
                     ) || (*/
                         $oldMedia->position >= ($oldMedia->duration - ($oldMedia->duration / 20)) &&
                         strcmp($oldMedia->filename, $media->filename) < 0 // Alter Dateiname ist kleiner als der neue
-                    //)
+                    // )
                 ) {
                     $medias[$key] = $media;
                 }
