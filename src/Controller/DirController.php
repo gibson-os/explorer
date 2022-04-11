@@ -54,7 +54,7 @@ class DirController extends AbstractController
             'dir' => $dir,
             'meta' => $dirStore->getMetas(),
             'path' => explode(DIRECTORY_SEPARATOR, mb_substr($dir, 0, -1)),
-            'homePath' => $homePath,
+            'homePath' => $homePath->getValue(),
         ]);
     }
 
