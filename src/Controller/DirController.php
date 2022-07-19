@@ -19,6 +19,7 @@ use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
+use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Service\DirService;
 use GibsonOS\Module\Explorer\Store\DirListStore;
 use GibsonOS\Module\Explorer\Store\DirStore;
@@ -94,10 +95,17 @@ class DirController extends AbstractController
     public function add(
         DirService $dirService,
         CoreDirService $coreDirService,
+        #[GetSetting('home_path')] Setting $homePath,
         string $dir,
         string $dirname
     ): AjaxResponse {
-        $path = $coreDirService->addEndSlash($dir) . $dirname;
+        $dir = $coreDirService->addEndSlash($dir);
+
+        if (mb_strpos($homePath->getValue(), $dir) === 0) {
+            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+        }
+
+        $path = $dir . $dirname;
         $coreDirService->create($path);
 
         return $this->returnSuccess($dirService->get($path));
@@ -110,10 +118,18 @@ class DirController extends AbstractController
     #[CheckPermission(Permission::READ)]
     public function download(
         CoreDirService $dirService,
+        CoreDirService $coreDirService,
         ZipArchive $zipArchive,
         RequestService $requestService,
+        #[GetSetting('home_path')] Setting $homePath,
         string $dir
-    ): FileResponse {
+    ): FileResponse|AjaxResponse {
+        $dir = $coreDirService->addEndSlash($dir);
+
+        if (mb_strpos($homePath->getValue(), $dir) === 0) {
+            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+        }
+
         $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5((string) rand()) . '.zip';
 
         if (file_exists($fileName)) {

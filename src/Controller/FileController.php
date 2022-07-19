@@ -5,6 +5,7 @@ namespace GibsonOS\Module\Explorer\Controller;
 
 use Exception;
 use GibsonOS\Core\Attribute\CheckPermission;
+use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -22,8 +23,8 @@ use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Manager\ServiceManager;
+use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User\Permission;
-use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService as CoreFileService;
 use GibsonOS\Core\Service\ImageService;
@@ -32,8 +33,6 @@ use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\ResponseInterface;
-use GibsonOS\Core\Service\SessionService;
-use GibsonOS\Core\Service\TwigService;
 use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\OverwriteException;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
@@ -43,34 +42,29 @@ use GibsonOS\Module\Explorer\Service\FileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\TrashService;
 use JsonException;
+use ReflectionException;
 
 class FileController extends AbstractController
 {
-    public function __construct(
-        RequestService $requestService,
-        TwigService $twigService,
-        SessionService $sessionService,
-        private SettingRepository $settingRepository
-    ) {
-        parent::__construct($requestService, $twigService, $sessionService);
-    }
-
     /**
      * @throws CreateError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
+     * @throws JsonException
      * @throws SaveError
      * @throws SelectError
      * @throws SetError
+     * @throws ReflectionException
      */
     #[CheckPermission(Permission::DELETE)]
     public function delete(
         TrashService $trashService,
+        #[GetSetting('home_path')] Setting $homePath,
         string $dir,
         array $files
     ): AjaxResponse {
-        if (mb_strpos($this->getHomePath(), $dir) === 0) {
+        if (mb_strpos($homePath->getValue(), $dir) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
         }
 
@@ -79,30 +73,28 @@ class FileController extends AbstractController
         return $this->returnSuccess();
     }
 
-    /**
-     * @throws SelectError
-     */
     #[CheckPermission(Permission::READ)]
-    public function download(RequestService $requestService): ResponseInterface
-    {
+    public function download(
+        RequestService $requestService,
+        #[GetSetting('home_path')] Setting $homePath,
+    ): ResponseInterface {
         $filename = '/' . urldecode($requestService->getQueryString());
 
-        if (mb_strpos($this->getHomePath(), $filename) === 0) {
+        if (mb_strpos($homePath->getValue(), $filename) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
         }
 
         return new FileResponse($requestService, $filename);
     }
 
-    /**
-     * @throws SelectError
-     */
     #[CheckPermission(Permission::READ)]
-    public function show(RequestService $requestService): ResponseInterface
-    {
+    public function show(
+        RequestService $requestService,
+        #[GetSetting('home_path')] Setting $homePath,
+    ): ResponseInterface {
         $filename = '/' . urldecode($requestService->getQueryString());
 
-        if (mb_strpos($this->getHomePath(), $filename) === 0) {
+        if (mb_strpos($homePath->getValue(), $filename) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
         }
 
@@ -112,13 +104,13 @@ class FileController extends AbstractController
     }
 
     /**
-     * @throws SelectError
      * @throws OverwriteException
      */
     #[CheckPermission(Permission::WRITE)]
     public function upload(
         DirService $dirService,
         FileService $fileService,
+        #[GetSetting('home_path')] Setting $homePath,
         string $dir,
         ?array $file,
         ?string $filename,
@@ -128,9 +120,8 @@ class FileController extends AbstractController
         bool $ignoreAll = false
     ): AjaxResponse {
         $dir = $dirService->addEndSlash($dir);
-        // $path = $dir . $file['name'];
 
-        if (mb_strpos($this->getHomePath(), $dir) === 0) {
+        if (mb_strpos($homePath->getValue(), $dir) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
         }
 
@@ -139,8 +130,8 @@ class FileController extends AbstractController
                 return $this->returnFailure('Uploaded file not found', StatusCode::NOT_FOUND);
             }
 
-            // $fileService->move($file['tmp_name'], $path, $overwrite, $ignore);
-            // $fileService->setPerms($path, 0660);
+        // $fileService->move($file['tmp_name'], $path, $overwrite, $ignore);
+        // $fileService->setPerms($path, 0660);
         } elseif (!$fileService->isWritable($dir . $filename, $overwrite, $ignore)) {
             // $this->_Helper->isWritable($dir . $filename, $overwrite, $ignore);
             // @todo exception erstellen. Alternativ die alte methode in den explorer file service ziehen?
@@ -152,16 +143,20 @@ class FileController extends AbstractController
 
     /**
      * @throws GetError
-     * @throws SelectError
      * @throws CreateError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws SetError
      */
     #[CheckPermission(Permission::WRITE + Permission::DELETE)]
-    public function move(CoreFileService $fileService, string $from, string $to, string $name): AjaxResponse
-    {
-        $homePath = $this->getHomePath();
+    public function move(
+        CoreFileService $fileService,
+        #[GetSetting('home_path')] Setting $homePath,
+        string $from,
+        string $to,
+        string $name
+    ): AjaxResponse {
+        $homePath = $homePath->getValue();
 
         if (
             mb_strpos($homePath, $from) === 0 ||
@@ -180,20 +175,20 @@ class FileController extends AbstractController
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws SelectError
      * @throws SetError
      */
     #[CheckPermission(Permission::WRITE)]
     public function rename(
         CoreFileService $fileService,
         DirService $dirService,
+        #[GetSetting('home_path')] Setting $homePath,
         string $dir,
         string $oldFilename,
         string $newFilename
     ): AjaxResponse {
         $dir = $dirService->addEndSlash($dir);
 
-        if (mb_strpos($this->getHomePath(), $dir) === 0) {
+        if (mb_strpos($homePath->getValue(), $dir) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
         }
 
@@ -290,7 +285,7 @@ class FileController extends AbstractController
      */
     #[CheckPermission(Permission::WRITE)]
     public function metaInfos(
-        ServiceManager $ServiceManager,
+        ServiceManager $serviceManager,
         DescriberFactory $describerFactory,
         GibsonStoreService $gibsonStoreService,
         string $path
@@ -302,23 +297,11 @@ class FileController extends AbstractController
         }
 
         /** @var FileTypeInterface $fileTypeService */
-        $fileTypeService = $ServiceManager->get($fileTypeDescriber->getServiceClassname());
+        $fileTypeService = $serviceManager->get($fileTypeDescriber->getServiceClassname());
         $checkSum = md5_file($path);
         $fileMetas = $fileTypeService->getMetas($path);
         $gibsonStoreService->setFileMetas($path, $fileMetas, $checkSum ?: null);
 
         return $this->returnSuccess($fileMetas);
-    }
-
-    /**
-     * @throws SelectError
-     */
-    private function getHomePath(): string
-    {
-        return $this->settingRepository->getByKeyAndModuleName(
-            'explorer',
-            $this->sessionService->getUserId() ?? 0,
-            'home_path'
-        )->getValue();
     }
 }

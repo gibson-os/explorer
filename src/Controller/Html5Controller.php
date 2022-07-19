@@ -168,7 +168,6 @@ class Html5Controller extends AbstractController
     }
 
     /**
-     * @param int   $position
      * @param int[] $userIds
      *
      * @throws JsonException
