@@ -9,6 +9,7 @@ Ext.define('GibsonOS.module.explorer.dir.Parameter', {
             xtype: 'gosFormTextfield',
             margins: '0 5 0 0',
             isFormField: false,
+            name: me.name,
             value: me.value
         },{
             xtype: 'gosButton',
