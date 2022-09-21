@@ -86,16 +86,24 @@ class DeleteCommand extends AbstractCommand
     private function deleteWhereFileNotExists(): void
     {
         foreach ($this->mediaRepository->getAllByStatus(Media::STATUS_GENERATED) as $media) {
-            if (file_exists($media->getDir() . $media->getFilename())) {
+            if (
+                file_exists($media->getDir() . $media->getFilename()) &&
+                file_exists($this->mediaPath . $media->getToken() . '.mp4')
+            ) {
+                $this->logger->debug(sprintf(
+                    'Media %s exist. Not deleted.',
+                    $media->getDir() . $media->getFilename()
+                ));
+
                 continue;
             }
 
-            if ($this->dry) {
-                printf(
-                    'Media %s deleted because file does not exist.' . PHP_EOL,
-                    $media->getDir() . $media->getFilename()
-                );
-            } else {
+            $this->logger->info(sprintf(
+                'Media %s deleted because file does not exist.',
+                $media->getDir() . $media->getFilename()
+            ));
+
+            if (!$this->dry) {
                 $this->modelManager->delete($media);
             }
         }
@@ -113,14 +121,19 @@ class DeleteCommand extends AbstractCommand
 
             try {
                 $this->mediaRepository->getByToken($token);
+
+                $this->logger->debug(sprintf(
+                    'Generated media %s exist. Not deleted.',
+                    $this->mediaPath . $filename
+                ));
             } catch (SelectError) {
                 try {
-                    if ($this->dry) {
-                        printf(
-                            'Generated Video %s deleted because media entity does not exist.' . PHP_EOL,
-                            $this->mediaPath . $filename
-                        );
-                    } else {
+                    $this->logger->info(sprintf(
+                        'Generated media %s deleted because media entity does not exist.',
+                        $this->mediaPath . $filename
+                    ));
+
+                    if (!$this->dry) {
                         $this->fileService->delete($file);
                     }
                 } catch (FileNotFound) {
@@ -151,14 +164,14 @@ class DeleteCommand extends AbstractCommand
             }
 
             foreach ($this->mediaRepository->getAllOlderThan(new DateTime('-' . $lifetime . ' days')) as $media) {
-                if ($this->dry) {
-                    printf(
-                        'Media %s deleted because generate date %s is older than %s.' . PHP_EOL,
-                        $media->getDir() . $media->getFilename(),
-                        $media->getAdded()->format('Y-m-d'),
-                        (new DateTime('-' . $lifetime . ' days'))->format('Y-m-d')
-                    );
-                } else {
+                $this->logger->info(sprintf(
+                    'Media %s deleted because generate date %s is older than %s.' . PHP_EOL,
+                    $media->getDir() . $media->getFilename(),
+                    $media->getAdded()->format('Y-m-d'),
+                    (new DateTime('-' . $lifetime . ' days'))->format('Y-m-d')
+                ));
+
+                if (!$this->dry) {
                     $this->fileService->delete($this->mediaPath . $media->getToken() . '.mp4');
                     $this->modelManager->delete($media);
                 }
@@ -222,15 +235,14 @@ class DeleteCommand extends AbstractCommand
                 }
 
                 $fileSize = filesize($this->mediaPath . $media->getToken() . '.mp4');
+                $this->logger->info(sprintf(
+                    'Media %s deleted because folder size is %d Bytes bigger as %d Bytes.' . PHP_EOL,
+                    $media->getDir() . $media->getFilename(),
+                    $deleteSize,
+                    $size
+                ));
 
-                if ($this->dry) {
-                    printf(
-                        'Media %s deleted because folder size is %d Bytes bigger as %d Bytes.' . PHP_EOL,
-                        $media->getDir() . $media->getFilename(),
-                        $deleteSize,
-                        $size
-                    );
-                } else {
+                if (!$this->dry) {
                     $this->fileService->delete($this->mediaPath . $media->getToken() . '.mp4');
                     $this->modelManager->delete($media);
                 }
