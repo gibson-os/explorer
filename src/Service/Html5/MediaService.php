@@ -22,9 +22,11 @@ use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\Ffmpeg\MediaService as CoreMediaService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Service\FileService;
+use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position as PositionModel;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
+use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 use JsonException;
 use OutOfRangeException;
 use ReflectionException;
@@ -32,12 +34,12 @@ use ReflectionException;
 class MediaService
 {
     public function __construct(
-        private CoreMediaService $mediaService,
-        private DirService $dirService,
-        private FileService $fileService,
-        private MediaRepository $mediaRepository,
-        private TypeService $typeService,
-        private ModelManager $modelManager
+        private readonly CoreMediaService $mediaService,
+        private readonly DirService $dirService,
+        private readonly FileService $fileService,
+        private readonly MediaRepository $mediaRepository,
+        private readonly TypeService $typeService,
+        private readonly ModelManager $modelManager,
     ) {
     }
 
@@ -163,6 +165,7 @@ class MediaService
      * @throws OpenError
      * @throws ProcessError
      * @throws SetError
+     * @throws MediaException
      */
     public function getConvertStatus(Media $media): ConvertStatus
     {
@@ -174,7 +177,7 @@ class MediaService
             $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
         );
 
-        return $this->mediaService->getConvertStatus($mediaDto, $media->getToken() . '.mp4')
+        return $this->mediaService->getConvertStatus($mediaDto, $media->getToken() . $this->getGeneratedFileEnding($media))
             ->setStatus($media->getStatus())
         ;
     }
@@ -269,6 +272,15 @@ class MediaService
         }
 
         return $tokens;
+    }
+
+    public function getGeneratedFileEnding(Media $media): string
+    {
+        return match ($media->getType()) {
+            FileTypeDescriberInterface::CATEGORY_VIDEO => '.mp4',
+            FileTypeDescriberInterface::CATEGORY_AUDIO => '.mp3',
+            default => throw new MediaException(sprintf('%d has no defined ending!'))
+        };
     }
 
     private function isMp4Video(MediaDto $mediaDto): bool

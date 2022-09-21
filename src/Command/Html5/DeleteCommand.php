@@ -20,9 +20,11 @@ use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\LockService;
+use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
-use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
+use GibsonOS\Module\Explorer\Service\Html5\MediaService;
+use JsonException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -37,12 +39,13 @@ class DeleteCommand extends AbstractCommand
     private string $mediaPath;
 
     public function __construct(
-        private MediaRepository $mediaRepository,
-        private SettingRepository $settingRepository,
-        private LockService $lockService,
-        private DirService $dirService,
-        private FileService $fileService,
-        private ModelManager $modelManager,
+        private readonly MediaRepository $mediaRepository,
+        private readonly SettingRepository $settingRepository,
+        private readonly LockService $lockService,
+        private readonly DirService $dirService,
+        private readonly FileService $fileService,
+        private readonly ModelManager $modelManager,
+        private readonly MediaService $mediaService,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -52,6 +55,8 @@ class DeleteCommand extends AbstractCommand
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
+     * @throws JsonException
+     * @throws MediaException
      * @throws ModelDeleteError
      * @throws SelectError
      * @throws UnlockError
@@ -81,8 +86,10 @@ class DeleteCommand extends AbstractCommand
     }
 
     /**
-     * @throws SelectError
      * @throws ModelDeleteError
+     * @throws SelectError
+     * @throws MediaException
+     * @throws JsonException
      */
     private function deleteWhereFileNotExists(): void
     {
@@ -94,7 +101,7 @@ class DeleteCommand extends AbstractCommand
                     file_exists(
                         $this->mediaPath .
                         $media->getToken() .
-                        ($media->getType() === FileTypeDescriberInterface::CATEGORY_VIDEO ? '.mp4' : 'mp3')
+                        $this->mediaService->getGeneratedFileEnding($media)
                     )
                 )
             ) {
@@ -183,7 +190,7 @@ class DeleteCommand extends AbstractCommand
                     $this->fileService->delete(
                         $this->mediaPath .
                         $media->getToken() .
-                        ($media->getType() === FileTypeDescriberInterface::CATEGORY_VIDEO ? '.mp4' : 'mp3')
+                        $this->mediaService->getGeneratedFileEnding($media)
                     );
                     $this->modelManager->delete($media);
                 }
@@ -197,6 +204,8 @@ class DeleteCommand extends AbstractCommand
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
+     * @throws JsonException
+     * @throws MediaException
      * @throws ModelDeleteError
      */
     private function deleteWhereSizeExceeded(): void
@@ -250,7 +259,7 @@ class DeleteCommand extends AbstractCommand
                     continue;
                 }
 
-                $fileEnding = $media->getType() === FileTypeDescriberInterface::CATEGORY_VIDEO ? '.mp4' : 'mp3';
+                $fileEnding = $this->mediaService->getGeneratedFileEnding($media);
                 $fileSize = filesize($this->mediaPath . $media->getToken() . $fileEnding);
                 $this->logger->info(sprintf(
                     'Media %s deleted because folder size is %d Bytes bigger as %d Bytes.' . PHP_EOL,
