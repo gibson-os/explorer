@@ -22,6 +22,7 @@ use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Service\LockService;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
+use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -88,11 +89,18 @@ class DeleteCommand extends AbstractCommand
         foreach ($this->mediaRepository->getAllByStatus(Media::STATUS_GENERATED) as $media) {
             if (
                 file_exists($media->getDir() . $media->getFilename()) &&
-                file_exists($this->mediaPath . $media->getToken() . '.mp4')
+                (
+                    !$media->isGenerationRequired() ||
+                    file_exists(
+                        $this->mediaPath .
+                        $media->getToken() .
+                        ($media->getType() === FileTypeDescriberInterface::CATEGORY_VIDEO ? '.mp4' : 'mp3')
+                    )
+                )
             ) {
                 $this->logger->debug(sprintf(
                     'Media %s exist. Not deleted.',
-                    $media->getDir() . $media->getFilename()
+                    $this->mediaPath . $media->getToken()
                 ));
 
                 continue;
@@ -100,7 +108,7 @@ class DeleteCommand extends AbstractCommand
 
             $this->logger->info(sprintf(
                 'Media %s deleted because file does not exist.',
-                $media->getDir() . $media->getFilename()
+                $this->mediaPath . $media->getToken()
             ));
 
             if (!$this->dry) {
@@ -172,7 +180,11 @@ class DeleteCommand extends AbstractCommand
                 ));
 
                 if (!$this->dry) {
-                    $this->fileService->delete($this->mediaPath . $media->getToken() . '.mp4');
+                    $this->fileService->delete(
+                        $this->mediaPath .
+                        $media->getToken() .
+                        ($media->getType() === FileTypeDescriberInterface::CATEGORY_VIDEO ? '.mp4' : 'mp3')
+                    );
                     $this->modelManager->delete($media);
                 }
             }
@@ -234,7 +246,12 @@ class DeleteCommand extends AbstractCommand
                     break;
                 }
 
-                $fileSize = filesize($this->mediaPath . $media->getToken() . '.mp4');
+                if (!$media->isGenerationRequired()) {
+                    continue;
+                }
+
+                $fileEnding = $media->getType() === FileTypeDescriberInterface::CATEGORY_VIDEO ? '.mp4' : 'mp3';
+                $fileSize = filesize($this->mediaPath . $media->getToken() . $fileEnding);
                 $this->logger->info(sprintf(
                     'Media %s deleted because folder size is %d Bytes bigger as %d Bytes.' . PHP_EOL,
                     $media->getDir() . $media->getFilename(),
@@ -243,7 +260,7 @@ class DeleteCommand extends AbstractCommand
                 ));
 
                 if (!$this->dry) {
-                    $this->fileService->delete($this->mediaPath . $media->getToken() . '.mp4');
+                    $this->fileService->delete($this->mediaPath . $media->getToken() . $fileEnding);
                     $this->modelManager->delete($media);
                 }
 
