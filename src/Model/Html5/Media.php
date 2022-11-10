@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Model\Html5;
 
-use DateTime;
-use DateTimeInterface;
 use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Key;
@@ -12,8 +10,6 @@ use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
-use JsonSerializable;
-use mysqlDatabase;
 
 /**
  * @method User  getUser()
@@ -21,7 +17,7 @@ use mysqlDatabase;
  */
 #[Table]
 #[Key(columns: ['dir', 'filename'])]
-class Media extends AbstractModel implements JsonSerializable
+class Media extends AbstractModel implements \JsonSerializable
 {
     public const SUBTITLE_NONE = 'none';
 
@@ -66,7 +62,7 @@ class Media extends AbstractModel implements JsonSerializable
     private bool $generationRequired = true;
 
     #[Column(type: Column::TYPE_TIMESTAMP, default: Column::DEFAULT_CURRENT_TIMESTAMP)]
-    private DateTimeInterface $added;
+    private \DateTimeInterface $added;
 
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private int $userId;
@@ -74,11 +70,11 @@ class Media extends AbstractModel implements JsonSerializable
     #[Constraint]
     protected User $user;
 
-    public function __construct(mysqlDatabase $database = null)
+    public function __construct(\mysqlDatabase $database = null)
     {
         parent::__construct($database);
 
-        $this->added = new DateTime();
+        $this->added = new \DateTime();
     }
 
     public function getId(): ?int
@@ -201,12 +197,12 @@ class Media extends AbstractModel implements JsonSerializable
         return $this;
     }
 
-    public function getAdded(): DateTimeInterface
+    public function getAdded(): \DateTimeInterface
     {
         return $this->added;
     }
 
-    public function setAdded(DateTimeInterface $added): Media
+    public function setAdded(\DateTimeInterface $added): Media
     {
         $this->added = $added;
 

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Install;
 
-use Generator;
 use GibsonOS\Core\Dto\Install\Success;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\InstallException;
@@ -21,7 +20,7 @@ class Html5Install extends AbstractInstall implements PriorityInterface
      * @throws SelectError
      * @throws CreateError
      */
-    public function install(string $module): Generator
+    public function install(string $module): \Generator
     {
         yield $html5MediaPathInput = $this->getSettingInput(
             'explorer',

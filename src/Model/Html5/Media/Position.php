@@ -3,14 +3,12 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Model\Html5\Media;
 
-use DateTimeInterface;
 use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
-use mysqlDatabase;
 
 /**
  * @method Media    getMedia()
@@ -31,7 +29,7 @@ class Position extends AbstractModel
     private int $position;
 
     #[Column(type: Column::TYPE_TIMESTAMP, default: Column::DEFAULT_CURRENT_TIMESTAMP, attributes: [Column::ATTRIBUTE_CURRENT_TIMESTAMP])]
-    private DateTimeInterface $modified;
+    private \DateTimeInterface $modified;
 
     #[Constraint]
     protected Media $media;
@@ -39,7 +37,7 @@ class Position extends AbstractModel
     #[Constraint]
     protected User $user;
 
-    public function __construct(mysqlDatabase $database = null)
+    public function __construct(\mysqlDatabase $database = null)
     {
         parent::__construct($database);
     }
@@ -80,12 +78,12 @@ class Position extends AbstractModel
         return $this;
     }
 
-    public function getModified(): DateTimeInterface
+    public function getModified(): \DateTimeInterface
     {
         return $this->modified;
     }
 
-    public function setModified(DateTimeInterface $modified): Position
+    public function setModified(\DateTimeInterface $modified): Position
     {
         $this->modified = $modified;
 

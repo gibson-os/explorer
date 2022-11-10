@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Controller;
 
-use Exception;
 use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Attribute\GetModel;
 use GibsonOS\Core\Attribute\GetSetting;
@@ -37,6 +36,7 @@ use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\TwigResponse;
 use GibsonOS\Core\Utility\StatusCode;
+use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
@@ -44,8 +44,6 @@ use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use GibsonOS\Module\Explorer\Store\Html5\MediaStore;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
-use JsonException;
-use ReflectionException;
 
 class Html5Controller extends AbstractController
 {
@@ -93,9 +91,9 @@ class Html5Controller extends AbstractController
     /**
      * @throws DateTimeError
      * @throws GetError
-     * @throws JsonException
+     * @throws \JsonException
      * @throws SaveError
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     #[CheckPermission(Permission::WRITE + Permission::MANAGE)]
     public function convert(
@@ -128,6 +126,7 @@ class Html5Controller extends AbstractController
      * @throws ProcessError
      * @throws SetError
      * @throws NoAudioError
+     * @throws MediaException
      */
     #[CheckPermission(Permission::READ)]
     public function convertStatus(
@@ -170,8 +169,8 @@ class Html5Controller extends AbstractController
     /**
      * @param int[] $userIds
      *
-     * @throws JsonException
-     * @throws ReflectionException
+     * @throws \JsonException
+     * @throws \ReflectionException
      * @throws SaveError
      */
     #[CheckPermission(Permission::WRITE)]
@@ -232,7 +231,7 @@ class Html5Controller extends AbstractController
      * @throws LoadError
      * @throws WriteError
      * @throws FactoryError
-     * @throws Exception
+     * @throws \Exception
      */
     #[CheckPermission(Permission::READ)]
     public function image(
@@ -273,7 +272,7 @@ class Html5Controller extends AbstractController
     /**
      * @throws SelectError
      * @throws DeleteError
-     * @throws JsonException
+     * @throws \JsonException
      */
     #[CheckPermission(Permission::DELETE)]
     public function delete(

@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Command\Html5;
 
-use DateTime;
-use Exception;
 use GibsonOS\Core\Attribute\Command\Option;
 use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
@@ -24,7 +22,6 @@ use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
-use JsonException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -55,7 +52,7 @@ class DeleteCommand extends AbstractCommand
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws JsonException
+     * @throws \JsonException
      * @throws MediaException
      * @throws ModelDeleteError
      * @throws SelectError
@@ -89,7 +86,7 @@ class DeleteCommand extends AbstractCommand
      * @throws ModelDeleteError
      * @throws SelectError
      * @throws MediaException
-     * @throws JsonException
+     * @throws \JsonException
      */
     private function deleteWhereFileNotExists(): void
     {
@@ -163,7 +160,7 @@ class DeleteCommand extends AbstractCommand
      * @throws FileNotFound
      * @throws GetError
      * @throws ModelDeleteError
-     * @throws Exception
+     * @throws \Exception
      */
     private function deleteWhereLifetimeExpired(): void
     {
@@ -178,12 +175,12 @@ class DeleteCommand extends AbstractCommand
                 return;
             }
 
-            foreach ($this->mediaRepository->getAllOlderThan(new DateTime('-' . $lifetime . ' days')) as $media) {
+            foreach ($this->mediaRepository->getAllOlderThan(new \DateTime('-' . $lifetime . ' days')) as $media) {
                 $this->logger->info(sprintf(
                     'Media %s deleted because generate date %s is older than %s.' . PHP_EOL,
                     $media->getDir() . $media->getFilename(),
                     $media->getAdded()->format('Y-m-d'),
-                    (new DateTime('-' . $lifetime . ' days'))->format('Y-m-d')
+                    (new \DateTime('-' . $lifetime . ' days'))->format('Y-m-d')
                 ));
 
                 if (!$this->dry) {
@@ -204,7 +201,7 @@ class DeleteCommand extends AbstractCommand
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws JsonException
+     * @throws \JsonException
      * @throws MediaException
      * @throws ModelDeleteError
      */
