@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Dto;
 
-use JsonSerializable;
-
-class File implements JsonSerializable
+class File implements \JsonSerializable
 {
     private bool $thumbAvailable = false;
 

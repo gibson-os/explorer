@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Repository\Html5;
 
-use DateTime;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
@@ -89,7 +88,7 @@ class MediaRepository extends AbstractRepository
      *
      * @return Media[]
      */
-    public function getAllOlderThan(DateTime $date): array
+    public function getAllOlderThan(\DateTime $date): array
     {
         return $this->fetchAll(
             '`added`<?',

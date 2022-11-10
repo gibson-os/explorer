@@ -41,8 +41,6 @@ use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 use GibsonOS\Module\Explorer\Service\FileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\TrashService;
-use JsonException;
-use ReflectionException;
 
 class FileController extends AbstractController
 {
@@ -51,11 +49,11 @@ class FileController extends AbstractController
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws JsonException
+     * @throws \JsonException
      * @throws SaveError
      * @throws SelectError
      * @throws SetError
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     #[CheckPermission(Permission::DELETE)]
     public function delete(
@@ -229,7 +227,7 @@ class FileController extends AbstractController
      * @throws WriteError
      * @throws ImageCreateError
      * @throws LoadError
-     * @throws Exception
+     * @throws \Exception
      */
     #[CheckPermission(Permission::READ)]
     public function image(
@@ -280,8 +278,8 @@ class FileController extends AbstractController
      * @throws GetError
      * @throws ReadError
      * @throws WriteError
-     * @throws JsonException
-     * @throws Exception
+     * @throws \JsonException
+     * @throws \Exception
      */
     #[CheckPermission(Permission::WRITE)]
     public function metaInfos(

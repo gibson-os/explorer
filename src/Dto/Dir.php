@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Dto;
 
-use JsonSerializable;
-
-class Dir implements JsonSerializable
+class Dir implements \JsonSerializable
 {
     private int $size = 0;
 

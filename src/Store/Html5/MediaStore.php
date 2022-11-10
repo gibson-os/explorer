@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
-use Generator;
 use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\GetError;
@@ -13,12 +12,11 @@ use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
-use mysqlDatabase;
 
 class MediaStore extends AbstractDatabaseStore
 {
     public function __construct(
-        mysqlDatabase $database,
+        \mysqlDatabase $database,
         private TypeService $typeService,
         private DirService $dir,
         #[GetSetting('html5_media_path')] private Setting $html5MediaPath
@@ -35,7 +33,7 @@ class MediaStore extends AbstractDatabaseStore
      * @throws DateTimeError
      * @throws SelectError
      */
-    public function getList(): Generator
+    public function getList(): \Generator
     {
         $mediaPath = $this->html5MediaPath->getValue();
 

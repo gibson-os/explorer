@@ -7,13 +7,12 @@ use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Trash;
-use mysqlDatabase;
 
 class TrashStore extends AbstractDatabaseStore
 {
     public function __construct(
         private FileService $fileService,
-        mysqlDatabase $database = null
+        \mysqlDatabase $database = null
     ) {
         parent::__construct($database);
     }

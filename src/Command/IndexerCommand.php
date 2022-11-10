@@ -104,7 +104,7 @@ class IndexerCommand extends AbstractCommand
 
             try {
                 $this->indexFile($path);
-            } catch (Exception $exception) {
+            } catch (\Exception $exception) {
                 echo 'FEHLER: ' . $exception->getMessage() . PHP_EOL;
             }
         }
@@ -120,14 +120,14 @@ class IndexerCommand extends AbstractCommand
                 $this->gibsonStoreService->cleanStore($storeDir, $files);
                 $this->gibsonStoreService->setDirMetas($storeDir, $dirMetas);
                 system('/usr/bin/setfacl -m u:' . $this->envService->getString('APACHE_USER') . ':rw- "' . $dir . '.gibsonStore"');
-            } catch (Exception $exception) {
+            } catch (\Exception $exception) {
                 echo 'FEHLER: ' . $exception->getMessage() . PHP_EOL;
             }
         }
 
         try {
             $this->gibsonStoreService->close($storeDir);
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             echo 'FEHLER: ' . $exception->getMessage() . PHP_EOL;
         }
 
