@@ -59,8 +59,19 @@ class MediaService
             return;
         }
 
+        $options = [
+            'crf' => 23,
+            'preset' => 'veryfast',
+            'movflags' => 'faststart',
+        ];
+
         if (!empty($audioStream)) {
             $mediaDto->selectAudioStream($audioStream);
+
+            if (mb_strpos($mediaDto->getSelectedAudioStream()->getChannels() ?? '', '5.1') !== false) {
+                $options['ac'] = 2;
+                $options['vol'] = 425;
+            }
         }
 
         if (!empty($media->getSubtitleStream())) {
@@ -76,12 +87,7 @@ class MediaService
             $filename,
             'libx264',
             'libfdk_aac',
-            [
-                'crf' => 23,
-                'preset' => 'veryfast',
-                'movflags' => 'faststart',
-                'ac' => 2,
-            ]
+            $options
         );
     }
 
