@@ -68,10 +68,7 @@ class MediaService
         if (!empty($audioStream)) {
             $mediaDto->selectAudioStream($audioStream);
 
-            if (mb_strpos($mediaDto->getSelectedAudioStream()->getChannels() ?? '', '5.1') !== false) {
-                $options['ac'] = 2;
-                $options['vol'] = 425;
-            }
+            $options = $this->convertSurroundSound($mediaDto, $options);
         }
 
         if (!empty($media->getSubtitleStream())) {
@@ -282,7 +279,7 @@ class MediaService
         return match ($media->getType()) {
             FileTypeDescriberInterface::CATEGORY_VIDEO => '.mp4',
             FileTypeDescriberInterface::CATEGORY_AUDIO => '.mp3',
-            default => throw new MediaException(sprintf('%d has no defined ending!'))
+            default => throw new MediaException(sprintf('%d has no defined ending!', $media->getType()))
         };
     }
 
@@ -293,5 +290,18 @@ class MediaService
             count($mediaDto->getAudioStreams()) <= 1 &&
             count($mediaDto->getVideoStreams()) <= 1
         ;
+    }
+
+    /**
+     * @throws NoAudioError
+     */
+    private function convertSurroundSound(MediaDto $mediaDto, array $options): array
+    {
+        if (mb_strpos($mediaDto->getSelectedAudioStream()->getChannels() ?? '', '5.1') !== false) {
+            $options['ac'] = 2;
+            $options['vol'] = 425;
+        }
+
+        return $options;
     }
 }
