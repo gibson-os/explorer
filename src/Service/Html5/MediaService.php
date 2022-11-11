@@ -80,6 +80,7 @@ class MediaService
                 'crf' => 23,
                 'preset' => 'veryfast',
                 'movflags' => 'faststart',
+                'ac' => 2,
             ]
         );
     }
