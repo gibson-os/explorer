@@ -8,7 +8,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/amphp/amp" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/amphp/byte-stream" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/behat/gherkin" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/captainhook/captainhook" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/captainhook/plugin-composer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/codeception/lib-asserts" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/codeception/module-asserts" />
@@ -88,6 +87,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/firebase/php-jwt" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-client" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/smalot/pdfparser" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/nikic/php-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/captainhook/captainhook" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

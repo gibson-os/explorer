@@ -45,26 +45,7 @@ class ToSeeStore extends AbstractDatabaseStore
 
     protected function setWheres(): void
     {
-        $this->addWhere(
-            '`' . $this->tableName . '`.`status` IN (?, ?)',
-            [ConvertStatus::STATUS_GENERATE, ConvertStatus::STATUS_GENERATED]
-        );
-
-        $userIds = $this->userIds;
-
-        if (count($userIds) > 0) {
-            $this->addWhere(
-                '`' . $this->tableName . '`.`user_id` IN (' . $this->table->getParametersString($userIds) . ')',
-                $userIds
-            );
-        } else {
-            $userIds = [0];
-        }
-
-        $this->addWhere(
-            '`' . $this->positionTableName . '`.`user_id` IN (' . $this->table->getParametersString($userIds) . ')',
-            $userIds
-        );
+        $this->addWhere('`' . $this->tableName . '`.`status` IN (?, ?)');
     }
 
     /**
@@ -81,10 +62,19 @@ class ToSeeStore extends AbstractDatabaseStore
     {
         parent::initTable();
 
+        $userIds = $this->userIds ?: [0];
         $this->table->appendJoinLeft(
             $this->positionTableName,
-            '`' . $this->tableName . '`.`id`=`explorer_html5_media_position`.`media_id`'
+            '`' . $this->tableName . '`.`id`=`' . $this->positionTableName . '`.`media_id` AND ' .
+            '`' . $this->positionTableName . '`.`user_id` IN (' . $this->table->getParametersString($userIds) . ')',
         );
+
+        foreach ($userIds as $userId) {
+            $this->table->addWhereParameter($userId);
+        }
+
+        $this->table->addWhereParameter(ConvertStatus::STATUS_GENERATE);
+        $this->table->addWhereParameter(ConvertStatus::STATUS_GENERATED);
     }
 
     /**
@@ -115,8 +105,17 @@ class ToSeeStore extends AbstractDatabaseStore
         $positionTable->setSelectString(array_merge($select, ['orderDate' => 'modified` AS `orderDate']));
         $positionTable->appendJoin(
             $tableName,
-            '`' . $tableName . '`.`id`=`explorer_html5_media_position`.`media_id`'
+            '`' . $tableName . '`.`id`=`' . $this->positionTableName . '`.`media_id`'
         );
+        $userIds = $this->userIds ?: [0];
+        $positionTable->setWhere(
+            '`' . $this->positionTableName . '`.`user_id` IN ' .
+            '(' . $positionTable->getParametersString($userIds) . ')'
+        );
+
+        foreach ($userIds as $userId) {
+            $this->table->addWhereParameter($userId);
+        }
 
         $this->table
             ->appendUnion($positionTable->getSelect())
@@ -129,7 +128,6 @@ class ToSeeStore extends AbstractDatabaseStore
         foreach ($this->table->connection->fetchObjectList() as $media) {
             $filenamePattern = $this->generateFilenamePattern($media->filename);
             $key = $this->dir->escapeForGlob($media->dir) . $filenamePattern;
-
             $media->position = (int) $media->position;
 
             try {
@@ -193,16 +191,17 @@ class ToSeeStore extends AbstractDatabaseStore
                     ->setFilename($media->filename)
                     ->setToken($media->token)
                 ;
-                $convertStatus = $this->media->getConvertStatus($mediaModel);
 
-                $listMedia['convertPercent'] = $convertStatus->getPercent();
-                $listMedia['convertTime'] = $convertStatus->getTime()->getTimestamp();
-                $timeRemaining = $convertStatus->getTimeRemaining();
-                $listMedia['convertTimeRemaining'] =
-                    $timeRemaining === null
-                    ? 0
-                    : $timeRemaining->getTimestamp()
-                ;
+                try {
+                    $convertStatus = $this->media->getConvertStatus($mediaModel);
+                } catch (FileNotFound) {
+                    $convertStatus = null;
+                }
+
+                $listMedia['convertPercent'] = $convertStatus?->getPercent() ?? 0;
+                $listMedia['convertTime'] = $convertStatus === null ? 0 : $convertStatus->getTime()->getTimestamp();
+                $timeRemaining = $convertStatus?->getTimeRemaining();
+                $listMedia['convertTimeRemaining'] = $timeRemaining === null ? 0 : $timeRemaining->getTimestamp();
             }
 
             yield $listMedia;
