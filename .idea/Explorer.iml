@@ -89,6 +89,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/smalot/pdfparser" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/nikic/php-parser" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/captainhook/captainhook" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/var-exporter" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
