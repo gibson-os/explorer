@@ -12,6 +12,9 @@ Ext.define('GibsonOS.module.explorer.html5.TabPanel', {
         },{
             xtype: 'gosModuleExplorerHtml5Grid',
             title: 'Alle'
+        },{
+            xtype: 'gosModuleExplorerHtml5ConnectedUserGrid',
+            title: 'Verbundene Benutzer'
         }];
 
         me.callParent();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Controller;
 
 use GibsonOS\Core\Attribute\CheckPermission;
+use GibsonOS\Core\Attribute\GetMappedModel;
 use GibsonOS\Core\Attribute\GetModel;
 use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
@@ -13,6 +14,7 @@ use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
 use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\File\OpenError;
 use GibsonOS\Core\Exception\FileNotFound;
+use GibsonOS\Core\Exception\FormException;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Image\CreateError;
 use GibsonOS\Core\Exception\Image\LoadError;
@@ -26,6 +28,7 @@ use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Model\Setting;
+use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
@@ -38,10 +41,13 @@ use GibsonOS\Core\Service\Response\TwigResponse;
 use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
+use GibsonOS\Module\Explorer\Form\Html5\ConnectedUserForm;
+use GibsonOS\Module\Explorer\Model\Html5\ConnectedUser;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
+use GibsonOS\Module\Explorer\Store\Html5\ConnectedUserStore;
 use GibsonOS\Module\Explorer\Store\Html5\MediaStore;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
 
@@ -304,5 +310,40 @@ class Html5Controller extends AbstractController
             ->setType($type)
             ->setDisposition(null)
         ;
+    }
+
+    /**
+     * @throws SelectError
+     * @throws \JsonException
+     * @throws \ReflectionException
+     */
+    #[CheckPermission(Permission::READ)]
+    public function connectedUsers(ConnectedUserStore $connectedUserStore): AjaxResponse
+    {
+        $connectedUserStore->setUser($this->sessionService->getUser() ?? new User());
+
+        return $this->returnSuccess($connectedUserStore->getList(), $connectedUserStore->getCount());
+    }
+
+    /**
+     * @throws FormException
+     */
+    #[CheckPermission(Permission::WRITE)]
+    public function connectedUserForm(ConnectedUserForm $connectedUserForm): AjaxResponse
+    {
+        return $this->returnSuccess($connectedUserForm->getForm());
+    }
+
+    /**
+     * @throws FormException
+     */
+    #[CheckPermission(Permission::WRITE)]
+    public function addConnectedUser(
+        ModelManager $modelManager,
+        #[GetMappedModel] ConnectedUser $connectedUser,
+    ): AjaxResponse {
+        $modelManager->save($connectedUser);
+
+        return $this->returnSuccess();
     }
 }
