@@ -16,15 +16,15 @@ Ext.define('GibsonOS.module.explorer.index.View', {
         }
     },
     initComponent: function() {
-        var view = this;
+        const me = this;
 
-        view.gos.functions.loadThumbnails = function() {
-            view.gos.store.gos.data.loadThumbnailsPointer = 0;
-            view.gos.store.gos.data.runLoadThumbnails = true;
-            view.gos.store.fireEvent('loadThumbnails', view.gos.store);
+        me.gos.functions.loadThumbnails = function() {
+            me.gos.store.gos.data.loadThumbnailsPointer = 0;
+            me.gos.store.gos.data.runLoadThumbnails = true;
+            me.gos.store.fireEvent('loadThumbnails', me.gos.store);
         };
 
-        this.gos.store = new GibsonOS.module.explorer.dir.store.View({
+        me.gos.store = new GibsonOS.module.explorer.dir.store.View({
             gos: {
                 data: {
                     runLoadThumbnails: true,
@@ -35,19 +35,19 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                 }
             }
         });
-        this.gos.store.on('load', function(store, records) {
+        me.gos.store.on('load', (store, records) => {
             store.gos.data.runLoadThumbnails = false;
 
             if (store.getProxy().getReader().jsonData.meta) {
-                view.gos.data.fileSize = store.getProxy().getReader().jsonData.meta.filesize;
-                view.gos.data.dirSize = store.getProxy().getReader().jsonData.meta.dirsize;
-                view.gos.data.fileCount = store.getProxy().getReader().jsonData.meta.filecount;
-                view.gos.data.dirFileCount = store.getProxy().getReader().jsonData.meta.dirfilecount;
-                view.gos.data.dirCount = store.getProxy().getReader().jsonData.meta.dircount;
-                view.gos.data.dirDirCount = store.getProxy().getReader().jsonData.meta.dirdircount;
+                me.gos.data.fileSize = store.getProxy().getReader().jsonData.meta.filesize;
+                me.gos.data.dirSize = store.getProxy().getReader().jsonData.meta.dirsize;
+                me.gos.data.fileCount = store.getProxy().getReader().jsonData.meta.filecount;
+                me.gos.data.dirFileCount = store.getProxy().getReader().jsonData.meta.dirfilecount;
+                me.gos.data.dirCount = store.getProxy().getReader().jsonData.meta.dircount;
+                me.gos.data.dirDirCount = store.getProxy().getReader().jsonData.meta.dirdircount;
             }
 
-            view.gos.functions.loadThumbnails();
+            me.gos.functions.loadThumbnails();
 
             Ext.iterate(records, (record) => {
                 if (record.get('html5MediaStatus') === 'generated') {
@@ -57,19 +57,19 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                     chromeCast.itemsInView[record.get('html5MediaToken')].push(record);
                 }
             });
-        }, this, {
+        }, me, {
             priority: 999
         });
-        this.gos.store.on('add', function(store) {
-            view.gos.functions.loadThumbnails(store);
+        me.gos.store.on('add', (store) => {
+            me.gos.functions.loadThumbnails(store);
         });
-        this.gos.store.on('loadThumbnails', function(store) {
+        me.gos.store.on('loadThumbnails', (store) => {
             if (!store.gos.data.runLoadThumbnails) {
                 return false;
             }
 
-            var pointer = store.gos.data.loadThumbnailsPointer;
-            var records = store.getRange();
+            let pointer = store.gos.data.loadThumbnailsPointer;
+            const records = store.getRange();
 
             for (var i = pointer; i < records.length; i++) {
                 if (
@@ -118,14 +118,20 @@ Ext.define('GibsonOS.module.explorer.index.View', {
             }
         });
 
-        this.callParent();
+        const listeners = {
+            itemclick: GibsonOS.module.explorer.index.listener.itemClick,
+            addDir(button, response, dir, child) {
+                me.fireEvent('addDir', button, response, dir, child);
+            },
+            deleteFile(response, dir, records) {
+                me.fireEvent('deleteFile', response, dir, records);
+            }
+        };
 
-        this.items = [{
+        me.items = [{
             xtype: 'gosModuleExplorerDirGrid',
             store: this.gos.store,
-            listeners: {
-                itemclick: GibsonOS.module.explorer.index.listener.itemClick
-            },
+            listeners: listeners,
             gos: {
                 functions: this.gos.functions
             }
@@ -139,9 +145,7 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                 },
                 functions: this.gos.functions
             },
-            listeners: {
-                itemclick: GibsonOS.module.explorer.index.listener.itemClick
-            }
+            listeners: listeners
         },{
             xtype: 'gosModuleExplorerDirView',
             store: this.gos.store,
@@ -152,9 +156,7 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                 },
                 functions: this.gos.functions
             },
-            listeners: {
-                itemclick: GibsonOS.module.explorer.index.listener.itemClick
-            }
+            listeners: listeners
         },{
             xtype: 'gosModuleExplorerDirView',
             store: this.gos.store,
@@ -165,9 +167,7 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                 },
                 functions: this.gos.functions
             },
-            listeners: {
-                itemclick: GibsonOS.module.explorer.index.listener.itemClick
-            }
+            listeners: listeners
         },{
             xtype: 'gosModuleExplorerDirView',
             store: this.gos.store,
@@ -178,9 +178,7 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                 },
                 functions: this.gos.functions
             },
-            listeners: {
-                itemclick: GibsonOS.module.explorer.index.listener.itemClick
-            }
+            listeners: listeners
         },{
             xtype: 'gosModuleExplorerDirView',
             store: this.gos.store,
@@ -191,14 +189,12 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                 },
                 functions: this.gos.functions
             },
-            listeners: {
-                itemclick: GibsonOS.module.explorer.index.listener.itemClick
-            }
+            listeners: listeners
         }];
 
-        this.callParent();
+        me.callParent();
 
-        this.on('destroy', function(panel) {
+        me.on('destroy', function(panel) {
             panel.gos.store.gos.data.runLoadThumbnails = false;
         });
     }

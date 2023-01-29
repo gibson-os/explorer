@@ -32,11 +32,11 @@ class ConvertCommand extends AbstractCommand
     private const LOCK_NAME = 'html5Convert';
 
     public function __construct(
-        private MediaRepository $mediaRepository,
-        private MediaService $mediaService,
-        private SettingRepository $settingRepository,
-        private LockService $lockService,
-        private ModelManager $modelManager,
+        private readonly MediaRepository $mediaRepository,
+        private readonly MediaService $mediaService,
+        private readonly SettingRepository $settingRepository,
+        private readonly LockService $lockService,
+        private readonly ModelManager $modelManager,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);

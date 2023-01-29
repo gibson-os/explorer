@@ -16,8 +16,8 @@ Ext.define('GibsonOS.module.explorer.dir.View', {
         this.itemContextMenu = GibsonOS.module.explorer.dir.contextMenu.item;
         this.containerContextMenu = GibsonOS.module.explorer.dir.contextMenu.container;
 
-        var iconSize = this.gos.data.iconSize;
-        var badgeSize = iconSize/2;
+        let iconSize = this.gos.data.iconSize;
+        let badgeSize = iconSize/2;
 
         if (iconSize == 48) {
             badgeSize = 16;

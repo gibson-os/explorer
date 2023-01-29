@@ -25,11 +25,11 @@ use Psr\Log\LoggerInterface;
 class TrashCommand extends AbstractCommand
 {
     public function __construct(
-        private SettingRepository $settingRepository,
-        private TrashRepository $trashRepository,
-        private DirService $dirService,
-        private FileService $fileService,
-        private ModelManager $modelManager,
+        private readonly SettingRepository $settingRepository,
+        private readonly TrashRepository $trashRepository,
+        private readonly DirService $dirService,
+        private readonly FileService $fileService,
+        private readonly ModelManager $modelManager,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);

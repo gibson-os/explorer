@@ -149,12 +149,15 @@ class FileController extends AbstractController
     #[CheckPermission(Permission::WRITE + Permission::DELETE)]
     public function move(
         CoreFileService $fileService,
+        DirService $dirService,
         #[GetSetting('home_path')] Setting $homePath,
         string $from,
         string $to,
-        string $name
+        array $names,
     ): AjaxResponse {
         $homePath = $homePath->getValue();
+        $from = $dirService->addEndSlash($from);
+        $to = $dirService->addEndSlash($to);
 
         if (
             mb_strpos($homePath, $from) === 0 ||
@@ -163,7 +166,9 @@ class FileController extends AbstractController
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
         }
 
-        $fileService->move($from . $name, $to . $name);
+        foreach ($names as $name) {
+            $fileService->move($from . $name, $to . $name);
+        }
 
         return $this->returnSuccess();
     }

@@ -37,15 +37,15 @@ class IndexerCommand extends AbstractCommand
     private bool $renew = false;
 
     public function __construct(
-        private LockService $lockService,
-        private SettingRepository $settingRepository,
-        private GibsonStoreService $gibsonStoreService,
-        private DirService $dirService,
-        private FileService $fileService,
-        private EnvService $envService,
-        private DescriberFactory $describerFactory,
-        private ServiceManager $ServiceManager,
-        private ExplorerFileService $explorerFileService,
+        private readonly LockService $lockService,
+        private readonly SettingRepository $settingRepository,
+        private readonly GibsonStoreService $gibsonStoreService,
+        private readonly DirService $dirService,
+        private readonly FileService $fileService,
+        private readonly EnvService $envService,
+        private readonly DescriberFactory $describerFactory,
+        private readonly ServiceManager $ServiceManager,
+        private readonly ExplorerFileService $explorerFileService,
         LoggerInterface $logger
     ) {
         parent::__construct($logger);
