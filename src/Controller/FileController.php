@@ -174,6 +174,38 @@ class FileController extends AbstractController
     }
 
     /**
+     * @throws GetError
+     * @throws CreateError
+     * @throws SetError
+     */
+    #[CheckPermission(Permission::WRITE + Permission::DELETE)]
+    public function copy(
+        CoreFileService $fileService,
+        DirService $dirService,
+        #[GetSetting('home_path')] Setting $homePath,
+        string $from,
+        string $to,
+        array $names,
+    ): AjaxResponse {
+        $homePath = $homePath->getValue();
+        $from = $dirService->addEndSlash($from);
+        $to = $dirService->addEndSlash($to);
+
+        if (
+            mb_strpos($homePath, $from) === 0 ||
+            mb_strpos($homePath, $to) === 0
+        ) {
+            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+        }
+
+        foreach ($names as $name) {
+            $fileService->copy($from . $name, $to . $name);
+        }
+
+        return $this->returnSuccess();
+    }
+
+    /**
      * @throws CreateError
      * @throws DeleteError
      * @throws FileNotFound

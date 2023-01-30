@@ -1,5 +1,5 @@
 Ext.define('GibsonOS.module.explorer.dir.View', {
-    extend: 'GibsonOS.View',
+    extend: 'GibsonOS.module.core.component.view.View',
     alias: ['widget.gosModuleExplorerDirView'],
     requiredPermission: {
         module: 'explorer',
@@ -12,9 +12,20 @@ Ext.define('GibsonOS.module.explorer.dir.View', {
     trackOver: true,
     overItemCls: 'explorerViewItemOver',
     selectedItemCls: 'explorerViewItemSelected',
-    initComponent: function() {
-        this.itemContextMenu = GibsonOS.module.explorer.dir.contextMenu.item;
-        this.containerContextMenu = GibsonOS.module.explorer.dir.contextMenu.container;
+    enableKeyEvents: true,
+    enableClickEvents: true,
+    enableContextMenu: true,
+    initComponent() {
+        let me = this;
+
+        me = GibsonOS.decorator.Drag.init(me);
+        me = GibsonOS.decorator.Drop.init(me);
+        me = GibsonOS.decorator.ActionManager.init(me);
+        me = GibsonOS.decorator.action.Add.init(me);
+        me = GibsonOS.decorator.action.Enter.init(me);
+        me = GibsonOS.decorator.action.Delete.init(me);
+        me = GibsonOS.module.explorer.dir.decorator.Drop.init(me);
+        me = GibsonOS.module.explorer.dir.decorator.Shortcuts.init(me);
 
         let iconSize = this.gos.data.iconSize;
         let badgeSize = iconSize/2;
@@ -41,27 +52,14 @@ Ext.define('GibsonOS.module.explorer.dir.View', {
             '</div>',
             '</tpl>'
         );
-        this.itemId = 'explorerDirView' + iconSize;
+        me.itemId = 'explorerDirView' + iconSize;
 
-        this.callParent();
-        this.on('itemdblclick', GibsonOS.module.explorer.dir.listener.itemDblClick);
-        this.on('itemkeydown', function(view, record, item, index, event) {
-            if (event.getKey() == Ext.EventObject.DELETE) {
-                var dir = view.getStore().getProxy().getReader().jsonData.dir;
-                var records = view.getSelectionModel().getSelection();
+        me.callParent();
 
-                GibsonOS.module.explorer.file.fn.delete(dir, records, function(response) {
-                    view.up().fireEvent('deleteFile', response, dir, records);
-                    view.getStore().remove(records);
-                });
-            } else if (event.getKey() == Ext.EventObject.RETURN) {
-                GibsonOS.module.explorer.dir.listener.itemDblClick(view, record);
-            } else {
-                GibsonOS.module.explorer.dir.fn.jumpToItem(view, record, index, event);
-            }
-        });
-        this.on('render', function(view, options) {
-            GibsonOS.module.explorer.file.fn.setUploadField(view, view.gos.functions && view.gos.functions.upload ? view.gos.functions.upload : {});
-        });
+        GibsonOS.decorator.ActionManager.addListeners(me);
+        GibsonOS.decorator.Drag.addListeners(me);
+        GibsonOS.decorator.Drop.addListeners(me);
+        GibsonOS.module.explorer.dir.decorator.Actions.add(me);
+        GibsonOS.module.explorer.dir.decorator.Listeners.add(me);
     }
 });

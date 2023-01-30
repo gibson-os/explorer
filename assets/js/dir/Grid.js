@@ -38,39 +38,6 @@ Ext.define('GibsonOS.module.explorer.dir.Grid', {
             me.getStore().remove(records);
         });
     },
-    getShortcuts(records) {
-        const me = this;
-        const dir = me.getStore().getProxy().getReader().jsonData.dir;
-        let shortcuts = [];
-
-        Ext.iterate(records, (record) => {
-            if (record.get('type') === 'dir') {
-                shortcuts.push({
-                    module: 'explorer',
-                    task: 'index',
-                    action: 'index',
-                    text: record.get('name'),
-                    icon: 'icon_dir',
-                    parameters: {
-                        dir: dir + record.get('name') + '/'
-                    }
-                });
-            } else {
-                shortcuts.push({
-                    module: 'explorer',
-                    task: 'file',
-                    action: 'download',
-                    text: record.get('name'),
-                    icon: 'icon_' + record.get('type'),
-                    parameters: {
-                        path: dir + record.get('name')
-                    }
-                });
-            }
-        });
-
-        return shortcuts;
-    },
     viewConfig: {
         getRowClass(record) {
             if (record.get('hidden')) {
@@ -82,73 +49,12 @@ Ext.define('GibsonOS.module.explorer.dir.Grid', {
         let me = this;
 
         me = GibsonOS.module.explorer.dir.decorator.Drop.init(me);
+        me = GibsonOS.module.explorer.dir.decorator.Shortcuts.init(me);
 
         me.callParent();
 
-        me.addAction({
-            text: 'Umbenennen',
-            selectionNeeded: true,
-            maxSelectionAllowed: 1,
-            handler() {
-                const record = me.getSelectionModel().getSelection()[0];
-
-                GibsonOS.MessageBox.show({
-                    title: 'Dateiname',
-                    msg: 'Neuer Name',
-                    type: GibsonOS.MessageBox.type.PROMPT,
-                    promptParameter: 'newFilename',
-                    okText: 'Umbenenen',
-                    value: record.get('name')
-                },{
-                    url: baseDir + 'explorer/file/rename',
-                    params: {
-                        dir: dir,
-                        oldFilename: record.get('name')
-                    },
-                    success(response) {
-                        const data = Ext.decode(response.responseText).data;
-
-                        record.set('name', data.filename);
-
-                        if (data.type !== record.get('type')) {
-                            record.set('type', data.type);
-                            record.set('category', data.category);
-                            record.set('thumbAvailable', data.thumbAvailable);
-                            record.set('thumb', null);
-                        }
-
-                        record.commit();
-                    }
-                });
-            }
-        });
-        GibsonOS.module.explorer.dir.action.Chromecast.init(me);
-        GibsonOS.module.explorer.dir.action.Convert.init(me);
-        me.addAction({
-            xtype: 'menuseparator',
-            addToContainerContextMenu: false,
-        });
-        me.addAction({
-            text: 'Neu',
-            menu: [
-                GibsonOS.module.explorer.dir.action.AddDir.getConfig(me),
-                GibsonOS.module.explorer.dir.action.AddFile.getConfig(me)
-            ]
-        });
-
-        me.on('cellkeydown', (table, td, cellIndex, record, tr, rowIndex, event) => {
-            if (
-                event.getKey() !== Ext.EventObject.DELETE &&
-                event.getKey() !== Ext.EventObject.RETURN
-            ) {
-                GibsonOS.module.explorer.dir.fn.jumpToItem(me, record, rowIndex, event);
-            }
-        });
-        me.on('render', (grid) => {
-            GibsonOS.module.explorer.file.fn.setUploadField(grid, grid.gos.functions && grid.gos.functions.upload ? grid.gos.functions.upload : {});
-
-            // grid.dropZone = GibsonOS.module.explorer.dir.listener.dropZone(grid);
-        });
+        GibsonOS.module.explorer.dir.decorator.Actions.add(me);
+        GibsonOS.module.explorer.dir.decorator.Listeners.add(me);
     },
     getColumns() {
         return [{

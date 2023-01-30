@@ -47,7 +47,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                     params: {
                         from: data.component.getStore().getProxy().getReader().jsonData.dir,
                         to: component.getStore().getProxy().getReader().jsonData.dir,
-                        names: names
+                        'names[]': names
                     },
                     success() {
                         component.getStore().add(records);
