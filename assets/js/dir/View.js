@@ -15,13 +15,13 @@ Ext.define('GibsonOS.module.explorer.dir.View', {
     enableKeyEvents: true,
     enableClickEvents: true,
     enableContextMenu: true,
+    enableDrag: true,
     initComponent() {
         let me = this;
 
         me = GibsonOS.decorator.Drag.init(me);
         me = GibsonOS.decorator.Drop.init(me);
         me = GibsonOS.decorator.ActionManager.init(me);
-        me = GibsonOS.decorator.action.Add.init(me);
         me = GibsonOS.decorator.action.Enter.init(me);
         me = GibsonOS.decorator.action.Delete.init(me);
         me = GibsonOS.module.explorer.dir.decorator.Drop.init(me);
@@ -30,7 +30,7 @@ Ext.define('GibsonOS.module.explorer.dir.View', {
         let iconSize = this.gos.data.iconSize;
         let badgeSize = iconSize/2;
 
-        if (iconSize == 48) {
+        if (iconSize === 48) {
             badgeSize = 16;
         }
 

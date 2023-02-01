@@ -9,18 +9,19 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.AddDir', {
             // requiredPermission: {
             //     module: 'explorer',
             //     task: 'dir',
-            //     action: 'save',
+            //     action: 'save'   ,
             //     permission: GibsonOS.Permission.WRITE
             // },
             handler() {
                 const me = this;
-                const dir = component.getStore().getProxy().getReader().jsonData.dir;
+                const store = component.getStore();
+                const dir = store.getProxy().getReader().jsonData.dir;
 
                 GibsonOS.module.explorer.dir.fn.add(dir, (response) => {
                     const data = Ext.decode(response.responseText).data;
 
                     component.fireEvent('addDir', me, response, dir, data.name);
-                    component.getStore().add(data);
+                    store.add(data);
                 });
             }
         }

@@ -13,10 +13,11 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.AddFile', {
             //     permission: GibsonOS.Permission.WRITE
             // },
             handler() {
-                const dir = component.getStore().getProxy().getReader().jsonData.dir;
+                const store = component.getStore();
+                const dir = store.getProxy().getReader().jsonData.dir;
 
                 GibsonOS.module.explorer.file.fn.add(dir, (response) => {
-                    component.getStore().add(Ext.decode(response.responseText).data);
+                    store.add(Ext.decode(response.responseText).data);
                 });
             }
         };

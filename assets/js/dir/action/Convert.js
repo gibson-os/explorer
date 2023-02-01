@@ -11,8 +11,8 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Convert', {
             },
             handler() {
                 const me = this;
-                const records = component.getSelectionModel().getSelection();
-                const dir = component.getStore().getProxy().getReader().jsonData.dir;
+                const records = me.component.getSelectionModel().getSelection();
+                const dir = me.component.getStore().getProxy().getReader().jsonData.dir;
                 let files = [];
 
                 Ext.iterate(records, (record) => {

@@ -1,5 +1,6 @@
 Ext.define('GibsonOS.module.explorer.dir.model.View', {
     extend: 'GibsonOS.data.Model',
+    idProperty: 'name',
     fields: [{
         name: 'size',
         type: 'int'

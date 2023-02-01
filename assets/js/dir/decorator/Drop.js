@@ -7,9 +7,17 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                 return data.component.enableExplorerDrop;
             },
             addRecords(records, ctrlPressed, data) {
-                if (data.dragElementId === component.id && !ctrlPressed) {
+                const me = this;
+
+                if (data.dragElementId === me.id && !ctrlPressed) {
                     return;
                 }
+
+                records = [];
+
+                Ext.iterate(data.records, (record) => {
+                    records.push(record.getData());
+                });
 
                 let title = 'Verschieben';
                 const message = 'Möchten Sie ' + (records.length > 1 ? records.length + ' Elemente' : records[0]['name']) + ' ';
@@ -19,7 +27,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                     title = 'Kopieren';
                     messageSuffix = 'kopieren';
 
-                    if (data.dragElementId === component.id) {
+                    if (data.dragElementId === me.id) {
                         Ext.iterate(records, (record) => {
                             record['name'] = '(Kopie) ' + record['name'];
                         });
@@ -46,11 +54,11 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                     url: baseDir + 'explorer/file/' + (ctrlPressed ? 'copy' : 'move'),
                     params: {
                         from: data.component.getStore().getProxy().getReader().jsonData.dir,
-                        to: component.getStore().getProxy().getReader().jsonData.dir,
+                        to: me.getStore().getProxy().getReader().jsonData.dir,
                         'names[]': names
                     },
                     success() {
-                        component.getStore().add(records);
+                        me.getStore().add(records);
 
                         if (!ctrlPressed) {
                             data.component.getStore().remove(data.records);
@@ -60,13 +68,25 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
             },
             insertRecords(targetRecord, records, ctrlPressed, data) {
                 const targetIsDir = targetRecord.get('type') === 'dir';
+                const me = this;
+                const isInsertAllowed = () => {
+                    if (targetIsDir) {
+                        return true;
+                    }
 
-                if (data.dragElementId === component.id && !(ctrlPressed || targetIsDir)) {
+                    if (data.dragElementId !== me.id) {
+                        return true;
+                    }
+
+                    return ctrlPressed;
+                }
+
+                if (!isInsertAllowed()) {
                     return;
                 }
 
                 let title = 'Verschieben';
-                const message = 'Möchten Sie ' + (records.length > 1 ? records.length + ' Elemente' : records[0]['name']) + ' ';
+                const message = 'Möchten Sie ' + (records.length > 1 ? records.length + ' Elemente' : records[0].get('name')) + ' ';
                 let messageSuffix = 'verschieben';
 
                 if (ctrlPressed) {
@@ -77,7 +97,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                 let names = [];
 
                 Ext.iterate(records, (record) => {
-                    names.push(record['name']);
+                    names.push(record.get('name'));
                 });
 
                 GibsonOS.MessageBox.show({
@@ -94,12 +114,12 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                     url: baseDir + 'explorer/file/' + (ctrlPressed ? 'copy' : 'move'),
                     params: {
                         from: data.component.getStore().getProxy().getReader().jsonData.dir,
-                        to: component.getStore().getProxy().getReader().jsonData.dir,
-                        names: names
+                        to: me.getStore().getProxy().getReader().jsonData.dir + (targetIsDir ? targetRecord.get('name') : ''),
+                        'names[]': names
                     },
                     success() {
                         if (!targetIsDir) {
-                            component.getStore().add(records);
+                            me.getStore().add(records);
                         }
 
                         if (!ctrlPressed) {
