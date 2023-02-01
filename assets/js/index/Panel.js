@@ -531,22 +531,20 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
             });
         });
 
-        this.down('#explorerDirTree').on('addDir', function(button, response) {
-            var menu = button.up('menu');
-            var viewStore = panel.down('#explorerIndexView').gos.store;
+        this.down('#explorerDirTree').on('addDir', (button, response, dir) => {
+            const viewStore = panel.down('#explorerIndexView').gos.store;
 
-            if (menu.getRecord().get('id') == viewStore.getProxy().extraParams.dir) {
-                var data = Ext.decode(response.responseText).data;
-                viewStore.add(data);
+            if (dir === viewStore.getProxy().extraParams.dir) {
+                viewStore.add(Ext.decode(response.responseText).data);
             }
         });
         this.down('#explorerDirTree').on('deleteDir', function(response, record) {
             var viewStore = panel.down('#explorerIndexView').gos.store;
             var parentDir = record.get('id').replace(/[^\/]*\/$/, '');
 
-            if (record.get('id') == viewStore.getProxy().extraParams.dir) {
+            if (record.get('id') === viewStore.getProxy().extraParams.dir) {
                 panel.down('#explorerIndexUpButton').handler();
-            } else if (parentDir == viewStore.getProxy().extraParams.dir) {
+            } else if (parentDir === viewStore.getProxy().extraParams.dir) {
                 var dirParts = record.get('id').split('/');
                 var dirName = dirParts[dirParts.length-1];
 

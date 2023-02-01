@@ -1,5 +1,5 @@
 Ext.define('GibsonOS.module.explorer.dir.Tree', {
-    extend: 'GibsonOS.tree.Panel',
+    extend: 'GibsonOS.module.core.component.tree.Panel',
     alias: ['widget.gosModuleExplorerDirViewTree'],
     itemId: 'explorerDirTree',
     requiredPermission: {
@@ -8,10 +8,18 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
     },
     header: false,
     useArrows: true,
-    initComponent: function() {
-        var tree = this;
+    deleteFunction(records) {
+        const me = this;
 
-        this.store = new GibsonOS.module.explorer.dir.store.Tree({
+        GibsonOS.module.explorer.file.fn.delete(records[0].get('id'), [], (response) => {
+            me.fireEvent('deleteDir', response, record);
+            record.remove();
+        });
+    },
+    initComponent() {
+        const me = this;
+
+        me.store = new GibsonOS.module.explorer.dir.store.Tree({
             gos: {
                 tree: this,
                 data: {
@@ -22,119 +30,42 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
             }
         });
 
-        this.callParent();
+        me.callParent();
 
-        this.on('cellkeydown', function(view, td, cellIndex, record, tr, rowIndex, event) {
-            if (event.getKey() == Ext.EventObject.DELETE) {
-                GibsonOS.module.explorer.file.fn.delete(record.get('id'), [], function(response) {
-                    tree.fireEvent('deleteDir', response, record);
-                    record.remove();
+        me.addAction({
+            text: 'Umbenennen',
+            selectionNeeded: true,
+            maxSelectionAllowed: 1,
+            handler() {
+            }
+        });
+        me.addAction({
+            text: 'Ordner',
+            iconCls: 'icon16 icon_dir',
+            // requiredPermission: {
+            //     module: 'explorer',
+            //     task: 'dir',
+            //     action: 'save'   ,
+            //     permission: GibsonOS.Permission.WRITE
+            // },
+            handler() {
+                const node = me.getSelectionModel().getSelection()[0];
+                const dir = node.get('id');
+
+                GibsonOS.module.explorer.dir.fn.add(dir, (response) => {
+                    const data = Ext.decode(response.responseText).data;
+
+                    node.appendChild({
+                        iconCls: 'icon16 icon_dir',
+                        id: dir + data.name + '/',
+                        text: data.name
+                    });
+
+                    me.fireEvent('addDir', me, response, dir, data.name);
                 });
             }
         });
     },
-    itemContextMenu: [{
-        text: 'Neuer Ordner',
-        iconCls: 'icon16 icon_dir',
-        requiredPermission: {
-            action: 'save',
-            permission: GibsonOS.Permission.WRITE
-        },
-        handler: function() {
-            var button = this;
-            var menu = this.up('#contextMenu');
-            var parent = menu.getParent();
-            var store = parent.getStore();
-            var dir = menu.getRecord().get('id');
-
-            GibsonOS.module.explorer.dir.fn.add(dir, function(response) {
-                var data = Ext.decode(response.responseText).data;
-
-                var node = parent.getSelectionModel().getLastSelected();
-                var child = node.appendChild({
-                    iconCls: 'icon16 icon_dir',
-                    id: dir + data.name + '/',
-                    text: data.name
-                });
-
-                parent.fireEvent('addDir', button, response, dir, child);
-            });
-        }
-    },('-'),{
-        text: 'Umbennen',
-        requiredPermission: {
-            action: 'rename',
-            permission: GibsonOS.Permission.WRITE
-        },
-        handler: function() {
-            /*Ext.MessageBox.prompt('Neuer Name', 'Neuer Name', function(btn, text) {
-             if (btn == 'ok') {
-             record.set('text', text);
-             saveDesktop();
-             }
-             }, window, false, record.get('text'));*/
-        }
-    },{
-        text: 'Löschen',
-        iconCls: 'icon_system system_delete',
-        requiredPermission: {
-            action: 'delete',
-            permission: GibsonOS.Permission.DELETE
-        },
-        handler: function() {
-            var button = this;
-            var menu = this.up('#contextMenu');
-            var parent = menu.getParent();
-            var dir = menu.getRecord().get('id');
-
-            GibsonOS.module.explorer.file.fn.delete(dir, [], function(response) {
-                var node = parent.getSelectionModel().getLastSelected();
-                parent.fireEvent('deleteDir', response, node);
-                node.remove();
-            });
-        }
-    },{
-        text: 'Download (zip)',
-        iconCls: 'icon_system system_down',
-        requiredPermission: {
-            action: 'download',
-            permission: GibsonOS.Permission.READ
-        },
-        handler: function() {
-        }
-    },{
-        text: 'Für HTML5 konvertieren',
-        iconCls: 'icon16 icon_html5',
-        requiredPermission: {
-            task: 'html5',
-            action: 'convert',
-            permission: GibsonOS.Permission.MANAGE
-        },
-        handler: function() {
-            var button = this;
-            var menu = this.up('#contextMenu');
-            var parent = menu.getParent();
-            var record = menu.getRecord();
-
-            GibsonOS.Ajax.request({
-                url: baseDir + 'explorer/html5/convert',
-                params: {
-                    dir: record.get('id')
-                },
-                success: function(response) {
-                    parent.fireEvent('convertVideoSuccess', button, response);
-                }
-            });
-        }
-    },{
-        requiredPermission: {
-            action: 'properties',
-            permission: GibsonOS.Permission.READ
-        },
-        text: 'Eigenschaften',
-        handler: function() {
-        }
-    }],
     viewConfig: {
         listeners: {
             render: function(view) {

@@ -1,27 +1,27 @@
 GibsonOS.define('GibsonOS.module.explorer.file.fn.delete', function(dir, records, success) {
-    var msg = 'Möchten Sie die ' + records.length + ' Dateien wirklich löschen?';
+    let msg = 'Möchten Sie die ' + records.length + ' Dateien wirklich löschen?';
 
-    if (records.length == 1) {
+    if (records.length === 1) {
         msg = 'Möchten Sie die Datei ' + records[0].get('name') + ' wirklich löschen?';
     }
 
-    var files = [];
-    var dirs = [];
+    let files = [];
+    let dirs = [];
 
     Ext.iterate(records, function(record) {
         files.push(record.get('name'));
 
-        if (record.get('type') == 'dir') {
+        if (record.get('type') === 'dir') {
             dirs.push(record);
         }
     });
 
-    if (dirs.length == files.length) {
+    if (dirs.length === files.length) {
         msg = 'Möchten Sie die ' + dirs.length + ' Ordner wirklich löschen?';
 
-        if (records.length == 1) {
+        if (records.length === 1) {
             msg = 'Möchten Sie den Ordner ' + records[0].get('name') + ' wirklich löschen?';
-        } else if (records.length == 0) {
+        } else if (records.length === 0) {
             var dirParts = dir.split('/');
             var dirName = dirParts[dirParts.length-1];
 

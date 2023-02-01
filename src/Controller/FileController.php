@@ -60,7 +60,7 @@ class FileController extends AbstractController
         TrashService $trashService,
         #[GetSetting('home_path')] Setting $homePath,
         string $dir,
-        array $files
+        array $files = [],
     ): AjaxResponse {
         if (mb_strpos($homePath->getValue(), $dir) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
