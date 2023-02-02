@@ -12,8 +12,8 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
         const me = this;
 
         GibsonOS.module.explorer.file.fn.delete(records[0].get('id'), [], (response) => {
-            me.fireEvent('deleteDir', response, record);
-            record.remove();
+            me.fireEvent('deleteDir', response, records[0]);
+            records[0].remove();
         });
     },
     initComponent() {
