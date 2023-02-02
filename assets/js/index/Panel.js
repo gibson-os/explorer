@@ -505,7 +505,7 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
             }
         });
 
-        this.down('#explorerIndexView').on('addDir', function(button, response, dir, text) {
+        this.down('#explorerIndexView').on('addDir', (button, response, dir, text) => {
             var tree = panel.down('#explorerDirTree');
             var node = tree.getStore().getNodeById(dir);
 
@@ -517,12 +517,21 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
                 });
             }
         });
-        this.down('#explorerIndexView').on('deleteFile', function(response, dir, records) {
-            var tree = panel.down('#explorerDirTree');
+        this.down('#explorerIndexView').on('renameDir', (button, response, dir, oldName, record) => {
+            const tree = panel.down('#explorerDirTree');
+            const node = tree.getStore().getNodeById(dir + oldName + '/');
+
+            if (node) {
+                node.set('text', record.get('name'));
+                node.commit();
+            }
+        });
+        this.down('#explorerIndexView').on('deleteFile', (response, dir, records) => {
+            const tree = panel.down('#explorerDirTree');
 
             Ext.iterate(records, function(record) {
-                if (record.get('type') == 'dir') {
-                    var node = tree.getStore().getNodeById(dir + record.get('name') + '/');
+                if (record.get('type') === 'dir') {
+                    const node = tree.getStore().getNodeById(dir + record.get('name') + '/');
 
                     if (node) {
                         node.remove(true);
@@ -536,6 +545,13 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
 
             if (dir === viewStore.getProxy().extraParams.dir) {
                 viewStore.add(Ext.decode(response.responseText).data);
+            }
+        });
+        this.down('#explorerDirTree').on('renameDir', (button, response, dir, oldName, record) => {
+            const viewStore = panel.down('#explorerIndexView').gos.store;
+
+            if (dir === viewStore.getProxy().extraParams.dir) {
+                viewStore.getById(oldName).setName(record.get('name'));
             }
         });
         this.down('#explorerDirTree').on('deleteDir', function(response, record) {

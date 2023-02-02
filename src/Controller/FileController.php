@@ -25,7 +25,7 @@ use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Manager\ServiceManager;
 use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User\Permission;
-use GibsonOS\Core\Service\DirService;
+use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Service\FileService as CoreFileService;
 use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\RequestService;
@@ -37,6 +37,7 @@ use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\OverwriteException;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
+use GibsonOS\Module\Explorer\Service\DirService;
 use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 use GibsonOS\Module\Explorer\Service\FileService;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
@@ -106,7 +107,7 @@ class FileController extends AbstractController
      */
     #[CheckPermission(Permission::WRITE)]
     public function upload(
-        DirService $dirService,
+        CoreDirService $dirService,
         FileService $fileService,
         #[GetSetting('home_path')] Setting $homePath,
         string $dir,
@@ -149,7 +150,7 @@ class FileController extends AbstractController
     #[CheckPermission(Permission::WRITE + Permission::DELETE)]
     public function move(
         CoreFileService $fileService,
-        DirService $dirService,
+        CoreDirService $dirService,
         #[GetSetting('home_path')] Setting $homePath,
         string $from,
         string $to,
@@ -181,7 +182,7 @@ class FileController extends AbstractController
     #[CheckPermission(Permission::WRITE + Permission::DELETE)]
     public function copy(
         CoreFileService $fileService,
-        DirService $dirService,
+        CoreDirService $dirService,
         #[GetSetting('home_path')] Setting $homePath,
         string $from,
         string $to,
@@ -214,23 +215,29 @@ class FileController extends AbstractController
      */
     #[CheckPermission(Permission::WRITE)]
     public function rename(
-        CoreFileService $fileService,
+        CoreFileService $coreFileService,
+        FileService $fileService,
+        CoreDirService $coreDirService,
         DirService $dirService,
         #[GetSetting('home_path')] Setting $homePath,
         string $dir,
         string $oldFilename,
-        string $newFilename
+        string $newFilename,
     ): AjaxResponse {
-        $dir = $dirService->addEndSlash($dir);
+        $dir = $coreDirService->addEndSlash($dir);
 
         if (mb_strpos($homePath->getValue(), $dir) === 0) {
             return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
         }
 
         $path = $dir . $newFilename;
-        $fileService->move($dir . $oldFilename, $path);
+        $coreFileService->move($dir . $oldFilename, $path);
 
-        return $this->returnSuccess();
+        if (is_dir($path)) {
+            return $this->returnSuccess($dirService->get($path));
+        }
+
+        return $this->returnSuccess($fileService->get($path));
     }
 
     /**
@@ -268,7 +275,7 @@ class FileController extends AbstractController
      */
     #[CheckPermission(Permission::READ)]
     public function image(
-        DirService $dirService,
+        CoreDirService $dirService,
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
         TypeFactory $typeFactory,

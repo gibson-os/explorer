@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service;
 
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
@@ -26,9 +25,7 @@ class FileService
 
     /**
      * @throws FactoryError
-     * @throws GetError
      * @throws ReadError
-     * @throws DateTimeError
      */
     public function get(string $path, int $userId = null): File
     {
@@ -71,7 +68,7 @@ class FileService
 
         $fileTypeDescriber = $this->describerFactory->create($path);
 
-        $file = (new File(
+        return (new File(
             $filename,
             $this->coreFileService->getFileEnding($path),
             $fileSize,
@@ -85,8 +82,6 @@ class FileService
             ->setModified(filemtime($path))
             ->setMetaInfos($metaInfos)
         ;
-
-        return $file;
     }
 
     /**

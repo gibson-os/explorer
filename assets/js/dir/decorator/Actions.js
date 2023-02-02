@@ -5,7 +5,9 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Actions', {
             selectionNeeded: true,
             maxSelectionAllowed: 1,
             handler() {
-                const record = component.getSelectionModel().getSelection()[0];
+                const me = this;
+                const record = me.component.getSelectionModel().getSelection()[0];
+                const dir = me.component.getStore().getProxy().getReader().jsonData.dir;
 
                 GibsonOS.MessageBox.show({
                     title: 'Dateiname',
@@ -22,14 +24,19 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Actions', {
                     },
                     success(response) {
                         const data = Ext.decode(response.responseText).data;
+                        const oldName = record.get('name');
 
-                        record.set('name', data.filename);
+                        record.set('name', data.name);
 
                         if (data.type !== record.get('type')) {
                             record.set('type', data.type);
                             record.set('category', data.category);
                             record.set('thumbAvailable', data.thumbAvailable);
                             record.set('thumb', null);
+                        }
+
+                        if (data.type === 'dir') {
+                            me.component.fireEvent('renameDir', me, response, dir, oldName, record);
                         }
 
                         record.commit();

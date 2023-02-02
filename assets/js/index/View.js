@@ -125,6 +125,9 @@ Ext.define('GibsonOS.module.explorer.index.View', {
             },
             deleteFile(response, dir, records) {
                 me.fireEvent('deleteFile', response, dir, records);
+            },
+            renameDir(button, response, dir, oldName, record) {
+                me.fireEvent('renameDir', button, response, dir, oldName, record);
             }
         };
 
