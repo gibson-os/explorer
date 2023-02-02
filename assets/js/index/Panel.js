@@ -506,8 +506,8 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
         });
 
         this.down('#explorerIndexView').on('addDir', (button, response, dir, text) => {
-            var tree = panel.down('#explorerDirTree');
-            var node = tree.getStore().getNodeById(dir);
+            const tree = panel.down('#explorerDirTree');
+            const node = tree.getStore().getNodeById(dir);
 
             if (node) {
                 node.appendChild({
@@ -523,6 +523,7 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
 
             if (node) {
                 node.set('text', record.get('name'));
+                node.setId(dir + record.get('name') + '/');
                 node.commit();
             }
         });
@@ -547,11 +548,14 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
                 viewStore.add(Ext.decode(response.responseText).data);
             }
         });
-        this.down('#explorerDirTree').on('renameDir', (button, response, dir, oldName, record) => {
+        this.down('#explorerDirTree').on('renameDir', (button, response, dir, oldName, node) => {
             const viewStore = panel.down('#explorerIndexView').gos.store;
 
             if (dir === viewStore.getProxy().extraParams.dir) {
-                viewStore.getById(oldName).setName(record.get('name'));
+                const record = viewStore.getById(oldName);
+
+                record.set('name', node.get('text'));
+                record.commit();
             }
         });
         this.down('#explorerDirTree').on('deleteDir', function(response, record) {

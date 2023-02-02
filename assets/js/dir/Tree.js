@@ -8,6 +8,7 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
     },
     header: false,
     useArrows: true,
+    enableToolbar: false,
     deleteFunction(records) {
         const me = this;
 
@@ -37,6 +38,32 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
             selectionNeeded: true,
             maxSelectionAllowed: 1,
             handler() {
+                const node = me.getSelectionModel().getSelection()[0];
+                const dir = node.parentNode.get('id');
+
+                GibsonOS.MessageBox.show({
+                    title: 'Ordername',
+                    msg: 'Neuer Name',
+                    type: GibsonOS.MessageBox.type.PROMPT,
+                    promptParameter: 'newFilename',
+                    okText: 'Umbenenen',
+                    value: node.get('text')
+                },{
+                    url: baseDir + 'explorer/file/rename',
+                    params: {
+                        dir: dir,
+                        oldFilename: node.get('text')
+                    },
+                    success(response) {
+                        const data = Ext.decode(response.responseText).data;
+                        const oldName = node.get('text');
+
+                        node.set('text', data.name);
+                        node.setId(dir + data.name + '/');
+                        node.commit();
+                        me.fireEvent('renameDir', me, response, dir, oldName, node);
+                    }
+                });
             }
         });
         me.addAction({
