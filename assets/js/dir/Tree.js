@@ -36,6 +36,49 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
             records[0].remove();
         });
     },
+    getFromDir(records) {
+        return (typeof(records[0].getId) === 'function' ? records[0].getId() : records[0].id).replace(/[^\/]*\/$/, '');
+    },
+    getToDir(targetRecord) {
+        return (targetRecord ? targetRecord : this.getStore().getRootNode()).getId();
+    },
+    addAfterDrop(records, targetRecord) {
+        const me = this;
+        let newRecords = [];
+
+        Ext.iterate(records, (record) => {
+            const recordData = typeof(record.getData) === 'function' ? record.getData() : record;
+
+            if (recordData.type !== 'dir') {
+                return false;
+            }
+
+            const text = record.text ?? record.name;
+
+            newRecords.push({
+                iconCls: 'icon16 icon_dir',
+                id: me.getToDir(targetRecord) + text + '/',
+                text: text
+            });
+        });
+
+        if (newRecords.length === 0) {
+            return;
+        }
+
+        if (!targetRecord) {
+            this.getStore().getRootNode().appendChild(newRecords);
+
+            return;
+        }
+
+        targetRecord.appendChild(newRecords);
+    },
+    removeAfterDrop(data) {
+        Ext.iterate(data.records, (record) => {
+            record.remove();
+        });
+    },
     initComponent() {
         let me = this;
 
@@ -112,72 +155,5 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
                 });
             }
         });
-    },
-    // viewConfig: {
-    //     listeners: {
-    //         render: function(view) {
-    //             var tree = view.up('treepanel');
-    //
-    //             tree.dragZone = Ext.create('Ext.dd.DragZone', tree.getEl(), {
-    //                 getDragData: function(event) {
-    //                     var tree = view.up('treepanel');
-    //                     var proxy = tree.getStore().getProxy();
-    //                     var dir = proxy.getReader().jsonData.dir;
-    //                     var sourceElement = event.getTarget().parentNode.parentNode.parentNode;
-    //
-    //                     if (sourceElement) {
-    //                         var record = view.getRecord(sourceElement);
-    //                         var clone = sourceElement.getElementsByTagName('span')[0].cloneNode(true);
-    //                         var moveData = {
-    //                             grid: tree,
-    //                             record: record,
-    //                             type: 'dir'
-    //                         };
-    //                         var data = {
-    //                             module: 'explorer',
-    //                             task: 'index',
-    //                             action: 'index',
-    //                             text: record.get('text'),
-    //                             icon: 'icon_dir',
-    //                             params: {
-    //                                 dir: record.get('id')
-    //                             }
-    //                         };
-    //
-    //                         return tree.dragData = {
-    //                             sourceEl: sourceElement,
-    //                             repairXY: Ext.fly(sourceElement).getXY(),
-    //                             ddel: clone,
-    //                             shortcut: data,
-    //                             moveData: moveData
-    //                         };
-    //                     }
-    //                 },
-    //                 getRepairXY: function() {
-    //                     return this.dragData.repairXY;
-    //                 }
-    //             });
-    //             tree.dropZone = GibsonOS.dropZones.add(tree.getEl(), {
-    //                 getTargetFromEvent: function(event) {
-    //                     return event.getTarget('#' + tree.getId());
-    //                     //return event.getTarget('.x-grid-row');
-    //                 },
-    //                 onNodeOver : function(target, dd, event, data) {
-    //                     if (data.moveData) {
-    //                         return Ext.dd.DropZone.prototype.dropAllowed;
-    //                     }
-    //
-    //                     return Ext.dd.DropZone.prototype.dropNotAllowed;
-    //                 },
-    //                 onNodeDrop: function(target, dd, event, data) {
-    //                     data = data.moveData;
-    //                     data.grid = tree;
-    //                     data.to = view.getRecord(target).get('id');
-    //
-    //                     //GibsonOS.module.explorer.file.fn.move(data);
-    //                 }
-    //             });
-    //         }
-    //     }
-    // }
+    }
 });

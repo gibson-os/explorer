@@ -558,9 +558,9 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
                 record.commit();
             }
         });
-        this.down('#explorerDirTree').on('deleteDir', function(response, record) {
-            var viewStore = panel.down('#explorerIndexView').gos.store;
-            var parentDir = record.get('id').replace(/[^\/]*\/$/, '');
+        this.down('#explorerDirTree').on('deleteDir', (response, record) => {
+            const viewStore = panel.down('#explorerIndexView').gos.store;
+            const parentDir = record.get('id').replace(/[^\/]*\/$/, '');
 
             if (record.get('id') === viewStore.getProxy().extraParams.dir) {
                 panel.down('#explorerIndexUpButton').handler();

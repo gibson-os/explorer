@@ -5,14 +5,10 @@ Ext.define('GibsonOS.module.explorer.dir.store.Tree', {
         type: 'gosDataProxyAjax',
         url: baseDir + 'explorer/dir/dirList'
     },
-    constructor: function(data) {
+    constructor(data) {
         this.callParent(arguments);
 
-        this.on('load', function(store, node, records, successful) {
-            if (node.isRoot()) {
-                var node = store.getNodeById(store.getProxy().extraParams.dir);
-            }
-
+        this.on('load', (store, node) => {
             data.gos.tree.getSelectionModel().select(node, false, true);
             data.gos.tree.getView().focusRow(node);
         });

@@ -6,6 +6,34 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
             isDropAllowed(target, dd, event, data) {
                 return data.component.enableExplorerDrop;
             },
+            getFromDir() {
+                return this.getStore().getProxy().getReader().jsonData.dir;
+            },
+            getToDir(targetRecord) {
+                const me = this;
+                const dir = me.getStore().getProxy().getReader().jsonData.dir;
+
+                if (!targetRecord) {
+                    return dir;
+                }
+
+                return dir + (targetRecord.get('type') === 'dir' ? targetRecord.get('name') : '')
+            },
+            addAfterDrop(records) {
+                let newRecords = [];
+
+                Ext.iterate(records, (record) => {
+                    recordData = typeof(record.getData) === 'function' ? record.getData() : record;
+                    recordData.name = recordData.name ?? recordData.text;
+                    recordData.type = recordData.type ?? 'dir';
+                    newRecords.push(recordData);
+                });
+
+                this.getStore().add(newRecords);
+            },
+            removeAfterDrop(data) {
+                this.getStore().remove(data.records);
+            },
             addRecords(records, ctrlPressed, data) {
                 const me = this;
 
@@ -20,7 +48,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                 });
 
                 let title = 'Verschieben';
-                const message = 'Möchten Sie ' + (records.length > 1 ? records.length + ' Elemente' : records[0]['name']) + ' ';
+                const message = 'Möchten Sie ' + (records.length > 1 ? records.length + ' Elemente' : (records[0]['name'] ?? records[0]['text'])) + ' ';
                 let messageSuffix = 'verschieben';
 
                 if (ctrlPressed) {
@@ -29,7 +57,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
 
                     if (data.dragElementId === me.id) {
                         Ext.iterate(records, (record) => {
-                            record['name'] = '(Kopie) ' + record['name'];
+                            record['name'] = '(Kopie) ' + (record['name'] ?? record['text']);
                         });
                     }
                 }
@@ -37,7 +65,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                 let names = [];
 
                 Ext.iterate(records, (record) => {
-                    names.push(record['name']);
+                    names.push(record['name'] ?? record['text']);
                 });
 
                 GibsonOS.MessageBox.show({
@@ -53,15 +81,15 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                 },{
                     url: baseDir + 'explorer/file/' + (ctrlPressed ? 'copy' : 'move'),
                     params: {
-                        from: data.component.getStore().getProxy().getReader().jsonData.dir,
-                        to: me.getStore().getProxy().getReader().jsonData.dir,
+                        from: data.component.getFromDir(records),
+                        to: me.getToDir(),
                         'names[]': names
                     },
                     success() {
-                        me.getStore().add(records);
+                        me.addAfterDrop(records);
 
                         if (!ctrlPressed) {
-                            data.component.getStore().remove(data.records);
+                            data.component.removeAfterDrop(data)
                         }
                     }
                 });
@@ -86,7 +114,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                 }
 
                 let title = 'Verschieben';
-                const message = 'Möchten Sie ' + (records.length > 1 ? records.length + ' Elemente' : records[0].get('name')) + ' ';
+                const message = 'Möchten Sie ' + (records.length > 1 ? records.length + ' Elemente' : (records[0].get('name') ?? records[0].get('text'))) + ' ';
                 let messageSuffix = 'verschieben';
 
                 if (ctrlPressed) {
@@ -97,7 +125,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                 let names = [];
 
                 Ext.iterate(records, (record) => {
-                    names.push(record.get('name'));
+                    names.push(record.get('name') ?? record.get('text'));
                 });
 
                 GibsonOS.MessageBox.show({
@@ -113,17 +141,17 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                 },{
                     url: baseDir + 'explorer/file/' + (ctrlPressed ? 'copy' : 'move'),
                     params: {
-                        from: data.component.getStore().getProxy().getReader().jsonData.dir,
-                        to: me.getStore().getProxy().getReader().jsonData.dir + (targetIsDir ? targetRecord.get('name') : ''),
+                        from: data.component.getFromDir(records),
+                        to: me.getToDir(targetRecord),
                         'names[]': names
                     },
                     success() {
                         if (!targetIsDir) {
-                            me.getStore().add(records);
+                            me.addAfterDrop(records, targetRecord);
                         }
 
                         if (!ctrlPressed) {
-                            data.component.getStore().remove(data.records);
+                            data.component.removeAfterDrop(data);
                         }
                     }
                 });
