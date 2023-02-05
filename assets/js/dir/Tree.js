@@ -42,6 +42,13 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
     getToDir(targetRecord) {
         return (targetRecord ? targetRecord : this.getStore().getRootNode()).getId();
     },
+    isInsertAllowed(targetRecord, records, data, ctrlPressed) {
+        if (targetRecord.get('id') !== data.component.getFromDir(records)) {
+            return true;
+        }
+
+        return ctrlPressed;
+    },
     addAfterDrop(records, targetRecord) {
         const me = this;
         let newRecords = [];
@@ -84,13 +91,16 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
 
         me.store = new GibsonOS.module.explorer.dir.store.Tree({
             gos: {
-                tree: this,
                 data: {
                     extraParams: {
                         dir: this.gos.data.dir
                     }
                 }
             }
+        });
+        me.store.on('load', (store, node) => {
+            me.getSelectionModel().select(node, false, true);
+            me.getView().focusRow(node);
         });
         me = GibsonOS.module.explorer.dir.decorator.Drop.init(me);
 

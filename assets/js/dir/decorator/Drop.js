@@ -94,22 +94,22 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                     }
                 });
             },
+            isInsertAllowed(targetRecord, records, data, ctrlPressed) {
+                if (targetRecord.get('type') === 'dir') {
+                    return true;
+                }
+
+                if (data.dragElementId !== me.id) {
+                    return true;
+                }
+
+                return ctrlPressed;
+            },
             insertRecords(targetRecord, records, ctrlPressed, data) {
                 const targetIsDir = targetRecord.get('type') === 'dir';
                 const me = this;
-                const isInsertAllowed = () => {
-                    if (targetIsDir) {
-                        return true;
-                    }
 
-                    if (data.dragElementId !== me.id) {
-                        return true;
-                    }
-
-                    return ctrlPressed;
-                }
-
-                if (!isInsertAllowed()) {
+                if (!me.isInsertAllowed(targetRecord, records, data, ctrlPressed)) {
                     return;
                 }
 
