@@ -10,8 +10,6 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Listeners', {
         });
         component.on('render', (grid) => {
             GibsonOS.module.explorer.file.fn.setUploadField(grid, grid.gos.functions && grid.gos.functions.upload ? grid.gos.functions.upload : {});
-
-            // grid.dropZone = GibsonOS.module.explorer.dir.listener.dropZone(grid);
         });
     }
 });

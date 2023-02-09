@@ -3,10 +3,12 @@ Ext.define('GibsonOS.module.explorer.index.Properties', {
     alias: ['widget.gosModuleExplorerIndexProperties'],
     itemId: 'explorerIndexProperties',
     initComponent: function() {
-        this.callParent();
-        this.on('resize', function(panel, width, height, oldWidth, oldHeight, options) {
-            var eastIcon = panel.down('#explorerIndexPropertyIcon');
-            var data = eastIcon.data;
+        const me = this;
+
+        me.callParent();
+        me.on('resize', function(panel, width) {
+            const eastIcon = panel.down('#explorerIndexPropertyIcon');
+            let data = eastIcon.data;
 
             if (!data) {
                 data = {};

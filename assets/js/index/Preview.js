@@ -3,12 +3,13 @@ Ext.define('GibsonOS.module.explorer.index.Preview', {
     alias: ['widget.gosModuleExplorerIndexPreview'],
     itemId: 'explorerIndexPreview',
     data: {},
-    initComponent: function () {
-        var elementId = Ext.id();
-        var currentWidth = 0;
-        var currentHeight = 0;
+    initComponent() {
+        const me = this;
+        const elementId = Ext.id();
+        let currentWidth = 0;
+        let currentHeight = 0;
 
-        this.tpl = new Ext.XTemplate(
+        me.tpl = new Ext.XTemplate(
             '<tpl if="category == ' + GibsonOS.module.explorer.file.data.categories.VIDEO  + '">',
                 '<tpl if="html5MediaStatus == \'generated\'">',
                     '<video width="{width}" height="{height}" id="' + elementId + '" controls>',
@@ -21,10 +22,10 @@ Ext.define('GibsonOS.module.explorer.index.Preview', {
             '</tpl>'
         );
 
-        this.callParent();
+        me.callParent();
 
-        this.on('resize', function(panel, width, height) {
-            var previewElement = Ext.getElementById(elementId);
+        me.on('resize', (panel, width, height) => {
+            const previewElement = Ext.getElementById(elementId);
 
             if (previewElement) {
                 previewElement.width = width;

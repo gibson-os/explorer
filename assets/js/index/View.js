@@ -15,10 +15,10 @@ Ext.define('GibsonOS.module.explorer.index.View', {
         functions: {
         }
     },
-    initComponent: function() {
+    initComponent() {
         const me = this;
 
-        me.gos.functions.loadThumbnails = function() {
+        me.gos.functions.loadThumbnails = () => {
             me.gos.store.gos.data.loadThumbnailsPointer = 0;
             me.gos.store.gos.data.runLoadThumbnails = true;
             me.gos.store.fireEvent('loadThumbnails', me.gos.store);
@@ -54,6 +54,7 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                     if (!chromeCast.itemsInView[record.get('html5MediaToken')]) {
                         chromeCast.itemsInView[record.get('html5MediaToken')] = [];
                     }
+
                     chromeCast.itemsInView[record.get('html5MediaToken')].push(record);
                 }
             });
@@ -90,7 +91,7 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                         height: 256,
                         base64: true
                     },
-                    success: function(response) {
+                    success(response) {
                         if (!store.gos.data.runLoadThumbnails) {
                             return false;
                         }
@@ -98,11 +99,11 @@ Ext.define('GibsonOS.module.explorer.index.View', {
                         records[i].set('thumb', response.responseText);
                         store.gos.data.loadThumbnailsPointer = i+1;
 
-                        window.setTimeout(function () {
+                        window.setTimeout(() => {
                             store.fireEvent('loadThumbnails', store)
                         }, 100);
                     },
-                    failure: function() {
+                    failure() {
                         if (!store.gos.data.runLoadThumbnails) {
                             return false;
                         }

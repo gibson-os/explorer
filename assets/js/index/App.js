@@ -9,10 +9,10 @@ Ext.define('GibsonOS.module.explorer.index.App', {
         module: 'explorer',
         task: 'dir'
     },
-    initComponent: function() {
-        var app = this;
+    initComponent() {
+        const me = this;
 
-        this.items = [{
+        me.items = [{
             xtype: 'gosModuleExplorerIndexPanel',
             gos: {
                 data: {
@@ -20,7 +20,7 @@ Ext.define('GibsonOS.module.explorer.index.App', {
                 }
             }
         }];
-        this.tools = [{
+        me.tools = [{
             type:'gear',
             itemId: 'explorerIndexSettingsButton',
             tooltip: 'Einstellungen',
@@ -28,15 +28,15 @@ Ext.define('GibsonOS.module.explorer.index.App', {
                 Ext.create('GibsonOS.module.explorer.index.settings.Window');
             }
         }];
-        this.id = 'gosModuleExplorerIndexApp' + Ext.id();
+        me.id = 'gosModuleExplorerIndexApp' + Ext.id();
 
-        this.callParent();
+        me.callParent();
 
-        this.down('#explorerIndexView').gos.store.on('load', function(store, records, successful, operation, options) {
-            var dir = store.getProxy().getReader().jsonData.dir;
+        me.down('#explorerIndexView').gos.store.on('load', (store) => {
+            const dir = store.getProxy().getReader().jsonData.dir;
 
-            app.setTitle(dir);
-            app.taskBarButton.setText(dir);
+            me.setTitle(dir);
+            me.taskBarButton.setText(dir);
         });
     }
 });
