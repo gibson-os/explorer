@@ -40,9 +40,11 @@ class ConnectedUser extends AbstractModel implements \JsonSerializable
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(int $id): ConnectedUser
     {
         $this->id = $id;
+
+        return $this;
     }
 
     public function getUserId(): int
@@ -50,9 +52,11 @@ class ConnectedUser extends AbstractModel implements \JsonSerializable
         return $this->userId;
     }
 
-    public function setUserId(int $userId): void
+    public function setUserId(int $userId): ConnectedUser
     {
         $this->userId = $userId;
+
+        return $this;
     }
 
     public function getConnectedUserId(): int
@@ -60,9 +64,11 @@ class ConnectedUser extends AbstractModel implements \JsonSerializable
         return $this->connectedUserId;
     }
 
-    public function setConnectedUserId(int $connectedUserId): void
+    public function setConnectedUserId(int $connectedUserId): ConnectedUser
     {
         $this->connectedUserId = $connectedUserId;
+
+        return $this;
     }
 
     public function jsonSerialize(): array

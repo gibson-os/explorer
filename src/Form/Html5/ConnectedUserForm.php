@@ -21,14 +21,14 @@ class ConnectedUserForm extends AbstractModelForm
     protected function getFields(): array
     {
         return [
-            'connectedUser' => new AutoCompleteParameter('Verbundener Benutzer', $this->userAutoComplete),
+            'connectedUserId' => new AutoCompleteParameter('Verbundener Benutzer', $this->userAutoComplete),
         ];
     }
 
     public function getButtons(): array
     {
         return [
-            new Button('Speichern', 'explorer', 'html5', 'addConnectedUser'),
+            'save' => new Button('Speichern', 'explorer', 'html5', 'addConnectedUser'),
         ];
     }
 }

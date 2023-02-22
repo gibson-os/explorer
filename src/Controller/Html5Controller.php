@@ -6,6 +6,7 @@ namespace GibsonOS\Module\Explorer\Controller;
 use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Attribute\GetMappedModel;
 use GibsonOS\Core\Attribute\GetModel;
+use GibsonOS\Core\Attribute\GetModels;
 use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -336,13 +337,47 @@ class Html5Controller extends AbstractController
 
     /**
      * @throws FormException
+     * @throws SaveError
      */
     #[CheckPermission(Permission::WRITE)]
     public function addConnectedUser(
         ModelManager $modelManager,
         #[GetMappedModel] ConnectedUser $connectedUser,
     ): AjaxResponse {
-        $modelManager->save($connectedUser);
+        $connectedUser->setUserId($this->sessionService->getUserId() ?? 0);
+
+        if ($connectedUser->getConnectedUserId() === $connectedUser->getUserId()) {
+            return $this->returnFailure('Same users!');
+        }
+
+        $modelManager->saveWithoutChildren($connectedUser);
+
+        return $this->returnSuccess();
+    }
+
+    /**
+     * @param ConnectedUser[] $connectedUsers
+     *
+     * @throws DeleteError
+     * @throws \JsonException
+     */
+    #[CheckPermission(Permission::DELETE)]
+    public function deleteConnectedUsers(
+        ModelManager $modelManager,
+        #[GetModels(ConnectedUser::class)] array $connectedUsers,
+    ): AjaxResponse {
+        $userId = $this->sessionService->getUserId() ?? 0;
+
+        foreach ($connectedUsers as $connectedUser) {
+            if (
+                $userId !== $connectedUser->getUserId() &&
+                $userId !== $connectedUser->getConnectedUserId()
+            ) {
+                continue;
+            }
+
+            $modelManager->delete($connectedUser);
+        }
 
         return $this->returnSuccess();
     }
