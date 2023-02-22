@@ -17,7 +17,7 @@ use GibsonOS\Module\Explorer\Model\Html5\Media;
  * @method Position setUser(User $user)
  */
 #[Table]
-class Position extends AbstractModel
+class Position extends AbstractModel implements \JsonSerializable
 {
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], primary: true)]
     private int $mediaId;
@@ -88,5 +88,13 @@ class Position extends AbstractModel
         $this->modified = $modified;
 
         return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'position' => $this->getPosition(),
+            'user' => $this->getUser(),
+        ];
     }
 }

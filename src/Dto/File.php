@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Dto;
 
+use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
+
 class File implements \JsonSerializable
 {
     private bool $thumbAvailable = false;
@@ -12,6 +14,11 @@ class File implements \JsonSerializable
     private ?string $html5MediaToken = null;
 
     private ?int $position = null;
+
+    /**
+     * @var Position[]
+     */
+    private array $positions = [];
 
     private ?int $accessed = null;
 
@@ -119,6 +126,18 @@ class File implements \JsonSerializable
         return $this;
     }
 
+    public function getPositions(): array
+    {
+        return $this->positions;
+    }
+
+    public function setPositions(array $positions): File
+    {
+        $this->positions = $positions;
+
+        return $this;
+    }
+
     public function getAccessed(): ?int
     {
         return $this->accessed;
@@ -167,6 +186,7 @@ class File implements \JsonSerializable
             'html5VideoToken' => $this->getHtml5MediaToken(),
             'html5MediaToken' => $this->getHtml5MediaToken(),
             'position' => $this->getPosition(),
+            'positions' => $this->getPositions(),
             'category' => $this->getCategory(),
             'accessed' => $this->getAccessed(),
             'modified' => $this->getModified(),

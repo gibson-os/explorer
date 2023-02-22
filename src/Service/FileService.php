@@ -44,6 +44,7 @@ class FileService
         $html5Status = null;
         $html5Token = null;
         $position = null;
+        $positions = [];
 
         try {
             $metaInfos = $this->gibsonStoreService->getFileMetas($path);
@@ -53,14 +54,13 @@ class FileService
 
         try {
             $media = $this->mediaRepository->getByDirAndFilename($dir, $filename);
+            $mediaId = $media->getId() ?? 0;
             $html5Status = $media->getStatus();
             $html5Token = $media->getToken();
 
             if ($userId !== null) {
-                $position = $this->positionRepository->getByMediaAndUserId(
-                    $media->getId() ?? 0,
-                    $userId
-                )->getPosition();
+                $position = $this->positionRepository->getByMediaAndUserId($mediaId, $userId)->getPosition();
+                $positions = $this->positionRepository->getByMediaAndConnectedUserId($mediaId, $userId);
             }
         } catch (SelectError) {
             // do nothing
@@ -78,6 +78,7 @@ class FileService
             ->setHtml5MediaStatus($html5Status)
             ->setHtml5MediaToken($html5Token)
             ->setPosition($position)
+            ->setPositions($positions)
             ->setAccessed(fileatime($path))
             ->setModified(filemtime($path))
             ->setMetaInfos($metaInfos)
