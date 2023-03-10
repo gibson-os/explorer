@@ -29,39 +29,18 @@ class GeneralPermissionData extends AbstractInstall implements PriorityInterface
      */
     public function install(string $module): \Generator
     {
-        $this
-            ->setPermission('savePosition')
-            ->setPermission('video')
-            ->setPermission('toSeeList')
-            ->setPermission('image')
-            ->setPermission('get')
-            ->setPermission('chromecast')
-            ->setPermission('audio')
-        ;
-
-        yield new Success('Set general permission for explorer!');
-    }
-
-    /**
-     * @throws SaveError
-     * @throws \JsonException
-     * @throws \ReflectionException
-     */
-    private function setPermission(string $action): GeneralPermissionData
-    {
         try {
-            $this->permissionRepository->getByModuleTaskAndAction('explorer', 'html5', $action);
+            $this->permissionRepository->getByModuleAndTask('explorer', 'middleware');
         } catch (SelectError) {
             $this->modelManager->save(
                 (new Permission())
                     ->setModule('explorer')
-                    ->setTask('html5')
-                    ->setAction($action)
-                    ->setPermission(Permission::READ)
+                    ->setTask('middleware')
+                    ->setPermission(Permission::READ + Permission::WRITE)
             );
         }
 
-        return $this;
+        yield new Success('Set general permission for explorer!');
     }
 
     public function getPart(): string

@@ -18,6 +18,7 @@ use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
+use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
@@ -80,12 +81,12 @@ class ToSeeStore extends AbstractDatabaseStore
     /**
      * @throws ConvertStatusError
      * @throws DateTimeError
-     * @throws FileNotFound
      * @throws OpenError
      * @throws ProcessError
      * @throws ReadError
      * @throws NoAudioError
      * @throws SetError
+     * @throws MediaException
      */
     public function getList(): iterable
     {

@@ -15,10 +15,12 @@ use GibsonOS\Core\Service\PriorityInterface;
 class Html5Install extends AbstractInstall implements PriorityInterface
 {
     /**
+     * @throws CreateError
      * @throws InstallException
      * @throws SaveError
      * @throws SelectError
-     * @throws CreateError
+     * @throws \JsonException
+     * @throws \ReflectionException
      */
     public function install(string $module): \Generator
     {

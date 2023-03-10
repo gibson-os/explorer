@@ -19,6 +19,7 @@ use GibsonOS\Core\Exception\FormException;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Image\CreateError;
 use GibsonOS\Core\Exception\Image\LoadError;
+use GibsonOS\Core\Exception\MiddlewareException;
 use GibsonOS\Core\Exception\Model\DeleteError;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
@@ -27,6 +28,7 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
+use GibsonOS\Core\Exception\WebException;
 use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User;
@@ -34,11 +36,11 @@ use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\ImageService;
+use GibsonOS\Core\Service\MiddlewareService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
-use GibsonOS\Core\Service\Response\TwigResponse;
 use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
@@ -198,22 +200,16 @@ class Html5Controller extends AbstractController
         return $this->returnSuccess();
     }
 
-    #[CheckPermission(Permission::READ)]
-    public function chromecast(): TwigResponse
-    {
-        return $this->renderTemplate('@explorer/chromecast.html.twig');
-    }
-
     /**
      * @throws ConvertStatusError
      * @throws DateTimeError
-     * @throws FileNotFound
      * @throws NoAudioError
      * @throws OpenError
      * @throws ProcessError
      * @throws ReadError
      * @throws SelectError
      * @throws SetError
+     * @throws MediaException
      */
     #[CheckPermission(Permission::READ)]
     public function toSeeList(ToSeeStore $toSeeStore, ?array $userIds): AjaxResponse
@@ -378,6 +374,20 @@ class Html5Controller extends AbstractController
 
             $modelManager->delete($connectedUser);
         }
+
+        return $this->returnSuccess();
+    }
+
+    /**
+     * @throws SaveError
+     * @throws MiddlewareException
+     * @throws WebException
+     * @throws \JsonException
+     */
+    #[CheckPermission(Permission::WRITE)]
+    public function setSession(MiddlewareService $middlewareService, string $id): AjaxResponse
+    {
+        $middlewareService->send('chromecast', 'setSession', ['id' => $id]);
 
         return $this->returnSuccess();
     }
