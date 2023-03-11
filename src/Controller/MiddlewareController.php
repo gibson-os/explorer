@@ -19,12 +19,17 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\WebException;
 use GibsonOS\Core\Model\User\Permission;
-use GibsonOS\Core\Service\MiddlewareService;
+use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
-use GibsonOS\Core\Utility\JsonUtility;
+use GibsonOS\Core\Service\Response\Response;
+use GibsonOS\Core\Service\Response\ResponseInterface;
+use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\MediaException;
+use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
+use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
+use GibsonOS\Module\Explorer\Service\Html5\MiddlewareService;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
 
 class MiddlewareController extends AbstractController
@@ -51,8 +56,13 @@ class MiddlewareController extends AbstractController
         ToSeeStore $toSeeStore,
         string $sessionId,
     ): AjaxResponse {
-        $response = $middlewareService->send('chromecast', 'getSessionUserIds', ['id' => $sessionId]);
-        $toSeeStore->setUserIds(array_values(JsonUtility::decode($response->getBody()->getContent())['data']));
+        $userIds = $middlewareService->getUserIds($sessionId);
+
+        if (!$middlewareService->checkPermission($userIds, 'toSeeList', Permission::READ)) {
+            return $this->returnFailure('Permission denied!', StatusCode::FORBIDDEN);
+        }
+
+        $toSeeStore->setUserIds($userIds);
 
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
     }
@@ -72,9 +82,13 @@ class MiddlewareController extends AbstractController
         int $position,
         string $sessionId,
     ): AjaxResponse {
-        $response = $middlewareService->send('chromecast', 'getSessionUserIds', ['id' => $sessionId]);
+        $userIds = $middlewareService->getUserIds($sessionId);
 
-        foreach (JsonUtility::decode($response->getBody()->getContent())['data'] as $userId) {
+        if (!$middlewareService->checkPermission($userIds, 'savePosition', Permission::READ)) {
+            return $this->returnFailure('Permission denied!', StatusCode::FORBIDDEN);
+        }
+
+        foreach ($userIds as $userId) {
             $mediaService->savePosition(
                 $media,
                 $position,
@@ -83,5 +97,49 @@ class MiddlewareController extends AbstractController
         }
 
         return $this->returnSuccess();
+    }
+
+    #[CheckPermission(Permission::READ)]
+    public function image(
+        MiddlewareService $middlewareService,
+        GibsonStoreService $gibsonStoreService,
+        ImageService $imageService,
+        TypeFactory $typeFactory,
+        #[GetModel(['token' => 'token'])] Media $media,
+        string $sessionId,
+        int $width = null,
+        int $height = null,
+    ): ResponseInterface {
+        $userIds = $middlewareService->getUserIds($sessionId);
+
+        if (!$middlewareService->checkPermission($userIds, 'image', Permission::READ)) {
+            return $this->returnFailure('Permission denied!', StatusCode::FORBIDDEN);
+        }
+
+        $path = $media->getDir() . $media->getFilename();
+
+        if (!$gibsonStoreService->hasFileImage($path)) {
+            $fileTypeService = $typeFactory->create($path);
+            $image = $fileTypeService->getImage($path);
+            $gibsonStoreService->setFileImage($path, $image);
+        }
+
+        $image = $gibsonStoreService->getFileImage($path, $width, $height);
+        $body = $imageService->getString($image);
+
+        return new Response(
+            $body,
+            StatusCode::OK,
+            [
+                'Pragma' => 'public',
+                'Expires' => 0,
+                'Accept-Ranges' => 'bytes',
+                'Cache-Control' => ['must-revalidate, post-check=0, pre-check=0', 'private'],
+                'Content-Type' => 'image/jpg',
+                'Content-Length' => strlen($body),
+                'Content-Transfer-Encoding' => 'binary',
+                'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
+            ]
+        );
     }
 }
