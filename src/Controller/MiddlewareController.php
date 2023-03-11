@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Controller;
 
-use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Attribute\GetModel;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -24,12 +23,12 @@ use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\ResponseInterface;
 use GibsonOS\Core\Utility\StatusCode;
+use GibsonOS\Module\Explorer\Attribute\CheckChromecastPermission;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
-use GibsonOS\Module\Explorer\Service\Html5\MiddlewareService;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
 
 class MiddlewareController extends AbstractController
@@ -50,18 +49,11 @@ class MiddlewareController extends AbstractController
      * @throws WebException
      * @throws \JsonException
      */
-    #[CheckPermission(Permission::READ)]
+    #[CheckChromecastPermission(Permission::READ)]
     public function toSeeList(
-        MiddlewareService $middlewareService,
         ToSeeStore $toSeeStore,
-        string $sessionId,
+        array $userIds,
     ): AjaxResponse {
-        $userIds = $middlewareService->getUserIds($sessionId);
-
-        if (!$middlewareService->checkPermission($userIds, 'toSeeList', Permission::READ)) {
-            return $this->returnFailure('Permission denied!', StatusCode::FORBIDDEN);
-        }
-
         $toSeeStore->setUserIds($userIds);
 
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
@@ -74,20 +66,13 @@ class MiddlewareController extends AbstractController
      * @throws \JsonException
      * @throws \ReflectionException
      */
-    #[CheckPermission(Permission::WRITE)]
+    #[CheckChromecastPermission(Permission::WRITE)]
     public function savePosition(
-        MiddlewareService $middlewareService,
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media,
         int $position,
-        string $sessionId,
+        array $userIds,
     ): AjaxResponse {
-        $userIds = $middlewareService->getUserIds($sessionId);
-
-        if (!$middlewareService->checkPermission($userIds, 'savePosition', Permission::READ)) {
-            return $this->returnFailure('Permission denied!', StatusCode::FORBIDDEN);
-        }
-
         foreach ($userIds as $userId) {
             $mediaService->savePosition(
                 $media,
@@ -99,23 +84,15 @@ class MiddlewareController extends AbstractController
         return $this->returnSuccess();
     }
 
-    #[CheckPermission(Permission::READ)]
+    #[CheckChromecastPermission(Permission::READ)]
     public function image(
-        MiddlewareService $middlewareService,
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
         TypeFactory $typeFactory,
         #[GetModel(['token' => 'token'])] Media $media,
-        string $sessionId,
         int $width = null,
         int $height = null,
     ): ResponseInterface {
-        $userIds = $middlewareService->getUserIds($sessionId);
-
-        if (!$middlewareService->checkPermission($userIds, 'image', Permission::READ)) {
-            return $this->returnFailure('Permission denied!', StatusCode::FORBIDDEN);
-        }
-
         $path = $media->getDir() . $media->getFilename();
 
         if (!$gibsonStoreService->hasFileImage($path)) {
