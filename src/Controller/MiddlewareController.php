@@ -119,4 +119,10 @@ class MiddlewareController extends AbstractController
             ]
         );
     }
+
+    #[CheckChromecastPermission(Permission::READ)]
+    public function get(#[GetModel(['token' => 'token'])] Media $media): AjaxResponse
+    {
+        return $this->returnSuccess($media);
+    }
 }

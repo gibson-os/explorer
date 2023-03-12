@@ -25,7 +25,13 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Chromecast', {
                         button.disable();
                     }
                 },
-            }
+            },
+            handler() {
+                const me = this;
+                const record = me.component.getSelectionModel().getSelection()[0];
+
+                GibsonOS.module.explorer.file.chromecast.fn.play(record);
+            },
         });
     }
 });
