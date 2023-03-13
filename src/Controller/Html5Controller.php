@@ -33,6 +33,7 @@ use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Model\User\Permission;
+use GibsonOS\Core\Repository\ModuleRepository;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\ImageService;
@@ -41,6 +42,7 @@ use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
+use GibsonOS\Core\Utility\JsonUtility;
 use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
@@ -390,5 +392,27 @@ class Html5Controller extends AbstractController
         $middlewareService->send('chromecast', 'setSession', ['id' => $id]);
 
         return $this->returnSuccess();
+    }
+
+    #[CheckPermission(Permission::READ)]
+    public function chromecastReceiverAppId(
+        #[GetSetting('chromecastReceiverAppId', 'core')] Setting $chromecastReceiverAppId = null,
+        ModuleRepository $moduleRepository,
+        ModelManager $modelManager,
+        MiddlewareService $middlewareService,
+    ): AjaxResponse {
+        if ($chromecastReceiverAppId !== null) {
+            return $this->returnSuccess($chromecastReceiverAppId->getValue());
+        }
+
+        $response = $middlewareService->send('chromecast', 'getReceiverAppId');
+        $chromecastReceiverAppId = (new Setting())
+            ->setModule($moduleRepository->getByName('core'))
+            ->setKey('chromecastReceiverAppId')
+            ->setValue(JsonUtility::decode($response->getBody()->getContent())['data'])
+        ;
+        $modelManager->saveWithoutChildren($chromecastReceiverAppId);
+
+        return $this->returnSuccess($chromecastReceiverAppId->getValue());
     }
 }
