@@ -6,7 +6,7 @@ namespace GibsonOS\Module\Explorer\Service\Attribute;
 use GibsonOS\Core\Attribute\AttributeInterface;
 use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Service\Attribute\AbstractActionAttributeService;
-use GibsonOS\Core\Service\Attribute\PermissionAttribute;
+use GibsonOS\Core\Service\Attribute\MiddlewarePermissionAttributeService;
 use GibsonOS\Core\Service\MiddlewareService;
 use GibsonOS\Core\Service\PermissionService;
 use GibsonOS\Core\Service\RequestService;
@@ -16,7 +16,7 @@ use GibsonOS\Module\Explorer\Attribute\CheckChromecastPermission;
 class ChromecastPermissionAttribute extends AbstractActionAttributeService
 {
     public function __construct(
-        private readonly PermissionAttribute $permissionAttribute,
+        private readonly MiddlewarePermissionAttributeService $middlewarePermissionAttributeService,
         private readonly MiddlewareService $middlewareService,
         private readonly PermissionService $permissionService,
         private readonly RequestService $requestService,
@@ -29,7 +29,7 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
             return $parameters;
         }
 
-        $parameters = $this->permissionAttribute->preExecute($attribute, $parameters, $reflectionParameters);
+        $parameters = $this->middlewarePermissionAttributeService->preExecute($attribute, $parameters, $reflectionParameters);
         $response = $this->middlewareService->send(
             'chromecast',
             'getSessionUserIds',
@@ -62,7 +62,7 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
             return [];
         }
 
-        $usedParameters = $this->permissionAttribute->usedParameters($attribute);
+        $usedParameters = $this->middlewarePermissionAttributeService->usedParameters($attribute);
         $usedParameters[] = $attribute->getUserIdsParameter();
 
         return $usedParameters;

@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Attribute;
 
-use GibsonOS\Core\Attribute\CheckPermission;
+use GibsonOS\Core\Attribute\CheckMiddlewarePermission;
 use GibsonOS\Module\Explorer\Service\Attribute\ChromecastPermissionAttribute;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class CheckChromecastPermission extends CheckPermission
+class CheckChromecastPermission extends CheckMiddlewarePermission
 {
     public function __construct(
         int $permission,
