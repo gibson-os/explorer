@@ -37,7 +37,7 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
         );
 
         $userIds = JsonUtility::decode($response->getBody()->getContent())['data'];
-        $parameters[$attribute->getUserIdsParameter()] = $userIds;
+        $userIdsWithPermission = [];
 
         foreach ($userIds as $userId) {
             $hasPermission = $this->permissionService->hasPermission(
@@ -49,11 +49,17 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
             );
 
             if ($hasPermission) {
-                return $parameters;
+                $userIdsWithPermission[] = $userId;
             }
         }
 
-        throw new PermissionDenied();
+        if (count($userIdsWithPermission) === 0) {
+            throw new PermissionDenied();
+        }
+
+        $parameters[$attribute->getUserIdsParameter()] = $userIdsWithPermission;
+
+        return $parameters;
     }
 
     public function usedParameters(AttributeInterface $attribute): array
