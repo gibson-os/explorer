@@ -6,18 +6,21 @@ namespace GibsonOS\Module\Explorer\Controller;
 use GibsonOS\Core\Attribute\GetModel;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Exception\DateTimeError;
+use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
 use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\File\OpenError;
 use GibsonOS\Core\Exception\FileNotFound;
-use GibsonOS\Core\Exception\MiddlewareException;
+use GibsonOS\Core\Exception\GetError;
+use GibsonOS\Core\Exception\Image\CreateError;
+use GibsonOS\Core\Exception\Image\LoadError;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
-use GibsonOS\Core\Exception\WebException;
+use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
@@ -40,17 +43,13 @@ class MiddlewareController extends AbstractController
     /**
      * @throws ConvertStatusError
      * @throws DateTimeError
-     * @throws FileNotFound
      * @throws MediaException
-     * @throws MiddlewareException
      * @throws NoAudioError
      * @throws OpenError
      * @throws ProcessError
      * @throws ReadError
-     * @throws SaveError
      * @throws SelectError
      * @throws SetError
-     * @throws WebException
      * @throws JsonException
      */
     #[CheckChromecastPermission(Permission::READ)]
@@ -64,9 +63,7 @@ class MiddlewareController extends AbstractController
     }
 
     /**
-     * @throws MiddlewareException
      * @throws SaveError
-     * @throws WebException
      * @throws JsonException
      * @throws ReflectionException
      */
@@ -88,6 +85,18 @@ class MiddlewareController extends AbstractController
         return $this->returnSuccess();
     }
 
+    /**
+     * @param Media $media
+     *
+     * @throws ExecuteError
+     * @throws FileNotFound
+     * @throws ReadError
+     * @throws FactoryError
+     * @throws GetError
+     * @throws CreateError
+     * @throws LoadError
+     * @throws WriteError
+     */
     #[CheckChromecastPermission(Permission::READ)]
     public function image(
         GibsonStoreService $gibsonStoreService,
