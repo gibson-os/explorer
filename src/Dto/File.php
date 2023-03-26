@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Dto;
 
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
+use JsonSerializable;
 
-class File implements \JsonSerializable
+class File implements JsonSerializable
 {
     private bool $thumbAvailable = false;
 

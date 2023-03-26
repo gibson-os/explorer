@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Controller;
 
+use Exception;
 use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Attribute\GetMappedModel;
 use GibsonOS\Core\Attribute\GetModel;
@@ -55,6 +56,8 @@ use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use GibsonOS\Module\Explorer\Store\Html5\ConnectedUserStore;
 use GibsonOS\Module\Explorer\Store\Html5\MediaStore;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
+use JsonException;
+use ReflectionException;
 
 class Html5Controller extends AbstractController
 {
@@ -102,9 +105,9 @@ class Html5Controller extends AbstractController
     /**
      * @throws DateTimeError
      * @throws GetError
-     * @throws \JsonException
+     * @throws JsonException
      * @throws SaveError
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     #[CheckPermission(Permission::WRITE + Permission::MANAGE)]
     public function convert(
@@ -180,8 +183,8 @@ class Html5Controller extends AbstractController
     /**
      * @param int[] $userIds
      *
-     * @throws \JsonException
-     * @throws \ReflectionException
+     * @throws JsonException
+     * @throws ReflectionException
      * @throws SaveError
      */
     #[CheckPermission(Permission::WRITE)]
@@ -236,7 +239,7 @@ class Html5Controller extends AbstractController
      * @throws LoadError
      * @throws WriteError
      * @throws FactoryError
-     * @throws \Exception
+     * @throws Exception
      */
     #[CheckPermission(Permission::READ)]
     public function image(
@@ -277,7 +280,7 @@ class Html5Controller extends AbstractController
     /**
      * @throws SelectError
      * @throws DeleteError
-     * @throws \JsonException
+     * @throws JsonException
      */
     #[CheckPermission(Permission::DELETE)]
     public function delete(
@@ -313,8 +316,8 @@ class Html5Controller extends AbstractController
 
     /**
      * @throws SelectError
-     * @throws \JsonException
-     * @throws \ReflectionException
+     * @throws JsonException
+     * @throws ReflectionException
      */
     #[CheckPermission(Permission::READ)]
     public function connectedUsers(ConnectedUserStore $connectedUserStore): AjaxResponse
@@ -357,7 +360,7 @@ class Html5Controller extends AbstractController
      * @param ConnectedUser[] $connectedUsers
      *
      * @throws DeleteError
-     * @throws \JsonException
+     * @throws JsonException
      */
     #[CheckPermission(Permission::DELETE)]
     public function deleteConnectedUsers(
@@ -384,7 +387,7 @@ class Html5Controller extends AbstractController
      * @throws SaveError
      * @throws MiddlewareException
      * @throws WebException
-     * @throws \JsonException
+     * @throws JsonException
      */
     #[CheckPermission(Permission::WRITE)]
     public function setSession(MiddlewareService $middlewareService, string $id): AjaxResponse

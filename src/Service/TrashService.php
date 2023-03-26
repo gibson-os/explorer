@@ -18,6 +18,8 @@ use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Module\Explorer\Model\Trash;
 use GibsonOS\Module\Explorer\Repository\TrashRepository;
+use JsonException;
+use ReflectionException;
 
 class TrashService
 {
@@ -36,8 +38,8 @@ class TrashService
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws \JsonException
-     * @throws \ReflectionException
+     * @throws JsonException
+     * @throws ReflectionException
      * @throws SaveError
      * @throws SelectError
      * @throws SetError
@@ -72,7 +74,7 @@ class TrashService
      * @throws SelectError
      * @throws SetError
      * @throws ModelDeleteError
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function restore(array $tokens, ?int $userId): void
     {
@@ -95,7 +97,7 @@ class TrashService
      * @throws GetError
      * @throws ModelDeleteError
      * @throws SelectError
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function delete(array $tokens, ?int $userId): void
     {
@@ -114,10 +116,10 @@ class TrashService
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws \JsonException
+     * @throws JsonException
      * @throws SaveError
      * @throws SetError
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function addElement(string $trashDir, string $dir, ?string $filename, ?int $userId): string
     {

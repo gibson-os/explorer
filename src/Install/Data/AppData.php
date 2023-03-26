@@ -3,21 +3,25 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Install\Data;
 
+use Generator;
 use GibsonOS\Core\Dto\Install\Success;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Install\AbstractInstall;
 use GibsonOS\Core\Service\InstallService;
 use GibsonOS\Core\Service\PriorityInterface;
+use JsonException;
+use ReflectionException;
 
 class AppData extends AbstractInstall implements PriorityInterface
 {
     /**
      * @throws SaveError
      * @throws SelectError
-     * @throws \JsonException
+     * @throws JsonException
+     * @throws ReflectionException
      */
-    public function install(string $module): \Generator
+    public function install(string $module): Generator
     {
         $this
             ->addApp('Explorer', 'explorer', 'index', 'index', 'icon_dir')

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service;
 
+use Exception;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
@@ -89,7 +90,7 @@ class FileService
      * @throws ExecuteError
      * @throws GetError
      * @throws WriteError
-     * @throws \Exception
+     * @throws Exception
      */
     public function setFileMetas(FileTypeInterface $fileTypeService, string $path): void
     {

@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
+use DateTime;
 use GibsonOS\Core\Attribute\GetTableName;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Html5\ConnectedUser;
+use JsonException;
+use mysqlDatabase;
+use ReflectionException;
 
 class ConnectedUserStore extends AbstractDatabaseStore
 {
@@ -15,7 +19,7 @@ class ConnectedUserStore extends AbstractDatabaseStore
 
     public function __construct(
         #[GetTableName(User::class)] private readonly string $userTableName,
-        \mysqlDatabase $database = null,
+        mysqlDatabase $database = null,
     ) {
         parent::__construct($database);
     }
@@ -69,8 +73,8 @@ class ConnectedUserStore extends AbstractDatabaseStore
 
     /**
      * @throws SelectError
-     * @throws \JsonException
-     * @throws \ReflectionException
+     * @throws JsonException
+     * @throws ReflectionException
      */
     protected function getModel(): ConnectedUser
     {
@@ -81,7 +85,7 @@ class ConnectedUserStore extends AbstractDatabaseStore
         $connectedUser = (new User())
             ->setId((int) $record['connected_user_id'])
             ->setUser($record['connected_user_name'])
-            ->setAdded(new \DateTime($record['connected_user_added']))
+            ->setAdded(new DateTime($record['connected_user_added']))
         ;
 
         if ($this->user->getId() === $connectedUser->getId()) {

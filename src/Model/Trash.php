@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Model;
 
+use DateTimeInterface;
 use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Key;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
+use JsonSerializable;
 
 /**
  * @method User|null getUser()
@@ -16,7 +18,7 @@ use GibsonOS\Core\Model\User;
  */
 #[Table]
 #[Key(columns: ['dir', 'filename'])]
-class Trash extends AbstractModel implements \JsonSerializable
+class Trash extends AbstractModel implements JsonSerializable
 {
     #[Column(length: 32, primary: true)]
     private string $token;
@@ -28,7 +30,7 @@ class Trash extends AbstractModel implements \JsonSerializable
     private ?string $filename = null;
 
     #[Column(type: Column::TYPE_TIMESTAMP, default: Column::DEFAULT_CURRENT_TIMESTAMP)]
-    private \DateTimeInterface $added;
+    private DateTimeInterface $added;
 
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private ?int $userId = null;
@@ -72,12 +74,12 @@ class Trash extends AbstractModel implements \JsonSerializable
         return $this;
     }
 
-    public function getAdded(): \DateTimeInterface
+    public function getAdded(): DateTimeInterface
     {
         return $this->added;
     }
 
-    public function setAdded(\DateTimeInterface $added): Trash
+    public function setAdded(DateTimeInterface $added): Trash
     {
         $this->added = $added;
 

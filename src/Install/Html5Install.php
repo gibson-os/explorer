@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Install;
 
+use Generator;
 use GibsonOS\Core\Dto\Install\Success;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\InstallException;
@@ -11,6 +12,8 @@ use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Install\AbstractInstall;
 use GibsonOS\Core\Service\InstallService;
 use GibsonOS\Core\Service\PriorityInterface;
+use JsonException;
+use ReflectionException;
 
 class Html5Install extends AbstractInstall implements PriorityInterface
 {
@@ -19,10 +22,10 @@ class Html5Install extends AbstractInstall implements PriorityInterface
      * @throws InstallException
      * @throws SaveError
      * @throws SelectError
-     * @throws \JsonException
-     * @throws \ReflectionException
+     * @throws JsonException
+     * @throws ReflectionException
      */
-    public function install(string $module): \Generator
+    public function install(string $module): Generator
     {
         yield $html5MediaPathInput = $this->getSettingInput(
             'explorer',

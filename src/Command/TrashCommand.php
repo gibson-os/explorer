@@ -16,6 +16,7 @@ use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Module\Explorer\Model\Trash;
 use GibsonOS\Module\Explorer\Repository\TrashRepository;
+use JsonException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -37,7 +38,7 @@ class TrashCommand extends AbstractCommand
 
     /**
      * @throws SelectError
-     * @throws \JsonException
+     * @throws JsonException
      */
     protected function run(): int
     {
@@ -59,7 +60,7 @@ class TrashCommand extends AbstractCommand
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function deleteItem(Trash $trash, string $trashDir): void
     {

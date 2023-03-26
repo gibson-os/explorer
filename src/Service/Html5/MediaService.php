@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service\Html5;
 
+use DateTime;
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Dto\Ffmpeg\Media as MediaDto;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -26,6 +27,9 @@ use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position as PositionModel;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
+use JsonException;
+use OutOfRangeException;
+use ReflectionException;
 
 class MediaService
 {
@@ -184,13 +188,13 @@ class MediaService
 
     /**
      * @throws SaveError
-     * @throws \JsonException
-     * @throws \ReflectionException
+     * @throws JsonException
+     * @throws ReflectionException
      */
     public function savePosition(Media $media, int $currentPosition, int $userId): void
     {
         if ($currentPosition === 0) {
-            throw new \OutOfRangeException('Position 0 ist nicht gültig!');
+            throw new OutOfRangeException('Position 0 ist nicht gültig!');
         }
 
         $this->modelManager->save(
@@ -198,15 +202,15 @@ class MediaService
                 ->setMediaId($media->getId() ?? 0)
                 ->setPosition($currentPosition)
                 ->setUserId($userId)
-                ->setModified(new \DateTime())
+                ->setModified(new DateTime())
         );
     }
 
     /**
      * @throws DateTimeError
      * @throws GetError
-     * @throws \JsonException
-     * @throws \ReflectionException
+     * @throws JsonException
+     * @throws ReflectionException
      * @throws SaveError
      */
     public function scheduleConvert(

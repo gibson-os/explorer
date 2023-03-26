@@ -32,6 +32,8 @@ use GibsonOS\Module\Explorer\Repository\Html5\Media\PositionRepository;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
+use JsonException;
+use ReflectionException;
 
 class MiddlewareController extends AbstractController
 {
@@ -49,7 +51,7 @@ class MiddlewareController extends AbstractController
      * @throws SelectError
      * @throws SetError
      * @throws WebException
-     * @throws \JsonException
+     * @throws JsonException
      */
     #[CheckChromecastPermission(Permission::READ)]
     public function toSeeList(
@@ -65,8 +67,8 @@ class MiddlewareController extends AbstractController
      * @throws MiddlewareException
      * @throws SaveError
      * @throws WebException
-     * @throws \JsonException
-     * @throws \ReflectionException
+     * @throws JsonException
+     * @throws ReflectionException
      */
     #[CheckChromecastPermission(Permission::WRITE)]
     public function savePosition(

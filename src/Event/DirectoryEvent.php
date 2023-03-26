@@ -16,6 +16,7 @@ use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\EventService;
 use GibsonOS\Core\Service\FcmService;
 use GibsonOS\Module\Explorer\Dto\Parameter\DirectoryParameter;
+use JsonException;
 
 #[Event('Verzeichnis')]
 class DirectoryEvent extends AbstractEvent
@@ -32,7 +33,7 @@ class DirectoryEvent extends AbstractEvent
     /**
      * @throws FcmException
      * @throws WebException
-     * @throws \JsonException
+     * @throws JsonException
      */
     #[Event\Method('Nachricht senden')]
     public function pushMessage(

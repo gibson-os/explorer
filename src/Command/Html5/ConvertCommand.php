@@ -21,7 +21,9 @@ use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
+use JsonException;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 
 /**
  * @description Convert queued medias
@@ -50,8 +52,8 @@ class ConvertCommand extends AbstractCommand
      * @throws SaveError
      * @throws SelectError
      * @throws UnlockError
-     * @throws \JsonException
-     * @throws \ReflectionException
+     * @throws JsonException
+     * @throws ReflectionException
      */
     protected function run(): int
     {

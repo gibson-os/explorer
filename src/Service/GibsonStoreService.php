@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Service;
 
+use Exception;
 use GibsonOS\Core\Dto\Image;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
@@ -19,6 +20,8 @@ use GibsonOS\Core\Service\Image\ThumbnailService;
 use GibsonOS\Core\Service\SqLiteService;
 use GibsonOS\Core\Utility\JsonUtility;
 use JsonException;
+use SQLite3;
+use SQLite3Result;
 
 class GibsonStoreService
 {
@@ -70,7 +73,7 @@ class GibsonStoreService
         try {
             $query = $store->query(
                 'SELECT * FROM ' . self::META_TABLE_NAME .
-                " WHERE `key`='" . \SQLite3::escapeString($key) . "'"
+                " WHERE `key`='" . SQLite3::escapeString($key) . "'"
             );
         } catch (ExecuteError) {
             return $default;
@@ -105,7 +108,7 @@ class GibsonStoreService
 
         if (is_array($keys)) {
             foreach ($keys as $arrayKey => $item) {
-                $keys[$arrayKey] = \SQLite3::escapeString($item);
+                $keys[$arrayKey] = SQLite3::escapeString($item);
             }
 
             $where = " WHERE `key` IN ('" . implode("', '", $keys) . "')";
@@ -140,7 +143,7 @@ class GibsonStoreService
     {
         $store = $this->getStoreToWrite($dir);
         $store->addTableIfNotExists(self::META_TABLE_NAME, self::META_CREATE_QUERY);
-        $store->execute('REPLACE INTO ' . self::META_TABLE_NAME . " VALUES('" . \SQLite3::escapeString($key) . "', '" . (is_numeric($value) ? $value : \SQLite3::escapeString($value)) . "')");
+        $store->execute('REPLACE INTO ' . self::META_TABLE_NAME . " VALUES('" . SQLite3::escapeString($key) . "', '" . (is_numeric($value) ? $value : SQLite3::escapeString($value)) . "')");
 
         return $this;
     }
@@ -180,8 +183,8 @@ class GibsonStoreService
         try {
             $query = $store->query(
                 'SELECT * FROM ' . self::FILE_META_TABLE_NAME . ' WHERE ' .
-                "`filename`='" . \SQLite3::escapeString($filename) . "' AND " .
-                "`date`='" . \SQLite3::escapeString((string) filemtime($path)) . "' AND `key`='" . \SQLite3::escapeString($key) . "'"
+                "`filename`='" . SQLite3::escapeString($filename) . "' AND " .
+                "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "' AND `key`='" . SQLite3::escapeString($key) . "'"
             );
         } catch (ExecuteError) {
             return $default;
@@ -223,7 +226,7 @@ class GibsonStoreService
 
         if (is_array($keys)) {
             foreach ($keys as $arrayKey => $item) {
-                $keys[$arrayKey] = \SQLite3::escapeString($item);
+                $keys[$arrayKey] = SQLite3::escapeString($item);
             }
 
             $where = " AND `key` IN ('" . implode("', '", $keys) . "')";
@@ -232,8 +235,8 @@ class GibsonStoreService
         try {
             $query = $store->query(
                 'SELECT * FROM ' . self::FILE_META_TABLE_NAME . ' WHERE ' .
-                "`filename`='" . \SQLite3::escapeString($filename) . "' AND " .
-                "`date`='" . \SQLite3::escapeString((string) filemtime($path)) . "'" . $where
+                "`filename`='" . SQLite3::escapeString($filename) . "' AND " .
+                "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "'" . $where
             );
         } catch (ExecuteError) {
             return $default;
@@ -272,10 +275,10 @@ class GibsonStoreService
         }
 
         foreach ($keys as $arrayKey => $item) {
-            $keys[$arrayKey] = \SQLite3::escapeString($item);
+            $keys[$arrayKey] = SQLite3::escapeString($item);
         }
 
-        $where = " WHERE `key` IN ('" . implode("', '", $keys) . "') AND `filename`='" . \SQLite3::escapeString($filename) . "'";
+        $where = " WHERE `key` IN ('" . implode("', '", $keys) . "') AND `filename`='" . SQLite3::escapeString($filename) . "'";
 
         try {
             $count = $store->querySingle('SELECT COUNT(`key`) FROM ' . self::FILE_META_TABLE_NAME . $where);
@@ -291,7 +294,7 @@ class GibsonStoreService
      *
      * @throws ExecuteError
      * @throws GetError
-     * @throws \JsonException
+     * @throws JsonException
      * @throws WriteError
      */
     public function setFileMeta(string $path, string $key, $value, string $checkSum = null): GibsonStoreService
@@ -320,7 +323,7 @@ class GibsonStoreService
         $query->bindValue(':key', $key, SQLITE3_TEXT);
         $query->bindValue(':value', $value, SQLITE3_TEXT);
 
-        if (!$query->execute() instanceof \SQLite3Result) {
+        if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
         }
 
@@ -330,7 +333,7 @@ class GibsonStoreService
     /**
      * @throws ExecuteError
      * @throws GetError
-     * @throws \JsonException
+     * @throws JsonException
      * @throws WriteError
      */
     public function setFileMetas(string $dir, array $values, string $checkSum = null): GibsonStoreService
@@ -359,8 +362,8 @@ class GibsonStoreService
 
         $query = $store->querySingle(
             'SELECT chksum FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
-            "filename='" . \SQLite3::escapeString($filename) . "' AND " .
-            "date='" . \SQLite3::escapeString((string) filemtime($path)) . "'"
+            "filename='" . SQLite3::escapeString($filename) . "' AND " .
+            "date='" . SQLite3::escapeString((string) filemtime($path)) . "'"
         );
 
         if ($query) {
@@ -370,7 +373,7 @@ class GibsonStoreService
         $checkSum = $this->getChecksum($path, $checkSum);
         $query = $store->querySingle(
             'SELECT chksum FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
-            "chksum='" . \SQLite3::escapeString($checkSum) . "'"
+            "chksum='" . SQLite3::escapeString($checkSum) . "'"
         );
 
         if ($query) {
@@ -401,7 +404,7 @@ class GibsonStoreService
         try {
             $query = $store->query(
                 'SELECT * FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
-                "filename='" . \SQLite3::escapeString($filename) . "'"
+                "filename='" . SQLite3::escapeString($filename) . "'"
             );
         } catch (ExecuteError) {
             throw new ReadError();
@@ -458,7 +461,7 @@ class GibsonStoreService
         try {
             $query = $store->query(
                 'SELECT * FROM ' . self::THUMBNAIL_TABLE_NAME . ' WHERE ' .
-                "filename='" . \SQLite3::escapeString($filename) . "'"
+                "filename='" . SQLite3::escapeString($filename) . "'"
             );
         } catch (ExecuteError) {
             return null;
@@ -493,7 +496,7 @@ class GibsonStoreService
         $query->bindValue(':date', filemtime($path), SQLITE3_INTEGER);
         $query->bindValue(':image', $this->thumbnailService->getString($image), SQLITE3_BLOB);
 
-        if (!$query->execute() instanceof \SQLite3Result) {
+        if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
         }
 
@@ -508,7 +511,7 @@ class GibsonStoreService
         $query->bindValue(':date', filemtime($path), SQLITE3_INTEGER);
         $query->bindValue(':image', $this->thumbnailService->getString($thumbnail, 'png'), SQLITE3_BLOB);
 
-        if (!$query->execute() instanceof \SQLite3Result) {
+        if (!$query->execute() instanceof SQLite3Result) {
             throw new ExecuteError();
         }
 
@@ -549,7 +552,7 @@ class GibsonStoreService
         }
 
         foreach ($existingFiles as $key => $file) {
-            $existingFiles[$key] = \SQLite3::escapeString($file);
+            $existingFiles[$key] = SQLite3::escapeString($file);
         }
 
         $store->execute(
@@ -578,7 +581,7 @@ class GibsonStoreService
         }
 
         foreach ($existingFiles as $key => $file) {
-            $existingFiles[$key] = \SQLite3::escapeString($file);
+            $existingFiles[$key] = SQLite3::escapeString($file);
         }
 
         $store->execute(
@@ -609,7 +612,7 @@ class GibsonStoreService
         }
 
         foreach ($existingFiles as $key => $file) {
-            $existingFiles[$key] = \SQLite3::escapeString($file);
+            $existingFiles[$key] = SQLite3::escapeString($file);
         }
 
         $store->execute(
@@ -662,7 +665,7 @@ class GibsonStoreService
         if (!isset($this->stores[$dir])) {
             try {
                 $this->stores[$dir] = $this->sqLiteFactory->create($dir . '.gibsonStore');
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 throw new ExecuteError(sprintf('Cant create database for %s to write', $dir), 0, $exception);
             }
 
@@ -687,7 +690,7 @@ class GibsonStoreService
         if (!isset($this->stores[$dir])) {
             try {
                 $this->stores[$dir] = $this->sqLiteFactory->create($dir . '.gibsonStore');
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 throw new ExecuteError(sprintf('Cant create database for %s to read', $dir), 0, $exception);
             }
 

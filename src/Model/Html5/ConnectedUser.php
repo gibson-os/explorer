@@ -9,6 +9,7 @@ use GibsonOS\Core\Attribute\Install\Database\Key;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
+use JsonSerializable;
 
 /**
  * @method ConnectedUser setUser(User $user)
@@ -18,7 +19,7 @@ use GibsonOS\Core\Model\User;
  */
 #[Table]
 #[Key(true, ['user_id', 'connected_user_id'])]
-class ConnectedUser extends AbstractModel implements \JsonSerializable
+class ConnectedUser extends AbstractModel implements JsonSerializable
 {
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], autoIncrement: true)]
     private ?int $id = null;

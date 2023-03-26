@@ -23,6 +23,9 @@ use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
+use mysqlDatabase;
+use mysqlTable;
+use stdClass;
 
 class ToSeeStore extends AbstractDatabaseStore
 {
@@ -35,7 +38,7 @@ class ToSeeStore extends AbstractDatabaseStore
      * @throws CreateError
      */
     public function __construct(
-        \mysqlDatabase $database,
+        mysqlDatabase $database,
         private DirService $dir,
         private MediaService $media,
         private GibsonStoreService $gibsonStore,
@@ -102,7 +105,7 @@ class ToSeeStore extends AbstractDatabaseStore
         $this->table->setSelectString(array_merge($select, ['orderDate' => 'added` AS `orderDate']));
 
         $tableName = $this->tableName;
-        $positionTable = new \mysqlTable($this->database, $this->positionTableName);
+        $positionTable = new mysqlTable($this->database, $this->positionTableName);
         $positionTable->setSelectString(array_merge($select, ['orderDate' => 'modified` AS `orderDate']));
         $positionTable->appendJoin(
             $tableName,
@@ -213,7 +216,7 @@ class ToSeeStore extends AbstractDatabaseStore
         return preg_replace('/(s?)\d{1,3}e?\d.*/i', '$1*', $this->dir->escapeForGlob($filename));
     }
 
-    private function getNextFiles(\stdClass $media, string $pattern): array
+    private function getNextFiles(stdClass $media, string $pattern): array
     {
         $fileNames = (array) glob($pattern);
         $mediaFilePath = $media->dir . $media->filename;
