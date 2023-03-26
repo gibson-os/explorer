@@ -37,6 +37,8 @@ class PositionRepository extends AbstractRepository
 
     /**
      * @throws SelectError
+     *
+     * @return Position[]
      */
     public function getByMediaAndConnectedUserId(int $mediaId, int $userId): array
     {

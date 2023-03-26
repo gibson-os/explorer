@@ -15,6 +15,7 @@ use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
+use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\WebException;
 use GibsonOS\Core\Model\User\Permission;
@@ -27,6 +28,7 @@ use GibsonOS\Module\Explorer\Attribute\CheckChromecastPermission;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
+use GibsonOS\Module\Explorer\Repository\Html5\Media\PositionRepository;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
@@ -120,9 +122,61 @@ class MiddlewareController extends AbstractController
         );
     }
 
+    /**
+     * @param Media $media
+     *
+     * @throws DateTimeError
+     * @throws ExecuteError
+     * @throws FileNotFound
+     * @throws MediaException
+     * @throws NoAudioError
+     * @throws OpenError
+     * @throws ProcessError
+     * @throws ReadError
+     * @throws SelectError
+     * @throws SetError
+     */
     #[CheckChromecastPermission(Permission::READ)]
-    public function get(#[GetModel(['token' => 'token'])] Media $media): AjaxResponse
-    {
-        return $this->returnSuccess($media);
+    public function get(
+        GibsonStoreService $gibsonStoreService,
+        PositionRepository $positionRepository,
+        MediaService $mediaService,
+        #[GetModel(['token' => 'token'])] Media $media,
+        array $userIds,
+    ): AjaxResponse {
+        $mediaData = $media->jsonSerialize();
+        $mediaData['duration'] = (int) $gibsonStoreService->getFileMeta(
+            $media->getDir() . $media->getFilename(),
+            'duration',
+            0
+        );
+        $positions = [];
+
+        foreach ($userIds as $userId) {
+            try {
+                $positions[] = $positionRepository->getByMediaAndUserId($media->getId() ?? 0, $userId)->getPosition();
+            } catch (SelectError) {
+                // Do nothing
+            }
+
+            foreach ($positionRepository->getByMediaAndConnectedUserId($media->getId() ?? 0, $userId) as $position) {
+                $positions[] = $position->getPosition();
+            }
+        }
+
+        $mediaData['position'] = count($positions) > 0 ? max($positions) : 0;
+
+        try {
+            $convertStatus = $mediaService->getConvertStatus($media);
+        } catch (ConvertStatusError) {
+            $convertStatus = null;
+        }
+
+        $mediaData['convertPercent'] = $convertStatus?->getPercent() ?? 0;
+        $mediaData['convertTime'] = $convertStatus?->getTime()?->getTimestamp() ?? 0;
+        $timeRemaining = $convertStatus?->getTimeRemaining();
+        $mediaData['convertTimeRemaining'] = $timeRemaining === null ? 0 : $timeRemaining->getTimestamp();
+
+        return $this->returnSuccess($mediaData);
     }
 }
