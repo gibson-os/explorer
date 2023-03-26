@@ -9,6 +9,30 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Convert', {
                 action: 'convert',
                 permission: GibsonOS.Permission.MANAGE
             },
+            convertHandler(dir, files, records, audioStreamId, subtitleStreamId) {
+                const me = this;
+
+                GibsonOS.module.explorer.html5.fn.convert(dir, files, audioStreamId, subtitleStreamId, (response) => {
+                    let data = Ext.decode(response.responseText).data;
+                    me.disable();
+
+                    Ext.iterate(records, (record) => {
+                        if (!data[dir + record.get('name')]) {
+                            return true;
+                        }
+
+                        record.set('html5MediaStatus', 'wait');
+                        record.set('html5MediaToken', data[dir + record.get('name')]);
+                        record.commit();
+                    });
+
+                    GibsonOS.MessageBox.show({
+                        title: 'Konvertieren!',
+                        msg: 'Dateien wurden zum konvertieren eingereiht!',
+                        type: GibsonOS.MessageBox.type.INFO
+                    });
+                });
+            },
             handler() {
                 const me = this;
                 const records = me.component.getSelectionModel().getSelection();
