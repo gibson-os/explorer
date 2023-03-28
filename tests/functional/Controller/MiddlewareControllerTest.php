@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Test\Functional\Explorer\Controller;
 
+use DateTimeImmutable;
 use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Module\Explorer\Controller\MiddlewareController;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
@@ -15,6 +16,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 class MiddlewareControllerTest extends ExplorerFunctionalTest
 {
     use ProphecyTrait;
+    use MiddlewareControllerToSeeDataTrait;
 
     private MiddlewareController $middlewareController;
 
@@ -37,78 +39,63 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
     {
         $modelManager = $this->serviceManager->get(ModelManager::class);
 
-        $marvin = $this->addUser();
-        $arthur = $this->addUser('arthur');
+        $this->addUser();
+        $this->addUser('arthur');
 
-        foreach ($medias as $media) {
-            $modelManager->saveWithoutChildren(
-                (new Media())
-                    ->setToken($media['filename'])
-                    ->setDir($media['dir'] ?? '')
-                    ->setFilename($media['filename'])
-                    ->setUserId($media['userId'] ?? 1)
-                    ->setStatus($media['status'] ?? 'generated')
-            );
-            $this->gibsonStoreService->getFileMeta(($media['dir'] ?? '') . $media['filename'], 'duration', 0)
-                ->shouldBeCalledOnce()
+        foreach ($medias as $index => $media) {
+            $dir =
+                __DIR__ . DIRECTORY_SEPARATOR .
+                '..' . DIRECTORY_SEPARATOR .
+                '..' . DIRECTORY_SEPARATOR .
+                '_data' . DIRECTORY_SEPARATOR .
+                'media' . DIRECTORY_SEPARATOR . ($media['dir'] ?? '')
+            ;
+            $mediaModel = (new Media())
+                ->setToken($media['filename'])
+                ->setDir($dir)
+                ->setFilename($media['filename'])
+                ->setUserId($media['userId'] ?? 1)
+                ->setStatus($media['status'] ?? 'generated')
+                ->setAdded(new DateTimeImmutable('+' . $index . ' seconds'))
+            ;
+            $modelManager->saveWithoutChildren($mediaModel);
+            $callTimes = 0;
+
+            if (isset($media['position'])) {
+                $modelManager->saveWithoutChildren(
+                    (new Media\Position())
+                        ->setUserId(1)
+                        ->setPosition($media['position'])
+                        ->setMedia($mediaModel)
+                        ->setModified(new DateTimeImmutable('+' . $index . '11 seconds'))
+                );
+
+                if (in_array(1, $userIds)) {
+                    $callTimes += 2;
+                }
+            }
+
+            if (isset($media['position2'])) {
+                $modelManager->saveWithoutChildren(
+                    (new Media\Position())
+                        ->setUserId(2)
+                        ->setPosition($media['position2'])
+                        ->setMedia($mediaModel)
+                        ->setModified(new DateTimeImmutable('+' . $index . '22 seconds'))
+                );
+
+                if (in_array(2, $userIds)) {
+                    $callTimes += 2;
+                }
+            }
+
+            $this->gibsonStoreService->getFileMeta($dir . $media['filename'], 'duration', 0)
+                ->shouldBeCalledTimes($callTimes === 0 ? 1 : $callTimes)
                 ->willReturn($media['duration'] ?? 42)
             ;
         }
 
         $response = $this->middlewareController->toSeeList($this->serviceManager->get(ToSeeStore::class), $userIds);
         $this->checkAjaxResponse($response, $responseData, $total);
-    }
-
-    public function getToSeeData(): array
-    {
-        return [
-            'empty' => [
-                [],
-                [1],
-                [],
-                0,
-            ],
-            'one media' => [
-                [
-                    ['filename' => 'ford'],
-                ],
-                [1],
-                [
-                    [
-                        'html5VideoToken' => 'ford',
-                        'html5MediaToken' => 'ford',
-                        'dir' => '',
-                        'filename' => 'ford',
-                        'status' => 'generated',
-                        'duration' => 42,
-                        'position' => 0,
-                        'nextFiles' => 0,
-                        'category' => 2,
-                    ],
-                ],
-                1,
-            ],
-            'two medias same path' => [
-                [
-                    ['filename' => 'ford 1e1'],
-                    ['filename' => 'ford 1e2'],
-                ],
-                [1],
-                [
-                    [
-                        'html5VideoToken' => 'ford 1e2',
-                        'html5MediaToken' => 'ford 1e2',
-                        'dir' => '',
-                        'filename' => 'ford 1e2',
-                        'status' => 'generated',
-                        'duration' => 42,
-                        'position' => 0,
-                        'nextFiles' => 0,
-                        'category' => 2,
-                    ],
-                ],
-                2,
-            ],
-        ];
     }
 }
