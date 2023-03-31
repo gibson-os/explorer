@@ -157,11 +157,11 @@ class ToSeeStore extends AbstractDatabaseStore
         $filesWithBiggerNumbers = [];
 
         foreach ($fileNames as $fileName) {
-            if (isset($this->seenMedias[$fileName])) {
-                continue;
-            }
-
             if ($add) {
+                if (isset($this->seenMedias[$fileName])) {
+                    continue;
+                }
+
                 $filesWithBiggerNumbers[] = $fileName;
             }
 
