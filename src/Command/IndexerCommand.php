@@ -4,12 +4,11 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Command;
 
 use Exception;
+use GibsonOS\Core\Attribute\Command\Lock;
 use GibsonOS\Core\Attribute\Command\Option;
 use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\FactoryError;
-use GibsonOS\Core\Exception\Flock\LockError;
-use GibsonOS\Core\Exception\Flock\UnlockError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
@@ -20,7 +19,6 @@ use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\EnvService;
 use GibsonOS\Core\Service\FileService;
-use GibsonOS\Core\Service\LockService;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Service\File\Type\FileTypeInterface;
 use GibsonOS\Module\Explorer\Service\FileService as ExplorerFileService;
@@ -31,13 +29,13 @@ use Psr\Log\LoggerInterface;
  * @description Index all files in `home_path`
  */
 #[Cronjob(hours: '3', minutes: '30', daysOfWeek: '3')]
+#[Lock('explorerIndexerCommand')]
 class IndexerCommand extends AbstractCommand
 {
     #[Option('Renew index databases')]
     private bool $renew = false;
 
     public function __construct(
-        private readonly LockService $lockService,
         private readonly SettingRepository $settingRepository,
         private readonly GibsonStoreService $gibsonStoreService,
         private readonly DirService $dirService,
@@ -54,20 +52,11 @@ class IndexerCommand extends AbstractCommand
     /**
      * @throws GetError
      * @throws SelectError
-     * @throws UnlockError
      */
     protected function run(): int
     {
-        try {
-            $this->lockService->lock();
-
-            $homePath = $this->settingRepository->getByKeyAndModuleName('explorer', 0, 'home_path');
-            $this->indexDir($homePath->getValue(), false);
-
-            $this->lockService->unlock();
-        } catch (LockError) {
-            // Indexer in progress
-        }
+        $homePath = $this->settingRepository->getByKeyAndModuleName('explorer', 0, 'home_path');
+        $this->indexDir($homePath->getValue(), false);
 
         return self::SUCCESS;
     }

@@ -5,13 +5,12 @@ namespace GibsonOS\Module\Explorer\Command\Html5;
 
 use DateTime;
 use Exception;
+use GibsonOS\Core\Attribute\Command\Lock;
 use GibsonOS\Core\Attribute\Command\Option;
 use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
-use GibsonOS\Core\Exception\Flock\LockError;
-use GibsonOS\Core\Exception\Flock\UnlockError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\DeleteError as ModelDeleteError;
 use GibsonOS\Core\Exception\Repository\SelectError;
@@ -19,7 +18,6 @@ use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
-use GibsonOS\Core\Service\LockService;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
@@ -31,6 +29,7 @@ use Psr\Log\LoggerInterface;
  * @description Delete converted files
  */
 #[Cronjob(minutes: '5', seconds: '0', user: 'root')]
+#[Lock('explorerHtml5DeleteCommand')]
 class DeleteCommand extends AbstractCommand
 {
     #[Option('Run dry. Files are not deleted')]
@@ -41,7 +40,6 @@ class DeleteCommand extends AbstractCommand
     public function __construct(
         private readonly MediaRepository $mediaRepository,
         private readonly SettingRepository $settingRepository,
-        private readonly LockService $lockService,
         private readonly DirService $dirService,
         private readonly FileService $fileService,
         private readonly ModelManager $modelManager,
@@ -59,28 +57,19 @@ class DeleteCommand extends AbstractCommand
      * @throws MediaException
      * @throws ModelDeleteError
      * @throws SelectError
-     * @throws UnlockError
      */
     protected function run(): int
     {
-        try {
-            $this->lockService->lock();
+        $this->mediaPath = $this->settingRepository->getByKeyAndModuleName(
+            'explorer',
+            0,
+            'html5_media_path'
+        )->getValue();
 
-            $this->mediaPath = $this->settingRepository->getByKeyAndModuleName(
-                'explorer',
-                0,
-                'html5_media_path'
-            )->getValue();
-
-            $this->deleteWhereFileNotExists();
-            $this->deleteWhereMediaNotExists();
-            $this->deleteWhereLifetimeExpired();
-            $this->deleteWhereSizeExceeded();
-
-            $this->lockService->unlock();
-        } catch (LockError) {
-            // Delete in progress
-        }
+        $this->deleteWhereFileNotExists();
+        $this->deleteWhereMediaNotExists();
+        $this->deleteWhereLifetimeExpired();
+        $this->deleteWhereSizeExceeded();
 
         return self::SUCCESS;
     }

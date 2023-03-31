@@ -15,6 +15,6 @@ class DefaultService implements FileTypeInterface
 
     public function getImage(string $filename): Image
     {
-        throw new Exception();
+        throw new Exception('Default type has no image!');
     }
 }

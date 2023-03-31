@@ -50,7 +50,6 @@ class MiddlewareController extends AbstractController
      * @throws ReadError
      * @throws SelectError
      * @throws SetError
-     * @throws JsonException
      */
     #[CheckChromecastPermission(Permission::READ)]
     public function toSeeList(
@@ -86,8 +85,6 @@ class MiddlewareController extends AbstractController
     }
 
     /**
-     * @param Media $media
-     *
      * @throws ExecuteError
      * @throws FileNotFound
      * @throws ReadError
@@ -134,8 +131,6 @@ class MiddlewareController extends AbstractController
     }
 
     /**
-     * @param Media $media
-     *
      * @throws DateTimeError
      * @throws ExecuteError
      * @throws FileNotFound
