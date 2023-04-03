@@ -62,7 +62,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
                 ->setFilename($media['filename'])
                 ->setUserId($media['userId'] ?? 1)
                 ->setStatus($media['status'] ?? 'generated')
-                ->setAdded(new DateTimeImmutable('+' . $index . ' seconds'))
+                ->setAdded($media['added'] ?? new DateTimeImmutable('+' . $index . ' seconds'))
             ;
             $modelManager->saveWithoutChildren($mediaModel);
             $callTimes = 0;

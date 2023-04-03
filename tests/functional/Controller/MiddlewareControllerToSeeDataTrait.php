@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace GibsonOS\Test\Functional\Explorer\Controller;
 
+use DateTimeImmutable;
+
 trait MiddlewareControllerToSeeDataTrait
 {
     public function getToSeeData(): array
@@ -1826,6 +1828,68 @@ trait MiddlewareControllerToSeeDataTrait
                         'status' => 'generated',
                         'duration' => 42,
                         'position' => 21,
+                        'nextFiles' => 1,
+                        'category' => 2,
+                    ],
+                ],
+                2,
+            ],
+            'Two medias in different directories second seen first later converted' => [
+                [
+                    ['filename' => 'ford 1e1', 'added' => new DateTimeImmutable('+1 hour')],
+                    ['filename' => 'ford 1e1', 'dir' => 'prefect' . DIRECTORY_SEPARATOR, 'position' => 42],
+                ],
+                [1],
+                [
+                    [
+                        'html5VideoToken' => 'ford 1e1',
+                        'html5MediaToken' => 'ford 1e1',
+                        'dir' => $dir . 'prefect' . DIRECTORY_SEPARATOR,
+                        'filename' => 'ford 1e1',
+                        'status' => 'generated',
+                        'duration' => 42,
+                        'position' => 42,
+                        'nextFiles' => 1,
+                        'category' => 2,
+                    ], [
+                        'html5VideoToken' => 'ford 1e1',
+                        'html5MediaToken' => 'ford 1e1',
+                        'dir' => $dir,
+                        'filename' => 'ford 1e1',
+                        'status' => 'generated',
+                        'duration' => 42,
+                        'position' => 0,
+                        'nextFiles' => 1,
+                        'category' => 2,
+                    ],
+                ],
+                2,
+            ],
+            'Two medias in different directories first seen second later converted' => [
+                [
+                    ['filename' => 'ford 1e1', 'dir' => 'prefect' . DIRECTORY_SEPARATOR, 'position' => 42],
+                    ['filename' => 'ford 1e1', 'added' => new DateTimeImmutable('+1 hour')],
+                ],
+                [1],
+                [
+                    [
+                        'html5VideoToken' => 'ford 1e1',
+                        'html5MediaToken' => 'ford 1e1',
+                        'dir' => $dir . 'prefect' . DIRECTORY_SEPARATOR,
+                        'filename' => 'ford 1e1',
+                        'status' => 'generated',
+                        'duration' => 42,
+                        'position' => 42,
+                        'nextFiles' => 1,
+                        'category' => 2,
+                    ], [
+                        'html5VideoToken' => 'ford 1e1',
+                        'html5MediaToken' => 'ford 1e1',
+                        'dir' => $dir,
+                        'filename' => 'ford 1e1',
+                        'status' => 'generated',
+                        'duration' => 42,
+                        'position' => 0,
                         'nextFiles' => 1,
                         'category' => 2,
                     ],

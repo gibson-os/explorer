@@ -194,11 +194,11 @@ class ToSeeStore extends AbstractDatabaseStore
         ];
 
         $this->initTable();
-        $this->table->setSelectString(array_merge($select, ['orderDate' => 'added` AS `orderDate']));
+        $this->table->setSelectString('`' . implode('`, `', $select) . '`, `added` AS `orderDate`, 0 AS `isPosition`');
 
         $tableName = $this->tableName;
         $positionTable = new mysqlTable($this->database, $this->positionTableName);
-        $positionTable->setSelectString(array_merge($select, ['orderDate' => 'modified` AS `orderDate']));
+        $positionTable->setSelectString('`' . implode('`, `', $select) . '`, `modified` AS `orderDate`, 1 AS `isPosition`');
         $positionTable->appendJoin(
             $tableName,
             '`' . $tableName . '`.`id`=`' . $this->positionTableName . '`.`media_id`'
@@ -215,7 +215,7 @@ class ToSeeStore extends AbstractDatabaseStore
 
         $this->table
             ->appendUnion($positionTable->getSelect())
-            ->setOrderBy('`orderDate` DESC')
+            ->setOrderBy('`isPosition` DESC, `orderDate` DESC')
             ->selectPrepared(false)
         ;
     }
