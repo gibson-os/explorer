@@ -19,10 +19,10 @@ use ReflectionException;
 class GeneralPermissionData extends AbstractInstall implements PriorityInterface
 {
     public function __construct(
-        ServiceManager $ServiceManager,
-        private PermissionRepository $permissionRepository
+        ServiceManager $serviceManager,
+        private readonly PermissionRepository $permissionRepository
     ) {
-        parent::__construct($ServiceManager);
+        parent::__construct($serviceManager);
     }
 
     /**

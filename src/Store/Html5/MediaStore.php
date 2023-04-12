@@ -5,7 +5,6 @@ namespace GibsonOS\Module\Explorer\Store\Html5;
 
 use Generator;
 use GibsonOS\Core\Attribute\GetSetting;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Model\Setting;
@@ -13,15 +12,19 @@ use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
+use GibsonOS\Module\Explorer\Service\FileService;
+use JsonException;
 use mysqlDatabase;
+use ReflectionException;
 
 class MediaStore extends AbstractDatabaseStore
 {
     public function __construct(
         mysqlDatabase $database,
-        private TypeService $typeService,
-        private DirService $dir,
-        #[GetSetting('html5_media_path')] private Setting $html5MediaPath
+        private readonly TypeService $typeService,
+        private readonly DirService $dirService,
+        private readonly FileService $fileService,
+        #[GetSetting('html5_media_path')] private readonly Setting $html5MediaPath,
     ) {
         parent::__construct($database);
     }
@@ -32,8 +35,9 @@ class MediaStore extends AbstractDatabaseStore
     }
 
     /**
-     * @throws DateTimeError
      * @throws SelectError
+     * @throws JsonException
+     * @throws ReflectionException
      */
     public function getList(): Generator
     {
@@ -43,32 +47,33 @@ class MediaStore extends AbstractDatabaseStore
         foreach (parent::getList() as $media) {
             $path = $media->getDir() . $media->getFilename();
             $data = $media->jsonSerialize();
+            $file = $this->fileService->get($path);
 
-            if (
-                $media->getStatus() == 'generate' ||
-                $media->getStatus() == 'generated'
-            ) {
-                $data['size'] = filesize($mediaPath . $media->getToken() . '.mp4');
+            if ($media->isGenerationRequired()) {
+                $file->setSize(
+                    $media->getStatus() == 'generate' || $media->getStatus() == 'generated'
+                    ? filesize($mediaPath . $media->getToken() . '.mp4')
+                    : 0
+                );
             }
 
-            $data['category'] = TypeService::TYPE_CATEGORY_VIDEO;
-            $data['type'] = $this->typeService->getFileType($path);
-            $data['thumbAvailable'] = $this->typeService->getThumbType($path) ? true : false;
+            $data['site'] = $file->getSize();
+            $data['category'] = $file->getCategory();
+            $data['type'] = $file->getType();
+            $data['thumbAvailable'] = $file->isThumbAvailable();
 
             yield $data;
         }
     }
 
     /**
-     * @throws DateTimeError
      * @throws GetError
-     * @throws SelectError
      */
     public function getSize(): int
     {
         $size = 0;
 
-        foreach ($this->dir->getFiles($this->html5MediaPath->getValue()) as $file) {
+        foreach ($this->dirService->getFiles($this->html5MediaPath->getValue()) as $file) {
             $size += filesize($file);
         }
 
