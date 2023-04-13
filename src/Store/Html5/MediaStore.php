@@ -46,7 +46,19 @@ class MediaStore extends AbstractDatabaseStore
         /** @var Media $media */
         foreach (parent::getList() as $media) {
             $path = $media->getDir() . $media->getFilename();
+
             $data = $media->jsonSerialize();
+            $data['size'] = 0;
+            $data['category'] = 0;
+            $data['type'] = '';
+            $data['thumbAvailable'] = false;
+
+            if (!file_exists($path)) {
+                yield $data;
+
+                continue;
+            }
+
             $file = $this->fileService->get($path);
 
             if ($media->isGenerationRequired()) {
@@ -57,7 +69,7 @@ class MediaStore extends AbstractDatabaseStore
                 );
             }
 
-            $data['site'] = $file->getSize();
+            $data['size'] = $file->getSize();
             $data['category'] = $file->getCategory();
             $data['type'] = $file->getType();
             $data['thumbAvailable'] = $file->isThumbAvailable();

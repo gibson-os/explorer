@@ -41,7 +41,7 @@ class FileService
             }
         }
 
-        $fileSize = filesize($path) ?: 0;
+        $fileSize = filesize($path);
         $html5Status = null;
         $html5Token = null;
         $position = null;
