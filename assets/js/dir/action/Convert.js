@@ -7,7 +7,8 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Convert', {
             requiredPermission: {
                 task: 'html5',
                 action: 'convert',
-                permission: GibsonOS.Permission.MANAGE
+                permission: GibsonOS.Permission.MANAGE,
+                method: 'POST'
             },
             convertHandler(dir, files, records, audioStreamId, subtitleStreamId) {
                 const me = this;
@@ -135,6 +136,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Convert', {
 
                             GibsonOS.Ajax.request({
                                 url: baseDir + 'explorer/file/metaInfos',
+                                method: 'GET',
                                 params: {
                                     path: dir + record.get('name')
                                 },
@@ -166,6 +168,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Convert', {
                             button.gos.data.refresh = () => {
                                 GibsonOS.Ajax.request({
                                     url: baseDir + 'explorer/html5/convertStatus',
+                                    method: 'GET',
                                     params: {
                                         token: record.get('html5MediaToken')
                                     },

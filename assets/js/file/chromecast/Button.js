@@ -7,7 +7,8 @@ Ext.define('GibsonOS.module.explorer.file.chromecast.Button', {
         module: 'explorer',
         task: 'html5',
         action: 'video',
-        permission: GibsonOS.Permission.READ
+        permission: GibsonOS.Permission.READ,
+        method: 'GET'
     },
     initComponent: function() {
         this.callParent();

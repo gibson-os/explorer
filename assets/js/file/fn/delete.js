@@ -46,7 +46,8 @@ GibsonOS.define('GibsonOS.module.explorer.file.fn.delete', function(dir, records
             text: 'Nein'
         }]
     },{
-        url: baseDir + 'explorer/file/delete',
+        url: baseDir + 'explorer/file',
+        method: 'DELETE',
         params: {
             dir: dir,
             'files[]': files

@@ -6,7 +6,8 @@ Ext.define('GibsonOS.module.explorer.html5.store.Grid', {
     constructor: function(data) {
         this.proxy = {
             type: 'gosDataProxyAjax',
-            url: baseDir + 'explorer/html5/index'
+            url: baseDir + 'explorer/html5',
+            method: 'GET'
         };
 
         this.callParent(arguments);
@@ -41,6 +42,7 @@ Ext.define('GibsonOS.module.explorer.html5.store.Grid', {
 
                 GibsonOS.Ajax.request({
                     url: baseDir + 'explorer/file/image',
+                    method: 'GET',
                     withoutFailure: true,
                     timeout: 120000,
                     params: {

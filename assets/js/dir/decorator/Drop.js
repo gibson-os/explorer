@@ -80,6 +80,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                     }]
                 },{
                     url: baseDir + 'explorer/file/' + (ctrlPressed ? 'copy' : 'move'),
+                    method: 'POST',
                     params: {
                         from: data.component.getFromDir(records),
                         to: me.getToDir(),
@@ -140,6 +141,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                     }]
                 },{
                     url: baseDir + 'explorer/file/' + (ctrlPressed ? 'copy' : 'move'),
+                    method: 'POST',
                     params: {
                         from: data.component.getFromDir(records),
                         to: me.getToDir(targetRecord),

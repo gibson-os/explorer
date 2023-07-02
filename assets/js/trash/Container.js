@@ -112,8 +112,9 @@ Ext.define('GibsonOS.module.explorer.trash.Container', {
         me.tbar = [{
             iconCls: 'icon_system system_refresh',
             requiredPermission: {
-                action: 'read',
-                permission: GibsonOS.Permission.READ
+                action: '',
+                permission: GibsonOS.Permission.READ,
+                method: 'GET'
             },
             handler: function() {
                 me.gos.store.load();
@@ -124,8 +125,9 @@ Ext.define('GibsonOS.module.explorer.trash.Container', {
             text: 'Leeren',
             disabled: true,
             requiredPermission: {
-                action: 'delete',
-                permission: GibsonOS.Permission.DELETE
+                action: '',
+                permission: GibsonOS.Permission.DELETE,
+                method: 'DELETE'
             },
             handler: function() {
                 GibsonOS.module.explorer.trash.fn.delete(me, me.down('#explorerTrashGrid').getStore().getRange());
@@ -136,7 +138,8 @@ Ext.define('GibsonOS.module.explorer.trash.Container', {
             disabled: true,
             requiredPermission: {
                 action: 'restore',
-                permission: GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.WRITE,
+                method: 'POST'
             },
             handler: function() {
                 var records = me.down('#explorerTrashGrid').getSelectionModel().getSelection();
@@ -148,6 +151,7 @@ Ext.define('GibsonOS.module.explorer.trash.Container', {
 
                 GibsonOS.Ajax.request({
                     url: baseDir + 'explorer/trash/restore',
+                    method: 'POST',
                     params: {
                         'tokens[]': tokens
                     },
@@ -161,8 +165,9 @@ Ext.define('GibsonOS.module.explorer.trash.Container', {
             iconCls: 'icon_system system_delete',
             disabled: true,
             requiredPermission: {
-                action: 'delete',
-                permission: GibsonOS.Permission.DELETE
+                action: '',
+                permission: GibsonOS.Permission.DELETE,
+                method: 'DELETE'
             },
             handler: function() {
                 GibsonOS.module.explorer.trash.fn.delete(me, me.down('#explorerTrashGrid').getSelectionModel().getSelection());

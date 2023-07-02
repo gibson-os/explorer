@@ -20,8 +20,9 @@ GibsonOS.define('GibsonOS.module.explorer.html5.contextMenu.item', [{
     text: 'Löschen',
     iconCls: 'icon_system system_delete',
     requiredPermission: {
-        action: 'delete',
-        permission: GibsonOS.Permission.DELETE
+        action: '',
+        permission: GibsonOS.Permission.DELETE,
+        method: 'DELETE'
     },
     handler: function() {
         var button = this;

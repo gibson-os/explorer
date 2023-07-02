@@ -77,6 +77,7 @@ GibsonOS.define('GibsonOS.module.explorer.file.fn.setUploadField', function(view
 
             GibsonOS.Ajax.request({
                 url: baseDir + 'explorer/file/upload',
+                method: 'POST',
                 params: {
                     dir: dir,
                     filename: files[i]['name'],

@@ -18,7 +18,8 @@ Ext.define('GibsonOS.module.explorer.index.settings.Form', {
             },
             requiredPermission: {
                 action:'saveSettings',
-                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE,
+                method: 'POST'
             },
             items: [{
                 xtype: 'gosFormTextfield',
@@ -39,7 +40,8 @@ Ext.define('GibsonOS.module.explorer.index.settings.Form', {
             name: 'global',
             requiredPermission: {
                 action:'saveSettings',
-                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE,
+                method: 'POST'
             }
         },{
             xtype: 'gosFormCheckbox',
@@ -48,7 +50,8 @@ Ext.define('GibsonOS.module.explorer.index.settings.Form', {
             name: 'global',
             requiredPermission: {
                 action:'saveSettings',
-                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE,
+                method: 'POST'
             }
         }];
 
@@ -57,12 +60,14 @@ Ext.define('GibsonOS.module.explorer.index.settings.Form', {
             itemId: 'gosModuleExplorerIndexSettingsSaveButton',
             requiredPermission: {
                 action:'saveSettings',
-                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE,
+                method: 'POST'
             },
             handler: function() {
                 me.getForm().submit({
                     xtype: 'gosFormActionAction',
                     url: baseDir + 'explorer/index/saveSettings',
+                    method: 'POST',
                     success: function() {
                         GibsonOS.MessageBox.show({
                             title: 'Gespeichert!',

@@ -12,7 +12,8 @@ function explorerDialogTree(buttonProperities, dir)
     var treeStore = new GibsonOS.data.TreeStore({
         proxy: {
             type: 'gosDataProxyAjax',
-            url: baseDir + 'explorer/dir/dirList',
+            url: baseDir + 'explorer/dir/list',
+            method: 'GET',
             extraParams: {
                 dir: dir
             },

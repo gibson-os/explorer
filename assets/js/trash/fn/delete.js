@@ -51,7 +51,8 @@ GibsonOS.define('GibsonOS.module.explorer.trash.fn.delete', function(view, recor
             text: 'Nein'
         }]
     },{
-        url: baseDir + 'explorer/trash/delete',
+        url: baseDir + 'explorer/trash',
+        method: 'DELETE',
         params: {
             'tokens[]': tokens
         },
