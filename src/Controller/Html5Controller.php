@@ -45,6 +45,7 @@ use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Utility\JsonUtility;
+use GibsonOS\Module\Explorer\Attribute\CheckExplorerPermission;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Form\Html5\ConnectedUserForm;
@@ -110,9 +111,8 @@ class Html5Controller extends AbstractController
      * @throws SaveError
      * @throws ReflectionException
      */
-    #[CheckPermission([Permission::WRITE, Permission::MANAGE])]
+    #[CheckExplorerPermission([Permission::WRITE, Permission::MANAGE])]
     public function postConvert(
-        #[GetSetting('home_path')] Setting $homePath,
         MediaService $mediaService,
         string $dir,
         array $files = [],
@@ -120,13 +120,6 @@ class Html5Controller extends AbstractController
         string $subtitleStream = null
     ): AjaxResponse {
         $userId = $this->sessionService->getUserId() ?? 0;
-
-        if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            $this->returnFailure(
-                sprintf('Zugriff auf das Verzeichnis %s ist nicht gestattet!', $dir),
-                HttpStatusCode::FORBIDDEN
-            );
-        }
 
         return $this->returnSuccess(
             $mediaService->scheduleConvert($userId, $dir, $files, $audioStream, $subtitleStream)

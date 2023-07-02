@@ -7,7 +7,6 @@ use GibsonOS\Core\Archive\ZipArchive;
 use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
-use GibsonOS\Core\Enum\HttpStatusCode;
 use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\ArchiveException;
 use GibsonOS\Core\Exception\CreateError;
@@ -20,6 +19,7 @@ use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
+use GibsonOS\Module\Explorer\Attribute\CheckExplorerPermission;
 use GibsonOS\Module\Explorer\Service\DirService;
 use GibsonOS\Module\Explorer\Store\DirListStore;
 use GibsonOS\Module\Explorer\Store\DirStore;
@@ -32,16 +32,14 @@ class DirController extends AbstractController
      * @throws GetError
      * @throws ReadError
      */
-    #[CheckPermission([Permission::READ])]
+    #[CheckExplorerPermission([Permission::READ])]
     public function get(
         DirStore $dirStore,
-        #[GetSetting('home_path')] Setting $homePath,
-        ?string $dir
+        CoreDirService $dirService,
+        string $homePath,
+        ?string $dir,
     ): AjaxResponse {
-        if (empty($dir) || mb_strpos($dir, $homePath->getValue()) !== 0) {
-            $dir = $homePath->getValue();
-        }
-
+        $dir ??= $homePath;
         $dirStore
             ->setDir($dir)
             ->setUserId($this->sessionService->getUserId())
@@ -54,8 +52,8 @@ class DirController extends AbstractController
             'total' => $dirStore->getCount(),
             'dir' => $dir,
             'meta' => $dirStore->getMetas(),
-            'path' => explode(DIRECTORY_SEPARATOR, mb_substr($dir, 0, -1)),
-            'homePath' => $homePath->getValue(),
+            'path' => explode(DIRECTORY_SEPARATOR, $dirService->removeEndSlash($dir)),
+            'homePath' => $homePath,
         ]);
     }
 
@@ -68,7 +66,7 @@ class DirController extends AbstractController
         DirListStore $dirListStore,
         #[GetSetting('home_path')] Setting $homePath,
         ?string $node,
-        ?string $dir
+        ?string $dir,
     ): AjaxResponse {
         $withParents = true;
 
@@ -91,19 +89,14 @@ class DirController extends AbstractController
      * @throws GetError
      * @throws ReadError
      */
-    #[CheckPermission([Permission::READ])]
+    #[CheckExplorerPermission([Permission::READ])]
     public function post(
         DirService $dirService,
         CoreDirService $coreDirService,
-        #[GetSetting('home_path')] Setting $homePath,
         string $dir,
-        string $dirname
+        string $dirname,
     ): AjaxResponse {
         $dir = $coreDirService->addEndSlash($dir);
-
-        if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
-        }
 
         $path = $dir . $dirname;
         $coreDirService->create($path);
@@ -115,20 +108,15 @@ class DirController extends AbstractController
      * @throws GetError
      * @throws ArchiveException
      */
-    #[CheckPermission([Permission::READ])]
+    #[CheckExplorerPermission([Permission::READ])]
     public function getDownload(
         CoreDirService $dirService,
         CoreDirService $coreDirService,
         ZipArchive $zipArchive,
         RequestService $requestService,
-        #[GetSetting('home_path')] Setting $homePath,
-        string $dir
+        string $dir,
     ): FileResponse|AjaxResponse {
         $dir = $coreDirService->addEndSlash($dir);
-
-        if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
-        }
 
         $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5((string) rand()) . '.zip';
 

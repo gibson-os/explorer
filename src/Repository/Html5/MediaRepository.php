@@ -67,22 +67,22 @@ class MediaRepository extends AbstractRepository
      *
      * @return Media[]
      */
-//    public function getAllGeneratedOrderByViewed(): array
-//    {
-//        $mediaTableName = Media::getTableName();
-//        $mediaPositionTableName = Media::getTableName();
-//        $table = $this->getTable($mediaTableName)
-//            ->setWhere('`status`=?')
-//            ->addWhereParameter(Media::STATUS_GENERATED)
-//            ->appendJoin(
-//                $mediaPositionTableName,
-//                '`' . $mediaTableName . '`.`id`=`' . $mediaPositionTableName . '`.`media_id`'
-//            )
-//            ->setOrderBy()
-//        ;
-//
-//        return $this->getModels($table, Media::class);
-//    }
+    //    public function getAllGeneratedOrderByViewed(): array
+    //    {
+    //        $mediaTableName = Media::getTableName();
+    //        $mediaPositionTableName = Media::getTableName();
+    //        $table = $this->getTable($mediaTableName)
+    //            ->setWhere('`status`=?')
+    //            ->addWhereParameter(Media::STATUS_GENERATED)
+    //            ->appendJoin(
+    //                $mediaPositionTableName,
+    //                '`' . $mediaTableName . '`.`id`=`' . $mediaPositionTableName . '`.`media_id`'
+    //            )
+    //            ->setOrderBy()
+    //        ;
+    //
+    //        return $this->getModels($table, Media::class);
+    //    }
 
     /**
      * @throws SelectError

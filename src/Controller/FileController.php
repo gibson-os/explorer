@@ -10,7 +10,6 @@ use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Enum\HttpStatusCode;
 use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\CreateError;
-use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\FileExistsError;
@@ -34,6 +33,7 @@ use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\ResponseInterface;
+use GibsonOS\Module\Explorer\Attribute\CheckExplorerPermission;
 use GibsonOS\Module\Explorer\Exception\OverwriteException;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
@@ -58,17 +58,12 @@ class FileController extends AbstractController
      * @throws SetError
      * @throws ReflectionException
      */
-    #[CheckPermission([Permission::DELETE])]
+    #[CheckExplorerPermission([Permission::DELETE])]
     public function delete(
         TrashService $trashService,
-        #[GetSetting('home_path')] Setting $homePath,
         string $dir,
         array $files = [],
     ): AjaxResponse {
-        if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
-        }
-
         $trashService->add($dir, $files);
 
         return $this->returnSuccess();
@@ -107,24 +102,19 @@ class FileController extends AbstractController
     /**
      * @throws OverwriteException
      */
-    #[CheckPermission([Permission::WRITE])]
+    #[CheckExplorerPermission([Permission::WRITE])]
     public function postUpload(
         CoreDirService $dirService,
         FileService $fileService,
-        #[GetSetting('home_path')] Setting $homePath,
         string $dir,
         ?array $file,
         ?string $filename,
         array $overwrite = [],
         array $ignore = [],
         bool $overwriteAll = false,
-        bool $ignoreAll = false
+        bool $ignoreAll = false,
     ): AjaxResponse {
         $dir = $dirService->addEndSlash($dir);
-
-        if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
-        }
 
         if (is_array($file)) {
             if (!is_string($file['tmp_name'])) {
@@ -149,25 +139,16 @@ class FileController extends AbstractController
      * @throws FileNotFound
      * @throws SetError
      */
-    #[CheckPermission([Permission::WRITE, Permission::DELETE])]
+    #[CheckExplorerPermission([Permission::WRITE, Permission::DELETE], ['from', 'to'])]
     public function postMove(
         CoreFileService $fileService,
         CoreDirService $dirService,
-        #[GetSetting('home_path')] Setting $homePath,
         string $from,
         string $to,
         array $names,
     ): AjaxResponse {
-        $homePath = $homePath->getValue();
         $from = $dirService->addEndSlash($from);
         $to = $dirService->addEndSlash($to);
-
-        if (
-            mb_strpos($homePath, $from) === 0
-            || mb_strpos($homePath, $to) === 0
-        ) {
-            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
-        }
 
         foreach ($names as $name) {
             $fileService->move($from . $name, $to . $name);
@@ -181,25 +162,16 @@ class FileController extends AbstractController
      * @throws CreateError
      * @throws SetError
      */
-    #[CheckPermission([Permission::WRITE, Permission::DELETE])]
+    #[CheckExplorerPermission([Permission::WRITE, Permission::DELETE], ['from', 'to'])]
     public function postCopy(
         CoreFileService $fileService,
         CoreDirService $dirService,
-        #[GetSetting('home_path')] Setting $homePath,
         string $from,
         string $to,
         array $names,
     ): AjaxResponse {
-        $homePath = $homePath->getValue();
         $from = $dirService->addEndSlash($from);
         $to = $dirService->addEndSlash($to);
-
-        if (
-            mb_strpos($homePath, $from) === 0
-            || mb_strpos($homePath, $to) === 0
-        ) {
-            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
-        }
 
         foreach ($names as $name) {
             $fileService->copy($from . $name, $to . $name);
@@ -211,27 +183,23 @@ class FileController extends AbstractController
     /**
      * @throws CreateError
      * @throws DeleteError
+     * @throws FactoryError
      * @throws FileNotFound
      * @throws GetError
+     * @throws ReadError
      * @throws SetError
      */
-    #[CheckPermission([Permission::WRITE])]
+    #[CheckExplorerPermission([Permission::WRITE, ['dir']])]
     public function postRename(
         CoreFileService $coreFileService,
         FileService $fileService,
         CoreDirService $coreDirService,
         DirService $dirService,
-        #[GetSetting('home_path')] Setting $homePath,
         string $dir,
         string $oldFilename,
         string $newFilename,
     ): AjaxResponse {
         $dir = $coreDirService->addEndSlash($dir);
-
-        if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
-        }
-
         $path = $dir . $newFilename;
         $coreFileService->move($dir . $oldFilename, $path);
 
@@ -244,18 +212,16 @@ class FileController extends AbstractController
 
     /**
      * @throws CreateError
-     * @throws DateTimeError
      * @throws FactoryError
      * @throws FileExistsError
-     * @throws GetError
      * @throws ReadError
      */
-    #[CheckPermission([Permission::WRITE])]
+    #[CheckExplorerPermission([Permission::WRITE])]
     public function postAdd(
         CoreFileService $coreFileService,
         FileService $fileService,
         string $dir,
-        string $filename
+        string $filename,
     ): AjaxResponse {
         $path = $dir . $filename;
 
@@ -285,7 +251,7 @@ class FileController extends AbstractController
         string $filename,
         int $width = null,
         int $height = null,
-        bool $base64 = false
+        bool $base64 = false,
     ): ResponseInterface {
         $path = $dirService->addEndSlash($dir) . $filename;
 
@@ -327,7 +293,7 @@ class FileController extends AbstractController
      * @throws JsonException
      * @throws Exception
      */
-    #[CheckPermission([Permission::WRITE])]
+    #[CheckExplorerPermission([Permission::WRITE], ['path'])]
     public function getMetaInfos(
         ServiceManager $serviceManager,
         DescriberFactory $describerFactory,
