@@ -71,8 +71,9 @@ Ext.define('GibsonOS.module.explorer.html5.Grid', {
                 itemId: 'explorerHtml5DeleteButton',
                 iconCls: 'icon_system system_delete',
                 requiredPermission: {
-                    action: 'delete',
-                    permission: GibsonOS.Permission.DELETE
+                    action: '',
+                    permission: GibsonOS.Permission.DELETE,
+                    method: 'DELETE'
                 },
                 disabled: true,
                 handler: function() {

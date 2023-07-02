@@ -82,6 +82,7 @@ Ext.define('GibsonOS.module.explorer.index.View', {
 
                 GibsonOS.Ajax.request({
                     url: baseDir + 'explorer/file/image',
+                    method: 'GET',
                     withoutFailure: true,
                     timeout: 120000,
                     params: {

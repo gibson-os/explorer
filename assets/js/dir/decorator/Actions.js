@@ -18,6 +18,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Actions', {
                     value: record.get('name')
                 },{
                     url: baseDir + 'explorer/file/rename',
+                    method: 'POST',
                     params: {
                         dir: dir,
                         oldFilename: record.get('name')

@@ -314,7 +314,7 @@ class Html5Controller extends AbstractController
      * @throws ReflectionException
      */
     #[CheckPermission([Permission::READ])]
-    public function connectedUsers(ConnectedUserStore $connectedUserStore): AjaxResponse
+    public function getConnectedUsers(ConnectedUserStore $connectedUserStore): AjaxResponse
     {
         $connectedUserStore->setUser($this->sessionService->getUser() ?? new User());
 
@@ -325,7 +325,7 @@ class Html5Controller extends AbstractController
      * @throws FormException
      */
     #[CheckPermission([Permission::WRITE])]
-    public function connectedUserForm(ConnectedUserForm $connectedUserForm): AjaxResponse
+    public function getConnectedUserForm(ConnectedUserForm $connectedUserForm): AjaxResponse
     {
         return $this->returnSuccess($connectedUserForm->getForm());
     }

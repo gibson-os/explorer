@@ -10,7 +10,8 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Chromecast', {
                 module: 'explorer',
                 task: 'html5',
                 action: 'video',
-                permission: GibsonOS.Permission.READ
+                permission: GibsonOS.Permission.READ,
+                method: 'GET'
             },
             listeners: {
                 render(button) {

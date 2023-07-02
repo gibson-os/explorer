@@ -7,6 +7,7 @@ GibsonOS.define('GibsonOS.module.explorer.file.fn.add', function(dir, success) {
         okText: 'Anlegen'
     },{
         url: baseDir + 'explorer/file/add',
+        method: 'POST',
         params: {
             dir: dir
         },

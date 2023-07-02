@@ -22,7 +22,8 @@ GibsonOS.define('GibsonOS.module.explorer.html5.fn.delete', function(records, su
             text: 'Nein'
         }]
     },{
-        url: baseDir + 'explorer/html5/delete',
+        url: baseDir + 'explorer/html5',
+        method: 'DELETE',
         params: {
             'tokens[]': tokens
         },

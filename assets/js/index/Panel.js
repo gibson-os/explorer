@@ -150,8 +150,9 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
                 itemId: 'explorerIndexBackButton',
                 iconCls: 'icon_system system_back',
                 requiredPermission: {
-                    action:'read',
-                    permission: GibsonOS.Permission.READ
+                    action: '',
+                    permission: GibsonOS.Permission.READ,
+                    method: 'GET'
                 },
                 disabled: true,
                 handler() {
@@ -170,8 +171,9 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
                 itemId: 'explorerIndexNextButton',
                 iconCls: 'icon_system system_next',
                 requiredPermission: {
-                    action:'read',
-                    permission: GibsonOS.Permission.READ
+                    action: '',
+                    permission: GibsonOS.Permission.READ,
+                    method: 'GET'
                 },
                 disabled: true,
                 handler() {
@@ -190,8 +192,9 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
                 itemId: 'explorerIndexUpButton',
                 iconCls: 'icon_system system_up',
                 requiredPermission: {
-                    action:'read',
-                    permission: GibsonOS.Permission.READ
+                    action: '',
+                    permission: GibsonOS.Permission.READ,
+                    method: 'GET'
                 },
                 disabled: true,
                 handler() {

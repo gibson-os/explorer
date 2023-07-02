@@ -9,7 +9,8 @@ Ext.define('GibsonOS.module.explorer.html5.connectedUser.Grid', {
         const me = this;
         const formWindow = new GibsonOS.module.core.component.form.Window({
             title: 'Verbindung hinzufügen',
-            url: baseDir + 'explorer/html5/connectedUserForm'
+            url: baseDir + 'explorer/html5/connectedUserForm',
+            method: 'GET',
         }).show();
 
         formWindow.down('form').getForm().on('actioncomplete', () => {
@@ -41,7 +42,8 @@ Ext.define('GibsonOS.module.explorer.html5.connectedUser.Grid', {
                 text: 'Nein'
             }]
         },{
-            url: baseDir + 'explorer/html5/deleteConnectedUsers',
+            url: baseDir + 'explorer/html5/connectedUsers',
+            method: 'DELETE',
             params: {
                 connectedUsers: Ext.encode(ids)
             },

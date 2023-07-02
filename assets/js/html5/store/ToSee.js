@@ -10,7 +10,8 @@ Ext.define('GibsonOS.module.explorer.html5.store.ToSee', {
     constructor: function(data) {
         this.proxy = {
             type: 'gosDataProxyAjax',
-            url: baseDir + 'explorer/html5/toSeeList'
+            url: baseDir + 'explorer/html5/toSeeList',
+            method: 'GET'
         };
 
         this.callParent(arguments);
@@ -44,6 +45,7 @@ Ext.define('GibsonOS.module.explorer.html5.store.ToSee', {
 
                 GibsonOS.Ajax.request({
                     url: baseDir + 'explorer/file/image',
+                    method: 'GET',
                     withoutFailure: true,
                     timeout: 120000,
                     params: {

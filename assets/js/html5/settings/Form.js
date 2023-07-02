@@ -21,7 +21,8 @@ Ext.define('GibsonOS.module.explorer.html5.settings.Form', {
             },
             requiredPermission: {
                 action:'saveSettings',
-                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE,
+                method: 'POST'
             },
             items: [{
                 xtype: 'gosFormTextfield',
@@ -41,7 +42,8 @@ Ext.define('GibsonOS.module.explorer.html5.settings.Form', {
             name: 'dirSize',
             requiredPermission: {
                 action:'saveSettings',
-                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE,
+                method: 'POST'
             }
         },{
             xtype: 'gosFormNumberfield',
@@ -49,7 +51,8 @@ Ext.define('GibsonOS.module.explorer.html5.settings.Form', {
             name: 'lifetime',
             requiredPermission: {
                 action:'saveSettings',
-                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE,
+                method: 'POST'
             }
         },{
             xtype: 'gosFormNumberfield',
@@ -57,7 +60,8 @@ Ext.define('GibsonOS.module.explorer.html5.settings.Form', {
             name: 'mediaCount',
             requiredPermission: {
                 action:'saveSettings',
-                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE,
+                method: 'POST'
             }
         }];
 
@@ -66,12 +70,14 @@ Ext.define('GibsonOS.module.explorer.html5.settings.Form', {
             itemId: 'gosModuleExplorerHtml5SettingsSaveButton',
             requiredPermission: {
                 action:'saveSettings',
-                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE
+                permission: GibsonOS.Permission.MANAGE + GibsonOS.Permission.WRITE,
+                method: 'POST'
             },
             handler: function() {
                 form.getForm().submit({
                     xtype: 'gosFormActionAction',
                     url: baseDir + 'explorer/html5/saveSettings',
+                    method: 'POST',
                     success: function(basicForm, action) {
                         GibsonOS.MessageBox.show({
                             title: 'Gespeichert!',

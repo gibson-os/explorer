@@ -6,7 +6,8 @@ Ext.define('GibsonOS.module.explorer.html5.store.ConnectedUser', {
     constructor(data) {
         this.proxy = {
             type: 'gosDataProxyAjax',
-            url: baseDir + 'explorer/html5/connectedUsers'
+            url: baseDir + 'explorer/html5/connectedUsers',
+            method: 'GET'
         };
 
         this.callParent(arguments);

@@ -123,6 +123,7 @@ Ext.define('GibsonOS.module.explorer.dir.Tree', {
                     value: node.get('text')
                 },{
                     url: baseDir + 'explorer/file/rename',
+                    method: 'POST',
                     params: {
                         dir: dir,
                         oldFilename: node.get('text')

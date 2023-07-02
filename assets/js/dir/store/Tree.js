@@ -3,6 +3,7 @@ Ext.define('GibsonOS.module.explorer.dir.store.Tree', {
     alias: ['store.gosModuleExplorerDirTreeStore'],
     proxy: {
         type: 'gosDataProxyAjax',
-        url: baseDir + 'explorer/dir/dirList'
+        url: baseDir + 'explorer/dir/list',
+        method: 'GET'
     }
 });
