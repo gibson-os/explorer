@@ -7,6 +7,8 @@ use Exception;
 use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
+use GibsonOS\Core\Enum\HttpStatusCode;
+use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
@@ -24,7 +26,6 @@ use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Manager\ServiceManager;
 use GibsonOS\Core\Model\Setting;
-use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Service\FileService as CoreFileService;
 use GibsonOS\Core\Service\ImageService;
@@ -33,7 +34,6 @@ use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\ResponseInterface;
-use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\OverwriteException;
 use GibsonOS\Module\Explorer\Factory\File\Type\DescriberFactory;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
@@ -58,7 +58,7 @@ class FileController extends AbstractController
      * @throws SetError
      * @throws ReflectionException
      */
-    #[CheckPermission(Permission::DELETE)]
+    #[CheckPermission([Permission::DELETE])]
     public function delete(
         TrashService $trashService,
         #[GetSetting('home_path')] Setting $homePath,
@@ -66,7 +66,7 @@ class FileController extends AbstractController
         array $files = [],
     ): AjaxResponse {
         if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
         }
 
         $trashService->add($dir, $files);
@@ -74,29 +74,29 @@ class FileController extends AbstractController
         return $this->returnSuccess();
     }
 
-    #[CheckPermission(Permission::READ)]
-    public function download(
+    #[CheckPermission([Permission::READ])]
+    public function getDownload(
         RequestService $requestService,
         #[GetSetting('home_path')] Setting $homePath,
     ): ResponseInterface {
         $filename = '/' . urldecode($requestService->getQueryString());
 
         if (mb_strpos($homePath->getValue(), $filename) === 0) {
-            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
         }
 
         return new FileResponse($requestService, $filename);
     }
 
-    #[CheckPermission(Permission::READ)]
-    public function show(
+    #[CheckPermission([Permission::READ])]
+    public function getShow(
         RequestService $requestService,
         #[GetSetting('home_path')] Setting $homePath,
     ): ResponseInterface {
         $filename = '/' . urldecode($requestService->getQueryString());
 
         if (mb_strpos($homePath->getValue(), $filename) === 0) {
-            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
         }
 
         return (new FileResponse($requestService, $filename))
@@ -107,8 +107,8 @@ class FileController extends AbstractController
     /**
      * @throws OverwriteException
      */
-    #[CheckPermission(Permission::WRITE)]
-    public function upload(
+    #[CheckPermission([Permission::WRITE])]
+    public function postUpload(
         CoreDirService $dirService,
         FileService $fileService,
         #[GetSetting('home_path')] Setting $homePath,
@@ -123,16 +123,16 @@ class FileController extends AbstractController
         $dir = $dirService->addEndSlash($dir);
 
         if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
         }
 
         if (is_array($file)) {
             if (!is_string($file['tmp_name'])) {
-                return $this->returnFailure('Uploaded file not found', StatusCode::NOT_FOUND);
+                return $this->returnFailure('Uploaded file not found', HttpStatusCode::NOT_FOUND);
             }
 
-        // $fileService->move($file['tmp_name'], $path, $overwrite, $ignore);
-        // $fileService->setPerms($path, 0660);
+            // $fileService->move($file['tmp_name'], $path, $overwrite, $ignore);
+            // $fileService->setPerms($path, 0660);
         } elseif (!$fileService->isWritable($dir . $filename, $overwrite, $ignore)) {
             // $this->_Helper->isWritable($dir . $filename, $overwrite, $ignore);
             // @todo exception erstellen. Alternativ die alte methode in den explorer file service ziehen?
@@ -149,8 +149,8 @@ class FileController extends AbstractController
      * @throws FileNotFound
      * @throws SetError
      */
-    #[CheckPermission(Permission::WRITE + Permission::DELETE)]
-    public function move(
+    #[CheckPermission([Permission::WRITE, Permission::DELETE])]
+    public function postMove(
         CoreFileService $fileService,
         CoreDirService $dirService,
         #[GetSetting('home_path')] Setting $homePath,
@@ -163,10 +163,10 @@ class FileController extends AbstractController
         $to = $dirService->addEndSlash($to);
 
         if (
-            mb_strpos($homePath, $from) === 0 ||
-            mb_strpos($homePath, $to) === 0
+            mb_strpos($homePath, $from) === 0
+            || mb_strpos($homePath, $to) === 0
         ) {
-            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
         }
 
         foreach ($names as $name) {
@@ -181,8 +181,8 @@ class FileController extends AbstractController
      * @throws CreateError
      * @throws SetError
      */
-    #[CheckPermission(Permission::WRITE + Permission::DELETE)]
-    public function copy(
+    #[CheckPermission([Permission::WRITE, Permission::DELETE])]
+    public function postCopy(
         CoreFileService $fileService,
         CoreDirService $dirService,
         #[GetSetting('home_path')] Setting $homePath,
@@ -195,10 +195,10 @@ class FileController extends AbstractController
         $to = $dirService->addEndSlash($to);
 
         if (
-            mb_strpos($homePath, $from) === 0 ||
-            mb_strpos($homePath, $to) === 0
+            mb_strpos($homePath, $from) === 0
+            || mb_strpos($homePath, $to) === 0
         ) {
-            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
         }
 
         foreach ($names as $name) {
@@ -215,8 +215,8 @@ class FileController extends AbstractController
      * @throws GetError
      * @throws SetError
      */
-    #[CheckPermission(Permission::WRITE)]
-    public function rename(
+    #[CheckPermission([Permission::WRITE])]
+    public function postRename(
         CoreFileService $coreFileService,
         FileService $fileService,
         CoreDirService $coreDirService,
@@ -229,7 +229,7 @@ class FileController extends AbstractController
         $dir = $coreDirService->addEndSlash($dir);
 
         if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
         }
 
         $path = $dir . $newFilename;
@@ -250,8 +250,8 @@ class FileController extends AbstractController
      * @throws GetError
      * @throws ReadError
      */
-    #[CheckPermission(Permission::WRITE)]
-    public function add(
+    #[CheckPermission([Permission::WRITE])]
+    public function postAdd(
         CoreFileService $coreFileService,
         FileService $fileService,
         string $dir,
@@ -275,8 +275,8 @@ class FileController extends AbstractController
      * @throws LoadError
      * @throws Exception
      */
-    #[CheckPermission(Permission::READ)]
-    public function image(
+    #[CheckPermission([Permission::READ])]
+    public function getImage(
         CoreDirService $dirService,
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
@@ -304,7 +304,7 @@ class FileController extends AbstractController
 
         return new Response(
             $body,
-            StatusCode::OK,
+            HttpStatusCode::OK,
             [
                 'Pragma' => 'public',
                 'Expires' => 0,
@@ -327,8 +327,8 @@ class FileController extends AbstractController
      * @throws JsonException
      * @throws Exception
      */
-    #[CheckPermission(Permission::WRITE)]
-    public function metaInfos(
+    #[CheckPermission([Permission::WRITE])]
+    public function getMetaInfos(
         ServiceManager $serviceManager,
         DescriberFactory $describerFactory,
         GibsonStoreService $gibsonStoreService,

@@ -138,8 +138,8 @@ class IndexerCommand extends AbstractCommand
 
         try {
             if (
-                file_exists($path . '/.noStore') ||
-                $this->gibsonStoreService->getDirMeta($path, 'ignore', false)
+                file_exists($path . '/.noStore')
+                || $this->gibsonStoreService->getDirMeta($path, 'ignore', false)
             ) {
                 $noStoreDir = true;
             }

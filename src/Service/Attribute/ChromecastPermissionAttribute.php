@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Service\Attribute;
 
 use GibsonOS\Core\Attribute\AttributeInterface;
+use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Service\Attribute\AbstractActionAttributeService;
 use GibsonOS\Core\Service\Attribute\MiddlewarePermissionAttributeService;
@@ -40,8 +41,12 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
         $userIdsWithPermission = [];
 
         foreach ($userIds as $userId) {
+            $permissionSum = array_sum(array_map(
+                static fn (Permission $permission): int => $permission->value,
+                $attribute->getPermissions(),
+            ));
             $hasPermission = $this->permissionService->hasPermission(
-                $attribute->getPermission(),
+                $permissionSum,
                 'explorer',
                 'html5',
                 $this->requestService->getActionName(),

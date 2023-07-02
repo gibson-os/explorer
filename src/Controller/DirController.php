@@ -7,6 +7,8 @@ use GibsonOS\Core\Archive\ZipArchive;
 use GibsonOS\Core\Attribute\CheckPermission;
 use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
+use GibsonOS\Core\Enum\HttpStatusCode;
+use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\ArchiveException;
 use GibsonOS\Core\Exception\CreateError;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -14,12 +16,10 @@ use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Model\Setting;
-use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
-use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Service\DirService;
 use GibsonOS\Module\Explorer\Store\DirListStore;
 use GibsonOS\Module\Explorer\Store\DirStore;
@@ -32,8 +32,8 @@ class DirController extends AbstractController
      * @throws GetError
      * @throws ReadError
      */
-    #[CheckPermission(Permission::READ)]
-    public function read(
+    #[CheckPermission([Permission::READ])]
+    public function get(
         DirStore $dirStore,
         #[GetSetting('home_path')] Setting $homePath,
         ?string $dir
@@ -63,8 +63,8 @@ class DirController extends AbstractController
      * @throws GetError
      * @throws ReadError
      */
-    #[CheckPermission(Permission::READ)]
-    public function dirList(
+    #[CheckPermission([Permission::READ])]
+    public function getList(
         DirListStore $dirListStore,
         #[GetSetting('home_path')] Setting $homePath,
         ?string $node,
@@ -91,8 +91,8 @@ class DirController extends AbstractController
      * @throws GetError
      * @throws ReadError
      */
-    #[CheckPermission(Permission::WRITE)]
-    public function add(
+    #[CheckPermission([Permission::READ])]
+    public function post(
         DirService $dirService,
         CoreDirService $coreDirService,
         #[GetSetting('home_path')] Setting $homePath,
@@ -102,7 +102,7 @@ class DirController extends AbstractController
         $dir = $coreDirService->addEndSlash($dir);
 
         if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
         }
 
         $path = $dir . $dirname;
@@ -115,8 +115,8 @@ class DirController extends AbstractController
      * @throws GetError
      * @throws ArchiveException
      */
-    #[CheckPermission(Permission::READ)]
-    public function download(
+    #[CheckPermission([Permission::READ])]
+    public function getDownload(
         CoreDirService $dirService,
         CoreDirService $coreDirService,
         ZipArchive $zipArchive,
@@ -127,7 +127,7 @@ class DirController extends AbstractController
         $dir = $coreDirService->addEndSlash($dir);
 
         if (mb_strpos($homePath->getValue(), $dir) === 0) {
-            return $this->returnFailure('Access denied', StatusCode::FORBIDDEN);
+            return $this->returnFailure('Access denied', HttpStatusCode::FORBIDDEN);
         }
 
         $fileName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5((string) rand()) . '.zip';

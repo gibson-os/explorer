@@ -55,12 +55,8 @@ class GibsonStoreService
     }
 
     /**
-     * @param mixed $default
-     *
      * @throws ExecuteError
      * @throws ReadError
-     *
-     * @return mixed
      */
     public function getDirMeta(string $dir, string $key, $default = null)
     {
@@ -89,12 +85,8 @@ class GibsonStoreService
     }
 
     /**
-     * @param mixed $default
-     *
      * @throws ExecuteError
      * @throws ReadError
-     *
-     * @return mixed
      */
     public function getDirMetas(string $dir, array $keys = null, $default = null)
     {
@@ -134,8 +126,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param mixed $value
-     *
      * @throws WriteError
      * @throws ExecuteError
      */
@@ -162,12 +152,8 @@ class GibsonStoreService
     }
 
     /**
-     * @param mixed $default
-     *
      * @throws ExecuteError
      * @throws ReadError
-     *
-     * @return mixed
      */
     public function getFileMeta(string $path, string $key, $default = null)
     {
@@ -204,12 +190,8 @@ class GibsonStoreService
     }
 
     /**
-     * @param mixed $default
-     *
      * @throws ReadError
      * @throws ExecuteError
-     *
-     * @return mixed
      */
     public function getFileMetas(string $path, array $keys = null, $default = null)
     {
@@ -290,8 +272,6 @@ class GibsonStoreService
     }
 
     /**
-     * @param mixed $value
-     *
      * @throws ExecuteError
      * @throws GetError
      * @throws JsonException
@@ -304,8 +284,8 @@ class GibsonStoreService
         $checkSum = $this->getChecksum($path, $checkSum);
 
         if (
-            is_array($value) ||
-            is_object($value)
+            is_array($value)
+            || is_object($value)
         ) {
             $value = JsonUtility::encode($value);
         }
@@ -416,8 +396,8 @@ class GibsonStoreService
             $image = $this->thumbnailService->load($row['image'], 'string');
 
             if (
-                $width !== null ||
-                $height !== null
+                $width !== null
+                || $height !== null
             ) {
                 if ($width > $this->thumbnailService->getWidth($image)) {
                     $width = $this->thumbnailService->getWidth($image);

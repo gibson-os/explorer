@@ -5,41 +5,46 @@ namespace GibsonOS\Module\Explorer\Install\Data;
 
 use Generator;
 use GibsonOS\Core\Dto\Install\Success;
+use GibsonOS\Core\Enum\Permission as PermissionEnum;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Install\AbstractInstall;
 use GibsonOS\Core\Manager\ServiceManager;
 use GibsonOS\Core\Model\User\Permission;
+use GibsonOS\Core\Repository\TaskRepository;
 use GibsonOS\Core\Repository\User\PermissionRepository;
 use GibsonOS\Core\Service\InstallService;
 use GibsonOS\Core\Service\PriorityInterface;
-use JsonException;
 use ReflectionException;
 
 class GeneralPermissionData extends AbstractInstall implements PriorityInterface
 {
     public function __construct(
         ServiceManager $serviceManager,
-        private readonly PermissionRepository $permissionRepository
+        private readonly PermissionRepository $permissionRepository,
+        private readonly TaskRepository $taskRepository,
     ) {
         parent::__construct($serviceManager);
     }
 
     /**
-     * @throws JsonException
      * @throws ReflectionException
+     * @throws SelectError
      * @throws SaveError
      */
     public function install(string $module): Generator
     {
+        $module = $this->moduleRepository->getByName('explorer');
+        $task = $this->taskRepository->getByNameAndModuleId('middleware', $module->getId() ?? 0);
+
         try {
-            $this->permissionRepository->getByModuleAndTask('explorer', 'middleware');
+            $this->permissionRepository->getByModuleAndTask($module, $task);
         } catch (SelectError) {
             $this->modelManager->save(
                 (new Permission())
-                    ->setModule('explorer')
-                    ->setTask('middleware')
-                    ->setPermission(Permission::READ + Permission::WRITE)
+                    ->setModule($module)
+                    ->setTask($task)
+                    ->setPermission(PermissionEnum::READ->value + PermissionEnum::WRITE->value)
             );
         }
 

@@ -84,10 +84,10 @@ class DeleteCommand extends AbstractCommand
     {
         foreach ($this->mediaRepository->getAllByStatus(Media::STATUS_GENERATED) as $media) {
             if (
-                file_exists($media->getDir() . $media->getFilename()) &&
-                (
-                    !$media->isGenerationRequired() ||
-                    file_exists(
+                file_exists($media->getDir() . $media->getFilename())
+                && (
+                    !$media->isGenerationRequired()
+                    || file_exists(
                         $this->mediaPath .
                         $media->getToken() .
                         $this->mediaService->getGeneratedFileEnding($media)
@@ -141,7 +141,7 @@ class DeleteCommand extends AbstractCommand
                         $this->fileService->delete($file);
                     }
                 } catch (FileNotFound) {
-                    // File does not exists
+                    // File does not exist
                 }
             }
         }

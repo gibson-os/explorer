@@ -10,6 +10,8 @@ use GibsonOS\Core\Attribute\GetModel;
 use GibsonOS\Core\Attribute\GetModels;
 use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
+use GibsonOS\Core\Enum\HttpStatusCode;
+use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
@@ -33,7 +35,6 @@ use GibsonOS\Core\Exception\WebException;
 use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User;
-use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Repository\ModuleRepository;
 use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
@@ -44,7 +45,6 @@ use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Utility\JsonUtility;
-use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Form\Html5\ConnectedUserForm;
@@ -62,12 +62,13 @@ use ReflectionException;
 class Html5Controller extends AbstractController
 {
     /**
-     * @throws DateTimeError
      * @throws GetError
+     * @throws JsonException
+     * @throws ReflectionException
      * @throws SelectError
      */
-    #[CheckPermission(Permission::READ)]
-    public function index(
+    #[CheckPermission([Permission::READ])]
+    public function get(
         RequestService $requestService,
         SettingRepository $settingRepository,
         MediaStore $mediaStore,
@@ -109,8 +110,8 @@ class Html5Controller extends AbstractController
      * @throws SaveError
      * @throws ReflectionException
      */
-    #[CheckPermission(Permission::WRITE + Permission::MANAGE)]
-    public function convert(
+    #[CheckPermission([Permission::WRITE, Permission::MANAGE])]
+    public function postConvert(
         #[GetSetting('home_path')] Setting $homePath,
         MediaService $mediaService,
         string $dir,
@@ -123,7 +124,7 @@ class Html5Controller extends AbstractController
         if (mb_strpos($homePath->getValue(), $dir) === 0) {
             $this->returnFailure(
                 sprintf('Zugriff auf das Verzeichnis %s ist nicht gestattet!', $dir),
-                StatusCode::FORBIDDEN
+                HttpStatusCode::FORBIDDEN
             );
         }
 
@@ -142,16 +143,16 @@ class Html5Controller extends AbstractController
      * @throws NoAudioError
      * @throws MediaException
      */
-    #[CheckPermission(Permission::READ)]
-    public function convertStatus(
+    #[CheckPermission([Permission::READ])]
+    public function getConvertStatus(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media
     ): AjaxResponse {
         return $this->returnSuccess($mediaService->getConvertStatus($media));
     }
 
-    #[CheckPermission(Permission::READ)]
-    public function video(
+    #[CheckPermission([Permission::READ])]
+    public function getVideo(
         DirService $dirService,
         #[GetSetting('html5_media_path')] Setting $html5MediaPath,
         #[GetModel(['token' => 'token'])] Media $media
@@ -165,8 +166,8 @@ class Html5Controller extends AbstractController
         );
     }
 
-    #[CheckPermission(Permission::READ)]
-    public function audio(
+    #[CheckPermission([Permission::READ])]
+    public function getAudio(
         DirService $dirService,
         #[GetSetting('html5_media_path')] Setting $html5MediaPath,
         #[GetModel(['token' => 'token'])] Media $media
@@ -187,8 +188,8 @@ class Html5Controller extends AbstractController
      * @throws ReflectionException
      * @throws SaveError
      */
-    #[CheckPermission(Permission::WRITE)]
-    public function savePosition(
+    #[CheckPermission([Permission::WRITE])]
+    public function postSavePosition(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media,
         int $position,
@@ -216,16 +217,16 @@ class Html5Controller extends AbstractController
      * @throws SetError
      * @throws MediaException
      */
-    #[CheckPermission(Permission::READ)]
-    public function toSeeList(ToSeeStore $toSeeStore, ?array $userIds): AjaxResponse
+    #[CheckPermission([Permission::READ])]
+    public function getToSeeList(ToSeeStore $toSeeStore, ?array $userIds): AjaxResponse
     {
         $toSeeStore->setUserIds(array_values(array_unique($userIds ?: [$this->sessionService->getUserId() ?? 0])));
 
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
     }
 
-    #[CheckPermission(Permission::READ)]
-    public function get(#[GetModel(['token' => 'token'])] Media $media): AjaxResponse
+    #[CheckPermission([Permission::READ])]
+    public function getGet(#[GetModel(['token' => 'token'])] Media $media): AjaxResponse
     {
         return $this->returnSuccess($media);
     }
@@ -241,7 +242,7 @@ class Html5Controller extends AbstractController
      * @throws FactoryError
      * @throws Exception
      */
-    #[CheckPermission(Permission::READ)]
+    #[CheckPermission([Permission::READ])]
     public function image(
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
@@ -263,7 +264,7 @@ class Html5Controller extends AbstractController
 
         return new Response(
             $body,
-            StatusCode::OK,
+            HttpStatusCode::OK,
             [
                 'Pragma' => 'public',
                 'Expires' => 0,
@@ -282,7 +283,7 @@ class Html5Controller extends AbstractController
      * @throws DeleteError
      * @throws JsonException
      */
-    #[CheckPermission(Permission::DELETE)]
+    #[CheckPermission([Permission::DELETE])]
     public function delete(
         MediaRepository $mediaRepository,
         ModelManager $modelManager,
@@ -319,7 +320,7 @@ class Html5Controller extends AbstractController
      * @throws JsonException
      * @throws ReflectionException
      */
-    #[CheckPermission(Permission::READ)]
+    #[CheckPermission([Permission::READ])]
     public function connectedUsers(ConnectedUserStore $connectedUserStore): AjaxResponse
     {
         $connectedUserStore->setUser($this->sessionService->getUser() ?? new User());
@@ -330,18 +331,18 @@ class Html5Controller extends AbstractController
     /**
      * @throws FormException
      */
-    #[CheckPermission(Permission::WRITE)]
+    #[CheckPermission([Permission::WRITE])]
     public function connectedUserForm(ConnectedUserForm $connectedUserForm): AjaxResponse
     {
         return $this->returnSuccess($connectedUserForm->getForm());
     }
 
     /**
-     * @throws FormException
      * @throws SaveError
+     * @throws ReflectionException
      */
-    #[CheckPermission(Permission::WRITE)]
-    public function addConnectedUser(
+    #[CheckPermission([Permission::WRITE])]
+    public function postConnectedUser(
         ModelManager $modelManager,
         #[GetMappedModel] ConnectedUser $connectedUser,
     ): AjaxResponse {
@@ -362,7 +363,7 @@ class Html5Controller extends AbstractController
      * @throws DeleteError
      * @throws JsonException
      */
-    #[CheckPermission(Permission::DELETE)]
+    #[CheckPermission([Permission::DELETE])]
     public function deleteConnectedUsers(
         ModelManager $modelManager,
         #[GetModels(ConnectedUser::class)] array $connectedUsers,
@@ -371,8 +372,8 @@ class Html5Controller extends AbstractController
 
         foreach ($connectedUsers as $connectedUser) {
             if (
-                $userId !== $connectedUser->getUserId() &&
-                $userId !== $connectedUser->getConnectedUserId()
+                $userId !== $connectedUser->getUserId()
+                && $userId !== $connectedUser->getConnectedUserId()
             ) {
                 continue;
             }
@@ -389,20 +390,28 @@ class Html5Controller extends AbstractController
      * @throws WebException
      * @throws JsonException
      */
-    #[CheckPermission(Permission::WRITE)]
-    public function setSession(MiddlewareService $middlewareService, string $id): AjaxResponse
+    #[CheckPermission([Permission::WRITE])]
+    public function postSession(MiddlewareService $middlewareService, string $id): AjaxResponse
     {
         $middlewareService->send('chromecast', 'setSession', ['id' => $id]);
 
         return $this->returnSuccess();
     }
 
-    #[CheckPermission(Permission::READ)]
-    public function chromecastReceiverAppId(
-        #[GetSetting('chromecastReceiverAppId', 'core')] Setting $chromecastReceiverAppId = null,
+    /**
+     * @throws JsonException
+     * @throws MiddlewareException
+     * @throws ReflectionException
+     * @throws SaveError
+     * @throws SelectError
+     * @throws WebException
+     */
+    #[CheckPermission([Permission::READ])]
+    public function getChromecastReceiverAppId(
         ModuleRepository $moduleRepository,
         ModelManager $modelManager,
         MiddlewareService $middlewareService,
+        #[GetSetting('chromecastReceiverAppId', 'core')] Setting $chromecastReceiverAppId = null,
     ): AjaxResponse {
         if ($chromecastReceiverAppId !== null) {
             return $this->returnSuccess($chromecastReceiverAppId->getValue());

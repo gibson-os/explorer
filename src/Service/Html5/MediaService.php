@@ -249,8 +249,8 @@ class MediaService
             $category = $this->typeService->getCategory($file);
 
             if (
-                $category !== TypeService::TYPE_CATEGORY_VIDEO &&
-                $category !== TypeService::TYPE_CATEGORY_AUDIO
+                $category !== TypeService::TYPE_CATEGORY_VIDEO
+                && $category !== TypeService::TYPE_CATEGORY_AUDIO
             ) {
                 continue;
             }
@@ -290,9 +290,9 @@ class MediaService
     private function isMp4Video(MediaDto $mediaDto): bool
     {
         return
-            $this->fileService->getFileEnding($mediaDto->getFilename()) === 'mp4' &&
-            count($mediaDto->getAudioStreams()) <= 1 &&
-            count($mediaDto->getVideoStreams()) <= 1
+            $this->fileService->getFileEnding($mediaDto->getFilename()) === 'mp4'
+            && count($mediaDto->getAudioStreams()) <= 1
+            && count($mediaDto->getVideoStreams()) <= 1
         ;
     }
 

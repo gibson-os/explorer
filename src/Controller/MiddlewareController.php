@@ -5,6 +5,8 @@ namespace GibsonOS\Module\Explorer\Controller;
 
 use GibsonOS\Core\Attribute\GetModel;
 use GibsonOS\Core\Controller\AbstractController;
+use GibsonOS\Core\Enum\HttpStatusCode;
+use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
@@ -21,12 +23,10 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
-use GibsonOS\Core\Model\User\Permission;
 use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\ResponseInterface;
-use GibsonOS\Core\Utility\StatusCode;
 use GibsonOS\Module\Explorer\Attribute\CheckChromecastPermission;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
@@ -51,8 +51,8 @@ class MiddlewareController extends AbstractController
      * @throws SelectError
      * @throws SetError
      */
-    #[CheckChromecastPermission(Permission::READ)]
-    public function toSeeList(
+    #[CheckChromecastPermission([Permission::READ])]
+    public function getToSeeList(
         ToSeeStore $toSeeStore,
         array $userIds,
     ): AjaxResponse {
@@ -66,8 +66,8 @@ class MiddlewareController extends AbstractController
      * @throws JsonException
      * @throws ReflectionException
      */
-    #[CheckChromecastPermission(Permission::WRITE)]
-    public function savePosition(
+    #[CheckChromecastPermission([Permission::WRITE])]
+    public function postSavePosition(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media,
         int $position,
@@ -94,8 +94,8 @@ class MiddlewareController extends AbstractController
      * @throws LoadError
      * @throws WriteError
      */
-    #[CheckChromecastPermission(Permission::READ)]
-    public function image(
+    #[CheckChromecastPermission([Permission::READ])]
+    public function getImage(
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
         TypeFactory $typeFactory,
@@ -116,7 +116,7 @@ class MiddlewareController extends AbstractController
 
         return new Response(
             $body,
-            StatusCode::OK,
+            HttpStatusCode::OK,
             [
                 'Pragma' => 'public',
                 'Expires' => 0,
@@ -142,7 +142,7 @@ class MiddlewareController extends AbstractController
      * @throws SelectError
      * @throws SetError
      */
-    #[CheckChromecastPermission(Permission::READ)]
+    #[CheckChromecastPermission([Permission::READ])]
     public function get(
         GibsonStoreService $gibsonStoreService,
         PositionRepository $positionRepository,

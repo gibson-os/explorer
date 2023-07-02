@@ -38,8 +38,8 @@ class VideoService implements FileTypeInterface
             $second = (int) ($media->getDuration() / 3);
 
             if (
-                $second === 0 &&
-                $media->getDuration() >= 1
+                $second === 0
+                && $media->getDuration() >= 1
             ) {
                 $second = 1;
             }

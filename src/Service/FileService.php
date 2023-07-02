@@ -112,8 +112,8 @@ class FileService
             }
 
             if (
-                in_array($path, $overwrite) ||
-                in_array($path, $ignore)
+                in_array($path, $overwrite)
+                || in_array($path, $ignore)
             ) {
                 return true;
             }

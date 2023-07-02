@@ -100,8 +100,8 @@ class ToSeeStore extends AbstractDatabaseStore
             $nextFiles = $this->getNextFiles($media, $pattern);
 
             if (
-                $this->hasSeen($media) &&
-                count($nextFiles) === 0
+                $this->hasSeen($media)
+                && count($nextFiles) === 0
             ) {
                 continue;
             }
@@ -251,8 +251,8 @@ class ToSeeStore extends AbstractDatabaseStore
                 $oldMedia = $medias[$key];
 
                 if (
-                    !$this->hasSeen($media) &&
-                    (strcmp($oldMedia->filename, $media->filename) > 0 || $this->hasSeen($oldMedia))
+                    !$this->hasSeen($media)
+                    && (strcmp($oldMedia->filename, $media->filename) > 0 || $this->hasSeen($oldMedia))
                 ) {
                     $medias[$key] = $media;
                 }
