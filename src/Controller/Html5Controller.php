@@ -236,7 +236,7 @@ class Html5Controller extends AbstractController
      * @throws Exception
      */
     #[CheckPermission([Permission::READ])]
-    public function image(
+    public function getImage(
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
         TypeFactory $typeFactory,
