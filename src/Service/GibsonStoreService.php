@@ -55,6 +55,8 @@ class GibsonStoreService
     }
 
     /**
+     * @param mixed|null $default
+     *
      * @throws ExecuteError
      * @throws ReadError
      */
@@ -85,6 +87,8 @@ class GibsonStoreService
     }
 
     /**
+     * @param mixed|null $default
+     *
      * @throws ExecuteError
      * @throws ReadError
      */
@@ -152,6 +156,8 @@ class GibsonStoreService
     }
 
     /**
+     * @param mixed|null $default
+     *
      * @throws ExecuteError
      * @throws ReadError
      */
@@ -190,6 +196,8 @@ class GibsonStoreService
     }
 
     /**
+     * @param mixed|null $default
+     *
      * @throws ReadError
      * @throws ExecuteError
      */
