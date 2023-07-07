@@ -386,7 +386,7 @@ class Html5Controller extends AbstractController
     #[CheckPermission([Permission::WRITE])]
     public function postSession(MiddlewareService $middlewareService, string $id): AjaxResponse
     {
-        $middlewareService->send('chromecast', 'setSession', ['id' => $id]);
+        $middlewareService->send('chromecast', 'session', ['id' => $id]);
 
         return $this->returnSuccess();
     }
@@ -410,7 +410,7 @@ class Html5Controller extends AbstractController
             return $this->returnSuccess($chromecastReceiverAppId->getValue());
         }
 
-        $response = $middlewareService->send('chromecast', 'getReceiverAppId');
+        $response = $middlewareService->send('chromecast', 'receiverAppId');
         $chromecastReceiverAppId = (new Setting())
             ->setModule($moduleRepository->getByName('core'))
             ->setKey('chromecastReceiverAppId')

@@ -33,7 +33,7 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
         $parameters = $this->middlewarePermissionAttributeService->preExecute($attribute, $parameters, $reflectionParameters);
         $response = $this->middlewareService->send(
             'chromecast',
-            'getSessionUserIds',
+            'sessionUserIds',
             ['id' => $this->requestService->getRequestValue('sessionId')]
         );
 
