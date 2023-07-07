@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Service\Attribute;
 
 use GibsonOS\Core\Attribute\AttributeInterface;
+use GibsonOS\Core\Enum\HttpMethod;
 use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\PermissionDenied;
 use GibsonOS\Core\Service\Attribute\AbstractActionAttributeService;
@@ -34,7 +35,8 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
         $response = $this->middlewareService->send(
             'chromecast',
             'sessionUserIds',
-            ['id' => $this->requestService->getRequestValue('sessionId')]
+            ['id' => $this->requestService->getRequestValue('sessionId')],
+            method: HttpMethod::GET,
         );
 
         $userIds = JsonUtility::decode($response->getBody()->getContent())['data'];
