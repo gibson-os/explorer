@@ -52,7 +52,8 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
                 'explorer',
                 'html5',
                 $this->requestService->getActionName(),
-                $userId
+                HttpMethod::from($this->requestService->getMethod()),
+                $userId,
             );
 
             if ($hasPermission) {
@@ -65,6 +66,7 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
         }
 
         $parameters[$attribute->getUserIdsParameter()] = $userIdsWithPermission;
+        $parameters[$attribute->getUserIdsParameter()] = [];
 
         return $parameters;
     }
