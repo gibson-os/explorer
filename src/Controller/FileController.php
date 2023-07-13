@@ -189,7 +189,7 @@ class FileController extends AbstractController
      * @throws ReadError
      * @throws SetError
      */
-    #[CheckExplorerPermission([Permission::WRITE, ['dir']])]
+    #[CheckExplorerPermission([Permission::WRITE])]
     public function postRename(
         CoreFileService $coreFileService,
         FileService $fileService,

@@ -2,7 +2,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Convert', {
     init(component) {
         component.addAction({
             iconCls: 'icon_system system_chromecast',
-            text: 'An Chromecast senden',
+            text: 'Für HTML5 konvertieren',
             selectionNeeded: true,
             requiredPermission: {
                 task: 'html5',
