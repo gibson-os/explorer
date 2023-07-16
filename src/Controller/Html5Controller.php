@@ -37,7 +37,6 @@ use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Repository\ModuleRepository;
 use GibsonOS\Core\Repository\SettingRepository;
-use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\MiddlewareService;
 use GibsonOS\Core\Service\RequestService;
@@ -146,32 +145,24 @@ class Html5Controller extends AbstractController
 
     #[CheckPermission([Permission::READ])]
     public function getVideo(
-        DirService $dirService,
-        #[GetSetting('html5_media_path')] Setting $html5MediaPath,
-        #[GetModel(['token' => 'token'])] Media $media
+        MediaService $mediaService,
+        #[GetModel(['token' => 'token'])] Media $media,
     ): FileResponse {
-        return $this->stream(
-            $dirService,
-            $html5MediaPath,
-            $media,
-            'mp4',
-            'video/mp4'
-        );
+        return (new FileResponse($this->requestService, $mediaService->getFilename($media, 'mp4')))
+            ->setType('video/mp4')
+            ->setDisposition(null)
+        ;
     }
 
     #[CheckPermission([Permission::READ])]
     public function getAudio(
-        DirService $dirService,
-        #[GetSetting('html5_media_path')] Setting $html5MediaPath,
-        #[GetModel(['token' => 'token'])] Media $media
+        MediaService $mediaService,
+        #[GetModel(['token' => 'token'])] Media $media,
     ): FileResponse {
-        return $this->stream(
-            $dirService,
-            $html5MediaPath,
-            $media,
-            'mp3',
-            'audio/mp3'
-        );
+        return (new FileResponse($this->requestService, $mediaService->getFilename($media, 'mp3')))
+            ->setType('audio/mp3')
+            ->setDisposition(null)
+        ;
     }
 
     /**
@@ -287,25 +278,6 @@ class Html5Controller extends AbstractController
         }
 
         return $this->returnSuccess();
-    }
-
-    private function stream(
-        DirService $dirService,
-        Setting $htmlMediaPath,
-        Media $media,
-        string $fileEnding,
-        string $type
-    ): FileResponse {
-        $filename = $dirService->addEndSlash($media->getDir()) . $media->getFilename();
-
-        if ($media->isGenerationRequired()) {
-            $filename = $htmlMediaPath->getValue() . $media->getToken() . '.' . $fileEnding;
-        }
-
-        return (new FileResponse($this->requestService, $filename))
-            ->setType($type)
-            ->setDisposition(null)
-        ;
     }
 
     /**

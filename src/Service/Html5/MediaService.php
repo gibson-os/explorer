@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Service\Html5;
 
 use DateTime;
+use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Dto\Ffmpeg\Media as MediaDto;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -18,6 +19,7 @@ use GibsonOS\Core\Exception\ProcessError;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Manager\ModelManager;
+use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\Ffmpeg\MediaService as CoreMediaService;
 use GibsonOS\Core\Service\File\TypeService;
@@ -40,6 +42,7 @@ class MediaService
         private readonly MediaRepository $mediaRepository,
         private readonly TypeService $typeService,
         private readonly ModelManager $modelManager,
+        #[GetSetting('html5_media_path')] private readonly Setting $html5MediaPath,
     ) {
     }
 
@@ -285,6 +288,17 @@ class MediaService
             FileTypeDescriberInterface::CATEGORY_AUDIO => '.mp3',
             default => throw new MediaException(sprintf('%d has no defined ending!', $media->getType()))
         };
+    }
+
+    public function getFilename(Media $media, string $fileEnding): string
+    {
+        $filename = $this->dirService->addEndSlash($media->getDir()) . $media->getFilename();
+
+        if ($media->isGenerationRequired()) {
+            $filename = $this->html5MediaPath->getValue() . $media->getToken() . '.' . $fileEnding;
+        }
+
+        return $filename;
     }
 
     private function isMp4Video(MediaDto $mediaDto): bool

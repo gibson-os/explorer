@@ -25,6 +25,7 @@ use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
 use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
+use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Service\Response\ResponseInterface;
 use GibsonOS\Module\Explorer\Attribute\CheckChromecastPermission;
@@ -59,6 +60,28 @@ class MiddlewareController extends AbstractController
         $toSeeStore->setUserIds($userIds);
 
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
+    }
+
+    #[CheckChromecastPermission([Permission::READ])]
+    public function getVideo(
+        MediaService $mediaService,
+        #[GetModel(['token' => 'token'])] Media $media,
+    ): FileResponse {
+        return (new FileResponse($this->requestService, $mediaService->getFilename($media, 'mp4')))
+            ->setType('video/mp4')
+            ->setDisposition(null)
+        ;
+    }
+
+    #[CheckChromecastPermission([Permission::READ])]
+    public function getAudio(
+        MediaService $mediaService,
+        #[GetModel(['token' => 'token'])] Media $media,
+    ): FileResponse {
+        return (new FileResponse($this->requestService, $mediaService->getFilename($media, 'mp3')))
+            ->setType('audio/mp3')
+            ->setDisposition(null)
+        ;
     }
 
     /**
