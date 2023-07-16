@@ -42,7 +42,7 @@ class MediaService
         private readonly MediaRepository $mediaRepository,
         private readonly TypeService $typeService,
         private readonly ModelManager $modelManager,
-        #[GetSetting('html5_media_path')] private readonly Setting $html5MediaPath,
+        #[GetSetting('html5_media_path', 'explorer')] private readonly Setting $html5MediaPath,
     ) {
     }
 
