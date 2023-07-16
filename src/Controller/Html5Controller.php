@@ -182,7 +182,7 @@ class Html5Controller extends AbstractController
      * @throws SaveError
      */
     #[CheckPermission([Permission::WRITE])]
-    public function postSavePosition(
+    public function postPosition(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media,
         int $position,

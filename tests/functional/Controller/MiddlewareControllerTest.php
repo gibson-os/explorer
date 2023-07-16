@@ -108,7 +108,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
         );
     }
 
-    public function testSavePosition(): void
+    public function testPostPosition(): void
     {
         $modelManager = $this->serviceManager->get(ModelManager::class);
         $media = (new Media())
@@ -121,7 +121,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
         ;
         $modelManager->saveWithoutChildren($media);
 
-        $this->checkSuccessResponse($this->middlewareController->savePosition(
+        $this->checkSuccessResponse($this->middlewareController->postPosition(
             $this->serviceManager->get(MediaService::class),
             $media,
             42,
@@ -134,7 +134,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
         );
         $this->assertEquals(42, $position->getPosition());
 
-        $this->checkSuccessResponse($this->middlewareController->savePosition(
+        $this->checkSuccessResponse($this->middlewareController->postPosition(
             $this->serviceManager->get(MediaService::class),
             $media,
             24,
@@ -148,7 +148,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
         $this->assertEquals(24, $position->getPosition());
 
         $this->expectException(OutOfRangeException::class);
-        $this->middlewareController->savePosition(
+        $this->middlewareController->postPosition(
             $this->serviceManager->get(MediaService::class),
             $media,
             0,
@@ -209,56 +209,56 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
         );
     }
 
-//    public function testNewImage(): void
-//    {
-//        $modelManager = $this->serviceManager->get(ModelManager::class);
-//        $media = (new Media())
-//            ->setToken('galaxy')
-//            ->setDir('')
-//            ->setFilename('ford')
-//            ->setUser($this->addUser())
-//            ->setStatus('generated')
-//            ->setAdded(new DateTimeImmutable())
-//        ;
-//        $modelManager->saveWithoutChildren($media);
-//
-//        $this->gibsonStoreService->hasFileImage('ford')
-//            ->shouldBeCalledOnce()
-//            ->willReturn(false)
-//        ;
-//        $image = $this->prophesize(Image::class);
-//        $this->gibsonStoreService->getFileImage('ford', 42, 42)
-//            ->shouldBeCalledOnce()
-//            ->willReturn($image->reveal())
-//        ;
-//        $imageService = $this->prophesize(ImageService::class);
-//        $imageService->getString($image->reveal())
-//            ->shouldBeCalledOnce()
-//            ->willReturn('prefect')
-//        ;
-//
-//        $response = $this->middlewareController->image(
-//            $this->gibsonStoreService->reveal(),
-//            $imageService->reveal(),
-//            $this->serviceManager->get(TypeFactory::class),
-//            $media,
-//            42,
-//            42,
-//        );
-//
-//        $this->assertEquals('prefect', $response->getBody());
-//        $this->assertEquals(
-//            [
-//                'Pragma' => 'public',
-//                'Expires' => 0,
-//                'Accept-Ranges' => 'bytes',
-//                'Cache-Control' => ['must-revalidate, post-check=0, pre-check=0', 'private'],
-//                'Content-Type' => 'image/jpg',
-//                'Content-Length' => 7,
-//                'Content-Transfer-Encoding' => 'binary',
-//                'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
-//            ],
-//            $response->getHeaders()
-//        );
-//    }
+    //    public function testNewImage(): void
+    //    {
+    //        $modelManager = $this->serviceManager->get(ModelManager::class);
+    //        $media = (new Media())
+    //            ->setToken('galaxy')
+    //            ->setDir('')
+    //            ->setFilename('ford')
+    //            ->setUser($this->addUser())
+    //            ->setStatus('generated')
+    //            ->setAdded(new DateTimeImmutable())
+    //        ;
+    //        $modelManager->saveWithoutChildren($media);
+    //
+    //        $this->gibsonStoreService->hasFileImage('ford')
+    //            ->shouldBeCalledOnce()
+    //            ->willReturn(false)
+    //        ;
+    //        $image = $this->prophesize(Image::class);
+    //        $this->gibsonStoreService->getFileImage('ford', 42, 42)
+    //            ->shouldBeCalledOnce()
+    //            ->willReturn($image->reveal())
+    //        ;
+    //        $imageService = $this->prophesize(ImageService::class);
+    //        $imageService->getString($image->reveal())
+    //            ->shouldBeCalledOnce()
+    //            ->willReturn('prefect')
+    //        ;
+    //
+    //        $response = $this->middlewareController->image(
+    //            $this->gibsonStoreService->reveal(),
+    //            $imageService->reveal(),
+    //            $this->serviceManager->get(TypeFactory::class),
+    //            $media,
+    //            42,
+    //            42,
+    //        );
+    //
+    //        $this->assertEquals('prefect', $response->getBody());
+    //        $this->assertEquals(
+    //            [
+    //                'Pragma' => 'public',
+    //                'Expires' => 0,
+    //                'Accept-Ranges' => 'bytes',
+    //                'Cache-Control' => ['must-revalidate, post-check=0, pre-check=0', 'private'],
+    //                'Content-Type' => 'image/jpg',
+    //                'Content-Length' => 7,
+    //                'Content-Transfer-Encoding' => 'binary',
+    //                'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
+    //            ],
+    //            $response->getHeaders()
+    //        );
+    //    }
 }
