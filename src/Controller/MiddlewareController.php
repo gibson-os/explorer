@@ -67,7 +67,7 @@ class MiddlewareController extends AbstractController
      * @throws ReflectionException
      */
     #[CheckChromecastPermission([Permission::WRITE])]
-    public function postSavePosition(
+    public function postPosition(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media,
         int $position,
