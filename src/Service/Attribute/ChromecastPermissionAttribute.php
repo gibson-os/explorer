@@ -66,7 +66,6 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
         }
 
         $parameters[$attribute->getUserIdsParameter()] = $userIdsWithPermission;
-        $parameters[$attribute->getUserIdsParameter()] = [];
 
         return $parameters;
     }
