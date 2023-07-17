@@ -47,12 +47,13 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
                 static fn (Permission $permission): int => $permission->value,
                 $attribute->getPermissions(),
             ));
+            $method = HttpMethod::from($this->requestService->getMethod());
             $hasPermission = $this->permissionService->hasPermission(
                 $permissionSum,
                 'explorer',
                 'html5',
                 $this->requestService->getActionName(),
-                HttpMethod::from($this->requestService->getMethod()),
+                $method === HttpMethod::HEAD ? HttpMethod::GET : $method,
                 $userId,
             );
 

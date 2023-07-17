@@ -63,6 +63,16 @@ class MiddlewareController extends AbstractController
     }
 
     #[CheckChromecastPermission([Permission::READ])]
+    public function headVideo(
+        MediaService $mediaService,
+        #[GetModel(['token' => 'token'])] Media $media,
+    ): Response {
+        $fileResponse = $this->getVideo($mediaService, $media);
+
+        return new Response('', $fileResponse->getCode(), $fileResponse->getHeaders());
+    }
+
+    #[CheckChromecastPermission([Permission::READ])]
     public function getVideo(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media,
@@ -71,6 +81,16 @@ class MiddlewareController extends AbstractController
             ->setType('video/mp4')
             ->setDisposition(null)
         ;
+    }
+
+    #[CheckChromecastPermission([Permission::READ])]
+    public function headAudio(
+        MediaService $mediaService,
+        #[GetModel(['token' => 'token'])] Media $media,
+    ): Response {
+        $fileResponse = $this->getAudio($mediaService, $media);
+
+        return new Response('', $fileResponse->getCode(), $fileResponse->getHeaders());
     }
 
     #[CheckChromecastPermission([Permission::READ])]
