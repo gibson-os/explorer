@@ -13,7 +13,7 @@ Ext.define('GibsonOS.module.explorer.index.Preview', {
             '<tpl if="category == ' + GibsonOS.module.explorer.file.data.categories.VIDEO  + '">',
                 '<tpl if="html5MediaStatus == \'generated\'">',
                     '<video width="{width}" height="{height}" id="' + elementId + '" controls>',
-                    '<source src="' + baseDir + 'explorer/html5/video/token/{html5MediaToken}" type="video/mp4">',
+                    '<source src="' + baseDir + 'explorer/html5/stream/token/{html5MediaToken}" type="video/mp4">',
                     '</video>',
                 '</tpl>',
             '</tpl>',

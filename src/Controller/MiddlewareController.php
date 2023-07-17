@@ -23,6 +23,7 @@ use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Exception\Sqlite\WriteError;
+use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
@@ -63,43 +64,22 @@ class MiddlewareController extends AbstractController
     }
 
     #[CheckChromecastPermission([Permission::READ])]
-    public function headVideo(
+    public function headStream(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media,
     ): Response {
-        $fileResponse = $this->getVideo($mediaService, $media);
+        $fileResponse = $this->getStream($mediaService, $media);
 
         return new Response('', $fileResponse->getCode(), $fileResponse->getHeaders());
     }
 
     #[CheckChromecastPermission([Permission::READ])]
-    public function getVideo(
+    public function getStream(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media,
     ): FileResponse {
-        return (new FileResponse($this->requestService, $mediaService->getFilename($media, 'mp4')))
-            ->setType('video/mp4')
-            ->setDisposition(null)
-        ;
-    }
-
-    #[CheckChromecastPermission([Permission::READ])]
-    public function headAudio(
-        MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media,
-    ): Response {
-        $fileResponse = $this->getAudio($mediaService, $media);
-
-        return new Response('', $fileResponse->getCode(), $fileResponse->getHeaders());
-    }
-
-    #[CheckChromecastPermission([Permission::READ])]
-    public function getAudio(
-        MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media,
-    ): FileResponse {
-        return (new FileResponse($this->requestService, $mediaService->getFilename($media, 'mp3')))
-            ->setType('audio/mp3')
+        return (new FileResponse($this->requestService, $mediaService->getFilename($media)))
+            ->setType($media->getType() === TypeService::TYPE_CATEGORY_VIDEO ? 'video/mp4' : 'audio/mp3')
             ->setDisposition(null)
         ;
     }

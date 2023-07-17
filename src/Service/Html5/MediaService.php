@@ -290,15 +290,15 @@ class MediaService
         };
     }
 
-    public function getFilename(Media $media, string $fileEnding): string
+    public function getFilename(Media $media): string
     {
-        $filename = $this->dirService->addEndSlash($media->getDir()) . $media->getFilename();
-
-        if ($media->isGenerationRequired()) {
-            $filename = $this->html5MediaPath->getValue() . $media->getToken() . '.' . $fileEnding;
+        if (!$media->isGenerationRequired()) {
+            return $this->dirService->addEndSlash($media->getDir()) . $media->getFilename();
         }
 
-        return $filename;
+        $fileEnding = $media->getType() === TypeService::TYPE_CATEGORY_VIDEO ? 'mp4' : 'mp3';
+
+        return $this->html5MediaPath->getValue() . $media->getToken() . '.' . $fileEnding;
     }
 
     private function isMp4Video(MediaDto $mediaDto): bool

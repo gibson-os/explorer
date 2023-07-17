@@ -37,6 +37,7 @@ use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Repository\ModuleRepository;
 use GibsonOS\Core\Repository\SettingRepository;
+use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Service\ImageService;
 use GibsonOS\Core\Service\MiddlewareService;
 use GibsonOS\Core\Service\RequestService;
@@ -144,23 +145,12 @@ class Html5Controller extends AbstractController
     }
 
     #[CheckPermission([Permission::READ])]
-    public function getVideo(
+    public function getStream(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])] Media $media,
     ): FileResponse {
-        return (new FileResponse($this->requestService, $mediaService->getFilename($media, 'mp4')))
-            ->setType('video/mp4')
-            ->setDisposition(null)
-        ;
-    }
-
-    #[CheckPermission([Permission::READ])]
-    public function getAudio(
-        MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media,
-    ): FileResponse {
-        return (new FileResponse($this->requestService, $mediaService->getFilename($media, 'mp3')))
-            ->setType('audio/mp3')
+        return (new FileResponse($this->requestService, $mediaService->getFilename($media)))
+            ->setType($media->getType() === TypeService::TYPE_CATEGORY_VIDEO ? 'video/mp4' : 'audio/mp3')
             ->setDisposition(null)
         ;
     }
