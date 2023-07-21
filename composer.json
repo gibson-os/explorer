@@ -2,7 +2,7 @@
   "name": "gibson-os/explorer",
   "require": {
     "php": " ^8.2",
-    "gibson-os/core": "^2.0.0",
+    "gibson-os/core": "^3.0.0",
     "ext-mbstring": "*",
     "ext-exif": "*",
     "ext-sqlite3": "*",
@@ -48,7 +48,8 @@
   "config": {
     "allow-plugins": {
       "composer/package-versions-deprecated": true,
-      "captainhook/plugin-composer": true
+      "captainhook/plugin-composer": true,
+      "php-http/discovery": true
     }
   }
 }
