@@ -64,7 +64,8 @@ class DirController extends AbstractController
     #[CheckPermission([Permission::READ])]
     public function getList(
         DirListStore $dirListStore,
-        #[GetSetting('home_path')] Setting $homePath,
+        #[GetSetting('home_path')]
+        Setting $homePath,
         ?string $node,
         ?string $dir,
     ): AjaxResponse {

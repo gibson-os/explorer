@@ -9,9 +9,9 @@ use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Table;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
+use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use JsonSerializable;
-use mysqlDatabase;
 
 /**
  * @method Media    getMedia()
@@ -40,9 +40,9 @@ class Position extends AbstractModel implements JsonSerializable
     #[Constraint]
     protected User $user;
 
-    public function __construct(mysqlDatabase $database = null)
+    public function __construct(ModelWrapper $modelWrapper)
     {
-        parent::__construct($database);
+        parent::__construct($modelWrapper);
     }
 
     public function getMediaId(): int

@@ -42,7 +42,7 @@ class IndexerCommand extends AbstractCommand
         private readonly FileService $fileService,
         private readonly EnvService $envService,
         private readonly DescriberFactory $describerFactory,
-        private readonly ServiceManager $ServiceManager,
+        private readonly ServiceManager $serviceManager,
         private readonly ExplorerFileService $explorerFileService,
         LoggerInterface $logger
     ) {
@@ -170,13 +170,13 @@ class IndexerCommand extends AbstractCommand
 
         if (!$this->gibsonStoreService->hasFileMetas($path, $fileTypeDescriber->getMetasStructure())) {
             /** @var FileTypeInterface $fileTypeService */
-            $fileTypeService = $this->ServiceManager->get($fileTypeDescriber->getServiceClassname());
+            $fileTypeService = $this->serviceManager->get($fileTypeDescriber->getServiceClassname());
             $this->explorerFileService->setFileMetas($fileTypeService, $path);
         }
 
         if (!$this->gibsonStoreService->hasFileImage($path)) {
             if ($fileTypeService === null) {
-                $fileTypeService = $this->ServiceManager->get($fileTypeDescriber->getServiceClassname());
+                $fileTypeService = $this->serviceManager->get($fileTypeDescriber->getServiceClassname());
             }
 
             try {

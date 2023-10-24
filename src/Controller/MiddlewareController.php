@@ -38,6 +38,8 @@ use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
 use JsonException;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
 use ReflectionException;
 
 class MiddlewareController extends AbstractController
@@ -45,13 +47,17 @@ class MiddlewareController extends AbstractController
     /**
      * @throws ConvertStatusError
      * @throws DateTimeError
+     * @throws JsonException
      * @throws MediaException
      * @throws NoAudioError
      * @throws OpenError
      * @throws ProcessError
      * @throws ReadError
+     * @throws ReflectionException
      * @throws SelectError
      * @throws SetError
+     * @throws ClientException
+     * @throws RecordException
      */
     #[CheckChromecastPermission([Permission::READ])]
     public function getToSeeList(
@@ -66,7 +72,8 @@ class MiddlewareController extends AbstractController
     #[CheckChromecastPermission([Permission::READ])]
     public function headStream(
         MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media,
+        #[GetModel(['token' => 'token'])]
+        Media $media,
     ): Response {
         $fileResponse = $this->getStream($mediaService, $media);
 
@@ -76,7 +83,8 @@ class MiddlewareController extends AbstractController
     #[CheckChromecastPermission([Permission::READ])]
     public function getStream(
         MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media,
+        #[GetModel(['token' => 'token'])]
+        Media $media,
     ): FileResponse {
         return (new FileResponse($this->requestService, $mediaService->getFilename($media)))
             ->setType($media->getType() === TypeService::TYPE_CATEGORY_VIDEO ? 'video/mp4' : 'audio/mp3')
@@ -92,7 +100,8 @@ class MiddlewareController extends AbstractController
     #[CheckChromecastPermission([Permission::WRITE])]
     public function postPosition(
         MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media,
+        #[GetModel(['token' => 'token'])]
+        Media $media,
         int $position,
         array $userIds,
     ): AjaxResponse {
@@ -122,7 +131,8 @@ class MiddlewareController extends AbstractController
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
         TypeFactory $typeFactory,
-        #[GetModel(['token' => 'token'])] Media $media,
+        #[GetModel(['token' => 'token'])]
+        Media $media,
         int $width = null,
         int $height = null,
     ): ResponseInterface {
@@ -170,7 +180,8 @@ class MiddlewareController extends AbstractController
         GibsonStoreService $gibsonStoreService,
         PositionRepository $positionRepository,
         MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media,
+        #[GetModel(['token' => 'token'])]
+        Media $media,
         array $userIds,
     ): AjaxResponse {
         $mediaData = $media->jsonSerialize();

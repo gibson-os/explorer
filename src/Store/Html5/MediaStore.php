@@ -5,28 +5,31 @@ namespace GibsonOS\Module\Explorer\Store\Html5;
 
 use Generator;
 use GibsonOS\Core\Attribute\GetSetting;
+use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Repository\SelectError;
+use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Service\DirService;
-use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
+use GibsonOS\Core\Wrapper\DatabaseStoreWrapper;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Service\FileService;
 use JsonException;
-use mysqlDatabase;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
 use ReflectionException;
 
 class MediaStore extends AbstractDatabaseStore
 {
     public function __construct(
-        mysqlDatabase $database,
-        private readonly TypeService $typeService,
+        DatabaseStoreWrapper $databaseStoreWrapper,
         private readonly DirService $dirService,
         private readonly FileService $fileService,
-        #[GetSetting('html5_media_path')] private readonly Setting $html5MediaPath,
+        #[GetSetting('html5_media_path')]
+        private readonly Setting $html5MediaPath,
     ) {
-        parent::__construct($database);
+        parent::__construct($databaseStoreWrapper);
     }
 
     protected function getModelClassName(): string
@@ -35,9 +38,13 @@ class MediaStore extends AbstractDatabaseStore
     }
 
     /**
-     * @throws SelectError
      * @throws JsonException
      * @throws ReflectionException
+     * @throws SelectError
+     * @throws FactoryError
+     * @throws ReadError
+     * @throws ClientException
+     * @throws RecordException
      */
     public function getList(): Generator
     {

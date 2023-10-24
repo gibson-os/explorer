@@ -6,16 +6,20 @@ namespace GibsonOS\Module\Explorer\Store;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
+use GibsonOS\Core\Wrapper\DatabaseStoreWrapper;
 use GibsonOS\Module\Explorer\Model\Trash;
-use mysqlDatabase;
+use JsonException;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
+use ReflectionException;
 
 class TrashStore extends AbstractDatabaseStore
 {
     public function __construct(
-        private FileService $fileService,
-        mysqlDatabase $database = null
+        private readonly FileService $fileService,
+        DatabaseStoreWrapper $databaseStoreWrapper,
     ) {
-        parent::__construct($database);
+        parent::__construct($databaseStoreWrapper);
     }
 
     protected function getModelClassName(): string
@@ -43,6 +47,10 @@ class TrashStore extends AbstractDatabaseStore
 
     /**
      * @throws SelectError
+     * @throws JsonException
+     * @throws ClientException
+     * @throws RecordException
+     * @throws ReflectionException
      */
     public function getList(): iterable
     {
@@ -50,9 +58,10 @@ class TrashStore extends AbstractDatabaseStore
         foreach (parent::getList() as $trash) {
             $data = $trash->jsonSerialize();
             $data['type'] = 'dir';
+            $filename = $trash->getFilename();
 
-            if ($trash->getFilename() !== null) {
-                $data['type'] = $this->fileService->getFileEnding($trash->getFilename() ?? '');
+            if ($filename !== null) {
+                $data['type'] = $this->fileService->getFileEnding($filename);
             }
 
             yield $data;

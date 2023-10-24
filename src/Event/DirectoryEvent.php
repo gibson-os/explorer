@@ -37,10 +37,14 @@ class DirectoryEvent extends AbstractEvent
      */
     #[Event\Method('Nachricht senden')]
     public function pushMessage(
-        #[Event\Parameter(UserParameter::class)] User $user,
-        #[Event\Parameter(DirectoryParameter::class)] string $directory,
-        #[Event\Parameter(StringParameter::class, 'Titel')] ?string $title,
-        #[Event\Parameter(StringParameter::class, 'Text')] ?string $body,
+        #[Event\Parameter(UserParameter::class)]
+        User $user,
+        #[Event\Parameter(DirectoryParameter::class)]
+        string $directory,
+        #[Event\Parameter(StringParameter::class, 'Titel')]
+        ?string $title,
+        #[Event\Parameter(StringParameter::class, 'Text')]
+        ?string $body,
     ): void {
         foreach ($user->getDevices() as $device) {
             $token = $device->getToken();

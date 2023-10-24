@@ -45,6 +45,7 @@ use GibsonOS\Core\Service\Response\AjaxResponse;
 use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Utility\JsonUtility;
+use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Explorer\Attribute\CheckExplorerPermission;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
@@ -139,7 +140,8 @@ class Html5Controller extends AbstractController
     #[CheckPermission([Permission::READ])]
     public function getConvertStatus(
         MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media
+        #[GetModel(['token' => 'token'])]
+        Media $media
     ): AjaxResponse {
         return $this->returnSuccess($mediaService->getConvertStatus($media));
     }
@@ -147,7 +149,8 @@ class Html5Controller extends AbstractController
     #[CheckPermission([Permission::READ])]
     public function getStream(
         MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media,
+        #[GetModel(['token' => 'token'])]
+        Media $media,
     ): FileResponse {
         return (new FileResponse($this->requestService, $mediaService->getFilename($media)))
             ->setType($media->getType() === TypeService::TYPE_CATEGORY_VIDEO ? 'video/mp4' : 'audio/mp3')
@@ -165,7 +168,8 @@ class Html5Controller extends AbstractController
     #[CheckPermission([Permission::WRITE])]
     public function postPosition(
         MediaService $mediaService,
-        #[GetModel(['token' => 'token'])] Media $media,
+        #[GetModel(['token' => 'token'])]
+        Media $media,
         int $position,
         array $userIds
     ): AjaxResponse {
@@ -221,7 +225,8 @@ class Html5Controller extends AbstractController
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
         TypeFactory $typeFactory,
-        #[GetModel(['token' => 'token'])] Media $media,
+        #[GetModel(['token' => 'token'])]
+        Media $media,
         int $width = null,
         int $height = null
     ): Response {
@@ -276,9 +281,11 @@ class Html5Controller extends AbstractController
      * @throws ReflectionException
      */
     #[CheckPermission([Permission::READ])]
-    public function getConnectedUsers(ConnectedUserStore $connectedUserStore): AjaxResponse
-    {
-        $connectedUserStore->setUser($this->sessionService->getUser() ?? new User());
+    public function getConnectedUsers(
+        ConnectedUserStore $connectedUserStore,
+        ModelWrapper $modelWrapper,
+    ): AjaxResponse {
+        $connectedUserStore->setUser($this->sessionService->getUser() ?? new User($modelWrapper));
 
         return $this->returnSuccess($connectedUserStore->getList(), $connectedUserStore->getCount());
     }
@@ -299,7 +306,8 @@ class Html5Controller extends AbstractController
     #[CheckPermission([Permission::WRITE])]
     public function postConnectedUser(
         ModelManager $modelManager,
-        #[GetMappedModel] ConnectedUser $connectedUser,
+        #[GetMappedModel]
+        ConnectedUser $connectedUser,
     ): AjaxResponse {
         $connectedUser->setUserId($this->sessionService->getUserId() ?? 0);
 
@@ -321,7 +329,8 @@ class Html5Controller extends AbstractController
     #[CheckPermission([Permission::DELETE])]
     public function deleteConnectedUsers(
         ModelManager $modelManager,
-        #[GetModels(ConnectedUser::class)] array $connectedUsers,
+        #[GetModels(ConnectedUser::class)]
+        array $connectedUsers,
     ): AjaxResponse {
         $userId = $this->sessionService->getUserId() ?? 0;
 
@@ -365,15 +374,17 @@ class Html5Controller extends AbstractController
     public function getChromecastReceiverAppId(
         ModuleRepository $moduleRepository,
         ModelManager $modelManager,
+        ModelWrapper $modelWrapper,
         MiddlewareService $middlewareService,
-        #[GetSetting('chromecastReceiverAppId', 'core')] Setting $chromecastReceiverAppId = null,
+        #[GetSetting('chromecastReceiverAppId', 'core')]
+        Setting $chromecastReceiverAppId = null,
     ): AjaxResponse {
         if ($chromecastReceiverAppId !== null) {
             return $this->returnSuccess($chromecastReceiverAppId->getValue());
         }
 
         $response = $middlewareService->send('chromecast', 'receiverAppId');
-        $chromecastReceiverAppId = (new Setting())
+        $chromecastReceiverAppId = (new Setting($modelWrapper))
             ->setModule($moduleRepository->getByName('core'))
             ->setKey('chromecastReceiverAppId')
             ->setValue(JsonUtility::decode($response->getBody()->getContent())['data'])

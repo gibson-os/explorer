@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Store\Html5;
 
+use Generator;
 use GibsonOS\Core\Attribute\GetTableName;
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -11,20 +12,27 @@ use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
 use GibsonOS\Core\Exception\File\OpenError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\ProcessError;
+use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Exception\SetError;
 use GibsonOS\Core\Exception\Sqlite\ExecuteError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Store\AbstractDatabaseStore;
+use GibsonOS\Core\Wrapper\DatabaseStoreWrapper;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
-use mysqlDatabase;
-use mysqlTable;
-use stdClass;
+use JsonException;
+use MDO\Dto\Query\Join;
+use MDO\Dto\Select;
+use MDO\Enum\JoinType;
+use MDO\Enum\OrderDirection;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
+use ReflectionException;
 
 class ToSeeStore extends AbstractDatabaseStore
 {
@@ -39,18 +47,24 @@ class ToSeeStore extends AbstractDatabaseStore
     private array $seenMedias = [];
 
     public function __construct(
-        mysqlDatabase $database,
+        DatabaseStoreWrapper $databaseStoreWrapper,
         private readonly DirService $dirService,
         private readonly MediaService $mediaService,
         private readonly GibsonStoreService $gibsonStoreService,
-        #[GetTableName(Position::class)] private readonly string $positionTableName
+        #[GetTableName(Position::class)]
+        private readonly string $positionTableName,
     ) {
-        parent::__construct($database);
+        parent::__construct($databaseStoreWrapper);
     }
 
     protected function setWheres(): void
     {
-        $this->addWhere('`' . $this->tableName . '`.`status` IN (?, ?)');
+        $this
+            ->addWhere(
+                '`m`.`status` IN (:statusGenerate, :statusGenerated)',
+                ['statusGenerate' => ConvertStatus::STATUS_GENERATE, 'statusGenerated' => ConvertStatus::STATUS_GENERATED]
+            )
+        ;
     }
 
     /**
@@ -63,40 +77,57 @@ class ToSeeStore extends AbstractDatabaseStore
         return $this;
     }
 
-    protected function initTable(): void
+    protected function initQuery(): void
     {
-        parent::initTable();
-
+        parent::initQuery();
         $userIds = $this->userIds ?: [0];
-        $this->table->appendJoinLeft(
-            $this->positionTableName,
-            '`' . $this->tableName . '`.`id`=`' . $this->positionTableName . '`.`media_id` AND ' .
-            '`' . $this->positionTableName . '`.`user_id` IN (' . $this->table->getParametersString($userIds) . ')',
-        );
 
-        foreach ($userIds as $userId) {
-            $this->table->addWhereParameter($userId);
-        }
-
-        $this->table->addWhereParameter(ConvertStatus::STATUS_GENERATE);
-        $this->table->addWhereParameter(ConvertStatus::STATUS_GENERATED);
+        $this->selectQuery
+            ->addJoin(new Join(
+                $this->getTable($this->positionTableName),
+                'mp',
+                sprintf(
+                    '`m`.`id`=`mp`.`media_id` AND `mp`.`user_id` IN (%s)',
+                    $this->getDatabaseStoreWrapper()->getSelectService()->getParametersString($userIds),
+                ),
+                JoinType::LEFT,
+            ))
+            ->addParameters($userIds)
+            ->setSelects(
+                $this->getDatabaseStoreWrapper()->getSelectService()->getSelects([
+                    new Select($this->table, 'm', 'media_'),
+                    new Select($this->getTable($this->positionTableName), 'mp', 'position_'),
+                ])
+            )
+            ->setOrders([
+                'IF(`mp`.`media_id` IS NULL, 0, 1)' => OrderDirection::DESC,
+                'IFNULL(`mp`.`modified`, `m`.`added`)' => OrderDirection::DESC,
+            ])
+        ;
     }
 
     /**
+     * @throws ClientException
      * @throws ConvertStatusError
      * @throws DateTimeError
+     * @throws JsonException
+     * @throws MediaException
+     * @throws NoAudioError
      * @throws OpenError
      * @throws ProcessError
      * @throws ReadError
-     * @throws NoAudioError
+     * @throws RecordException
+     * @throws ReflectionException
+     * @throws SelectError
      * @throws SetError
-     * @throws MediaException
      */
     public function getList(): iterable
     {
         $this->seenMedias = [];
 
-        foreach ($this->getMedias() as $pattern => $media) {
+        foreach ($this->getMedias() as $pattern => $models) {
+            $media = $models['media'];
+            $position = $models['position'];
             $nextFiles = $this->getNextFiles($media, $pattern);
 
             if (
@@ -107,28 +138,20 @@ class ToSeeStore extends AbstractDatabaseStore
             }
 
             $listMedia = [
-                'html5VideoToken' => $media->token,
-                'html5MediaToken' => $media->token,
-                'dir' => $media->dir,
-                'filename' => $media->filename,
-                'status' => $media->status,
-                'duration' => $media->duration,
-                'position' => $media->position,
+                'html5VideoToken' => $media->getToken(),
+                'html5MediaToken' => $media->getToken(),
+                'dir' => $media->getDir(),
+                'filename' => $media->getFilename(),
+                'status' => $media->getStatus(),
+                'duration' => $models['duration'],
+                'position' => $position?->getPosition() ?? 0,
                 'nextFiles' => count($nextFiles),
                 'category' => TypeService::TYPE_CATEGORY_VIDEO,
             ];
 
-            if ($media->status === ConvertStatus::STATUS_GENERATE) {
-                $mediaModel = (new Media())
-                    ->setFilename($media->token . '.mp4')
-                    ->setStatus($media->status)
-                    ->setDir($media->dir)
-                    ->setFilename($media->filename)
-                    ->setToken($media->token)
-                ;
-
+            if ($media->getStatus() === ConvertStatus::STATUS_GENERATE) {
                 try {
-                    $convertStatus = $this->mediaService->getConvertStatus($mediaModel);
+                    $convertStatus = $this->mediaService->getConvertStatus($media);
                 } catch (FileNotFound) {
                     $convertStatus = null;
                 }
@@ -147,10 +170,10 @@ class ToSeeStore extends AbstractDatabaseStore
         return preg_replace('/(s?)\d{1,3}e?\d.*/i', '$1*', $this->dirService->escapeForGlob($filename));
     }
 
-    private function getNextFiles(stdClass $media, string $pattern): array
+    private function getNextFiles(Media $media, string $pattern): array
     {
         $fileNames = (array) glob($pattern);
-        $mediaFilePath = $media->dir . $media->filename;
+        $mediaFilePath = $media->getDir() . $media->getFilename();
         asort($fileNames);
 
         $add = false;
@@ -178,90 +201,100 @@ class ToSeeStore extends AbstractDatabaseStore
         return Media::class;
     }
 
-    private function hasSeen(object $media): bool
+    protected function getAlias(): ?string
     {
-        return $this->seenMedias[$media->dir . $media->filename] ?? false;
+        return 'm';
     }
 
-    private function setTableForList(): void
+    private function hasSeen(Media $media): bool
     {
-        $select = [
-            'token' => 'token',
-            'dir' => 'dir',
-            'filename' => 'filename',
-            'status' => 'status',
-            'position' => 'position',
-        ];
-
-        $this->initTable();
-        $this->table->setSelectString('`' . implode('`, `', $select) . '`, `added` AS `orderDate`, 0 AS `isPosition`');
-
-        $tableName = $this->tableName;
-        $positionTable = new mysqlTable($this->database, $this->positionTableName);
-        $positionTable->setSelectString('`' . implode('`, `', $select) . '`, `modified` AS `orderDate`, 1 AS `isPosition`');
-        $positionTable->appendJoin(
-            $tableName,
-            '`' . $tableName . '`.`id`=`' . $this->positionTableName . '`.`media_id`'
-        );
-        $userIds = $this->userIds ?: [0];
-        $positionTable->setWhere(
-            '`' . $this->positionTableName . '`.`user_id` IN ' .
-            '(' . $positionTable->getParametersString($userIds) . ')'
-        );
-
-        foreach ($userIds as $userId) {
-            $this->table->addWhereParameter($userId);
-        }
-
-        $this->table
-            ->appendUnion($positionTable->getSelect())
-            ->setOrderBy('`isPosition` DESC, `orderDate` DESC')
-            ->selectPrepared(false)
-        ;
+        return $this->seenMedias[$media->getDir() . $media->getFilename()] ?? false;
     }
 
     /**
+     * @throws ClientException
+     * @throws JsonException
+     * @throws RecordException
+     * @throws ReflectionException
+     * @throws SelectError
+     *
+     * @return Generator<array{media: Media, position: ?Position}>
+     */
+    protected function getModels(): Generator
+    {
+        $databaseStoreWrapper = $this->getDatabaseStoreWrapper();
+        $result = $databaseStoreWrapper->getClient()->execute($this->selectQuery);
+
+        foreach ($result->iterateRecords() as $record) {
+            /** @var Media $media */
+            $media = $this->getModel($record, 'media_');
+            $position = null;
+
+            if ($record->get('position_media_id')->getValue() !== null) {
+                $position = new Position($databaseStoreWrapper->getModelWrapper());
+                $databaseStoreWrapper->getModelManager()->loadFromRecord($record, $position, 'position_');
+            }
+
+            yield ['media' => $media, 'position' => $position];
+        }
+    }
+
+    /**
+     * @throws SelectError
+     * @throws JsonException
+     * @throws ClientException
+     * @throws RecordException
+     * @throws ReflectionException
      * @throws ReadError
+     *
+     * @return array<string, array{media: Media, position: ?Position, duration: int}>
      */
     private function getMedias(): array
     {
-        $this->setTableForList();
         $medias = [];
 
-        foreach ($this->table->connection->fetchObjectList() as $media) {
-            $filenamePattern = $this->generateFilenamePattern($media->filename);
-            $key = $this->dirService->escapeForGlob($media->dir) . $filenamePattern;
-            $media->position = (int) $media->position;
+        foreach ($this->getModels() as $models) {
+            $media = $models['media'];
+            $position = $models['position'];
+            $filenamePattern = $this->generateFilenamePattern($media->getFilename());
+            $key = $this->dirService->escapeForGlob($media->getDir()) . $filenamePattern;
 
             try {
-                $media->duration = (int) $this->gibsonStoreService->getFileMeta(
-                    $media->dir . $media->filename,
+                $duration = (int) $this->gibsonStoreService->getFileMeta(
+                    $media->getDir() . $media->getFilename(),
                     'duration',
                     0
                 );
             } catch (ExecuteError) {
-                $media->duration = 0;
+                $duration = 0;
             }
 
-            if ($media->position >= ($media->duration - ($media->duration / 10))) {
-                $this->seenMedias[$media->dir . $media->filename] = true;
+            if ($position !== null && $position->getPosition() >= ($duration - ($duration / 10))) {
+                $this->seenMedias[$media->getDir() . $media->getFilename()] = true;
             }
+
+            $mediaArray = $models;
+            $mediaArray['duration'] = $duration;
 
             if (isset($medias[$key])) {
-                $oldMedia = $medias[$key];
+                $oldMedia = $medias[$key]['media'];
+                $oldPosition = $medias[$key]['position'];
 
                 if (
                     !$this->hasSeen($media)
-                    && (strcmp($oldMedia->filename, $media->filename) > 0 || $this->hasSeen($oldMedia))
+                    && (strcmp($oldMedia->getFileName(), $media->getFilename()) > 0 || $this->hasSeen($oldMedia))
                 ) {
-                    $medias[$key] = $media;
+                    $medias[$key] = $mediaArray;
                 }
 
-                if ($oldMedia->filename === $media->filename && $media->position > $oldMedia->position) {
-                    $medias[$key] = $media;
+                if (
+                    $oldMedia->getFilename() === $media->getFilename()
+                    && ($position?->getPosition() ?? 0) > ($oldPosition?->getPosition() ?? 0)
+                ) {
+                    $medias[$key] = $mediaArray;
                 }
             } else {
-                $medias[$key] = $media;
+                $medias[$key] = $mediaArray;
             }
         }
 

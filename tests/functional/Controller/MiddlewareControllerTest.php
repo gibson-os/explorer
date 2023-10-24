@@ -6,7 +6,10 @@ namespace GibsonOS\Test\Functional\Explorer\Controller;
 use DateTimeImmutable;
 use GibsonOS\Core\Dto\Image;
 use GibsonOS\Core\Manager\ModelManager;
+use GibsonOS\Core\Model\Module;
+use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Service\ImageService;
+use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Explorer\Controller\MiddlewareController;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
@@ -35,13 +38,26 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
         $this->gibsonStoreService = $this->prophesize(GibsonStoreService::class);
         $this->serviceManager->setService(GibsonStoreService::class, $this->gibsonStoreService->reveal());
 
+        /** @var ModelManager $modelManager */
+        $modelManager = $this->serviceManager->get(ModelManager::class);
+        $module = (new Module($this->modelWrapper))
+            ->setName('explorer')
+        ;
+        $modelManager->saveWithoutChildren($module);
+        $modelManager->saveWithoutChildren(
+            (new Setting($this->modelWrapper))
+                ->setModule($module)
+                ->setKey('html5_media_path')
+                ->setValue('galaxy')
+        );
+
         $this->middlewareController = $this->serviceManager->get(MiddlewareController::class);
     }
 
     /**
      * @dataProvider getToSeeData
      */
-    public function testToSeeList(array $medias, array $userIds, array $responseData, int $total): void
+    public function testGetToSeeList(array $medias, array $userIds, array $responseData, int $total): void
     {
         $modelManager = $this->serviceManager->get(ModelManager::class);
 
@@ -56,7 +72,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
                 '_data' . DIRECTORY_SEPARATOR .
                 'media' . DIRECTORY_SEPARATOR . ($media['dir'] ?? '')
             ;
-            $mediaModel = (new Media())
+            $mediaModel = (new Media($this->modelWrapper))
                 ->setToken($media['filename'])
                 ->setDir($dir)
                 ->setFilename($media['filename'])
@@ -69,7 +85,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
 
             if (isset($media['position'])) {
                 $modelManager->saveWithoutChildren(
-                    (new Media\Position())
+                    (new Media\Position($this->modelWrapper))
                         ->setUserId(1)
                         ->setPosition($media['position'])
                         ->setMedia($mediaModel)
@@ -77,13 +93,13 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
                 );
 
                 if (in_array(1, $userIds)) {
-                    $callTimes += 2;
+                    ++$callTimes;
                 }
             }
 
             if (isset($media['position2'])) {
                 $modelManager->saveWithoutChildren(
-                    (new Media\Position())
+                    (new Media\Position($this->modelWrapper))
                         ->setUserId(2)
                         ->setPosition($media['position2'])
                         ->setMedia($mediaModel)
@@ -91,7 +107,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
                 );
 
                 if (in_array(2, $userIds)) {
-                    $callTimes += 2;
+                    ++$callTimes;
                 }
             }
 
@@ -102,7 +118,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
         }
 
         $this->checkSuccessResponse(
-            $this->middlewareController->toSeeList($this->serviceManager->get(ToSeeStore::class), $userIds),
+            $this->middlewareController->getToSeeList($this->serviceManager->get(ToSeeStore::class), $userIds),
             $responseData,
             $total
         );
@@ -111,7 +127,8 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
     public function testPostPosition(): void
     {
         $modelManager = $this->serviceManager->get(ModelManager::class);
-        $media = (new Media())
+        $modelWrapper = $this->serviceManager->get(ModelWrapper::class);
+        $media = (new Media($modelWrapper))
             ->setToken('galaxy')
             ->setDir('')
             ->setFilename('ford')
@@ -156,10 +173,11 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
         );
     }
 
-    public function testImage(): void
+    public function testGetImage(): void
     {
         $modelManager = $this->serviceManager->get(ModelManager::class);
-        $media = (new Media())
+        $modelWrapper = $this->serviceManager->get(ModelWrapper::class);
+        $media = (new Media($modelWrapper))
             ->setToken('galaxy')
             ->setDir('')
             ->setFilename('ford')
@@ -184,7 +202,7 @@ class MiddlewareControllerTest extends ExplorerFunctionalTest
             ->willReturn('prefect')
         ;
 
-        $response = $this->middlewareController->image(
+        $response = $this->middlewareController->getImage(
             $this->gibsonStoreService->reveal(),
             $imageService->reveal(),
             $this->serviceManager->get(TypeFactory::class),

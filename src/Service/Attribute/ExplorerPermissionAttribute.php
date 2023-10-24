@@ -22,7 +22,8 @@ class ExplorerPermissionAttribute extends AbstractActionAttributeService
         private readonly PermissionAttribute $permissionAttribute,
         private readonly RequestService $requestService,
         private readonly DirService $dirService,
-        #[GetSetting('home_path')] private readonly Setting $homePath,
+        #[GetSetting('home_path')]
+        private readonly Setting $homePath,
     ) {
     }
 

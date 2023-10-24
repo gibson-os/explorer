@@ -2,7 +2,7 @@
   "name": "gibson-os/explorer",
   "require": {
     "php": " ^8.2",
-    "gibson-os/core": "^3.0.0",
+    "gibson-os/core": "^4.0.0",
     "ext-mbstring": "*",
     "ext-exif": "*",
     "ext-sqlite3": "*",

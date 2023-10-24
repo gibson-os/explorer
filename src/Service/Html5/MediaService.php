@@ -24,6 +24,7 @@ use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\Ffmpeg\MediaService as CoreMediaService;
 use GibsonOS\Core\Service\File\TypeService;
 use GibsonOS\Core\Service\FileService;
+use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position as PositionModel;
@@ -42,7 +43,9 @@ class MediaService
         private readonly MediaRepository $mediaRepository,
         private readonly TypeService $typeService,
         private readonly ModelManager $modelManager,
-        #[GetSetting('html5_media_path', 'explorer')] private readonly Setting $html5MediaPath,
+        #[GetSetting('html5_media_path', 'explorer')]
+        private readonly Setting $html5MediaPath,
+        private readonly ModelWrapper $modelWrapper,
     ) {
     }
 
@@ -201,7 +204,7 @@ class MediaService
         }
 
         $this->modelManager->save(
-            (new PositionModel())
+            (new PositionModel($this->modelWrapper))
                 ->setMediaId($media->getId() ?? 0)
                 ->setPosition($currentPosition)
                 ->setUserId($userId)
@@ -266,7 +269,7 @@ class MediaService
                 $tokens[$dir . $file] = $token;
 
                 $this->modelManager->save(
-                    (new Media())
+                    (new Media($this->modelWrapper))
                         ->setToken($token)
                         ->setDir($dir)
                         ->setFilename($file)

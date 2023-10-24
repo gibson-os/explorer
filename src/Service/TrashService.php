@@ -16,20 +16,24 @@ use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DateTimeService;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
+use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Explorer\Model\Trash;
 use GibsonOS\Module\Explorer\Repository\TrashRepository;
 use JsonException;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
 use ReflectionException;
 
 class TrashService
 {
     public function __construct(
-        private DirService $dirService,
-        private FileService $fileService,
-        private SettingRepository $settingRepository,
-        private TrashRepository $trashRepository,
-        private DateTimeService $dateTimeService,
-        private ModelManager $modelManager
+        private readonly DirService $dirService,
+        private readonly FileService $fileService,
+        private readonly SettingRepository $settingRepository,
+        private readonly TrashRepository $trashRepository,
+        private readonly DateTimeService $dateTimeService,
+        private readonly ModelManager $modelManager,
+        private readonly ModelWrapper $modelWrapper,
     ) {
     }
 
@@ -43,6 +47,8 @@ class TrashService
      * @throws SaveError
      * @throws SelectError
      * @throws SetError
+     * @throws ClientException
+     * @throws RecordException
      */
     public function add(string $dir, array $files = null, int $userId = null): array
     {
@@ -67,14 +73,17 @@ class TrashService
     /**
      * @param string[] $tokens
      *
+     * @throws ClientException
      * @throws CreateError
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
+     * @throws JsonException
+     * @throws ModelDeleteError
+     * @throws RecordException
+     * @throws ReflectionException
      * @throws SelectError
      * @throws SetError
-     * @throws ModelDeleteError
-     * @throws JsonException
      */
     public function restore(array $tokens, ?int $userId): void
     {
@@ -92,12 +101,15 @@ class TrashService
     }
 
     /**
+     * @throws ClientException
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
-     * @throws ModelDeleteError
-     * @throws SelectError
      * @throws JsonException
+     * @throws ModelDeleteError
+     * @throws RecordException
+     * @throws ReflectionException
+     * @throws SelectError
      */
     public function delete(array $tokens, ?int $userId): void
     {
@@ -125,7 +137,7 @@ class TrashService
     {
         $isDir = is_dir($dir . $filename);
         $token = $this->trashRepository->getFreeToken();
-        $trash = (new Trash())
+        $trash = (new Trash($this->modelWrapper))
             ->setToken($token)
             ->setDir($dir . ($isDir ? $filename : ''))
             ->setFilename($isDir ? null : $filename)

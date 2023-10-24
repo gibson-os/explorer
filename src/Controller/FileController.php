@@ -72,7 +72,8 @@ class FileController extends AbstractController
     #[CheckPermission([Permission::READ])]
     public function getDownload(
         RequestService $requestService,
-        #[GetSetting('home_path')] Setting $homePath,
+        #[GetSetting('home_path')]
+        Setting $homePath,
     ): ResponseInterface {
         $filename = '/' . urldecode($requestService->getQueryString());
 
@@ -86,7 +87,8 @@ class FileController extends AbstractController
     #[CheckPermission([Permission::READ])]
     public function getShow(
         RequestService $requestService,
-        #[GetSetting('home_path')] Setting $homePath,
+        #[GetSetting('home_path')]
+        Setting $homePath,
     ): ResponseInterface {
         $filename = '/' . urldecode($requestService->getQueryString());
 
