@@ -9,6 +9,7 @@ use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Core\Wrapper\DatabaseStoreWrapper;
 use GibsonOS\Module\Explorer\Model\Trash;
 use JsonException;
+use MDO\Enum\OrderDirection;
 use MDO\Exception\ClientException;
 use MDO\Exception\RecordException;
 use ReflectionException;
@@ -32,9 +33,9 @@ class TrashStore extends AbstractDatabaseStore
         return '`token`';
     }
 
-    protected function getDefaultOrder(): string
+    protected function getDefaultOrder(): array
     {
-        return '`added`';
+        return ['`added`' => OrderDirection::ASC];
     }
 
     protected function getOrderMapping(): array

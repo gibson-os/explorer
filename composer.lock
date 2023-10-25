@@ -71,16 +71,16 @@
         },
         {
             "name": "gibson-os/core",
-            "version": "v4.1.4",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gibson-os/core.git",
-                "reference": "f51b21b5c7fa437d823905c4a1256a0276c245db"
+                "reference": "c1b78a9fc7eaae03737d40869542062a66202639"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gibson-os/core/zipball/f51b21b5c7fa437d823905c4a1256a0276c245db",
-                "reference": "f51b21b5c7fa437d823905c4a1256a0276c245db",
+                "url": "https://api.github.com/repos/gibson-os/core/zipball/c1b78a9fc7eaae03737d40869542062a66202639",
+                "reference": "c1b78a9fc7eaae03737d40869542062a66202639",
                 "shasum": ""
             },
             "require": {
@@ -129,22 +129,22 @@
             "notification-url": "https://packagist.org/downloads/",
             "support": {
                 "issues": "https://github.com/gibson-os/core/issues",
-                "source": "https://github.com/gibson-os/core/tree/v4.1.4"
+                "source": "https://github.com/gibson-os/core/tree/v4.2.0"
             },
-            "time": "2023-10-24T19:31:48+00:00"
+            "time": "2023-10-25T20:42:47+00:00"
         },
         {
             "name": "gibson-os/mdo",
-            "version": "v2.10.0",
+            "version": "v2.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gibson-os/mdo.git",
-                "reference": "46205ef31879118d3afdc404e0f61746f4c21ad9"
+                "reference": "ab762546c8fef4c8ae768c27d19878a9c24cc65e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gibson-os/mdo/zipball/46205ef31879118d3afdc404e0f61746f4c21ad9",
-                "reference": "46205ef31879118d3afdc404e0f61746f4c21ad9",
+                "url": "https://api.github.com/repos/gibson-os/mdo/zipball/ab762546c8fef4c8ae768c27d19878a9c24cc65e",
+                "reference": "ab762546c8fef4c8ae768c27d19878a9c24cc65e",
                 "shasum": ""
             },
             "require": {
@@ -176,9 +176,9 @@
             "notification-url": "https://packagist.org/downloads/",
             "support": {
                 "issues": "https://github.com/gibson-os/mdo/issues",
-                "source": "https://github.com/gibson-os/mdo/tree/v2.10.0"
+                "source": "https://github.com/gibson-os/mdo/tree/v2.11.1"
             },
-            "time": "2023-10-24T21:00:27+00:00"
+            "time": "2023-10-25T19:49:44+00:00"
         },
         {
             "name": "google/auth",
