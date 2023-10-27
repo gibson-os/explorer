@@ -123,8 +123,8 @@ class FileController extends AbstractController
                 return $this->returnFailure('Uploaded file not found', HttpStatusCode::NOT_FOUND);
             }
 
-            // $fileService->move($file['tmp_name'], $path, $overwrite, $ignore);
-            // $fileService->setPerms($path, 0660);
+        // $fileService->move($file['tmp_name'], $path, $overwrite, $ignore);
+        // $fileService->setPerms($path, 0660);
         } elseif (!$fileService->isWritable($dir . $filename, $overwrite, $ignore)) {
             // $this->_Helper->isWritable($dir . $filename, $overwrite, $ignore);
             // @todo exception erstellen. Alternativ die alte methode in den explorer file service ziehen?

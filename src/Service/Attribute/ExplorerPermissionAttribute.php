@@ -47,7 +47,10 @@ class ExplorerPermissionAttribute extends AbstractActionAttributeService
                 continue;
             }
 
-            if (mb_strpos($homePath, $path) === 0) {
+            if (
+                mb_strpos($homePath, $path) === 0
+                && !($this->getReflectionParameter($pathParameter, $reflectionParameters)?->allowsNull() ?? true)
+            ) {
                 throw new PermissionDenied();
             }
         }
