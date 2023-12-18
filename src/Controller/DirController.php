@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Controller;
 
 use GibsonOS\Core\Archive\ZipArchive;
-use GibsonOS\Core\Attribute\CheckPermission;
-use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\ArchiveException;
@@ -14,7 +12,6 @@ use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\FactoryError;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Sqlite\ReadError;
-use GibsonOS\Core\Model\Setting;
 use GibsonOS\Core\Service\DirService as CoreDirService;
 use GibsonOS\Core\Service\RequestService;
 use GibsonOS\Core\Service\Response\AjaxResponse;
@@ -61,11 +58,10 @@ class DirController extends AbstractController
      * @throws GetError
      * @throws ReadError
      */
-    #[CheckPermission([Permission::READ])]
+    #[CheckExplorerPermission([Permission::READ])]
     public function getList(
         DirListStore $dirListStore,
-        #[GetSetting('home_path')]
-        Setting $homePath,
+        string $homePath,
         ?string $node,
         ?string $dir,
     ): AjaxResponse {
@@ -77,7 +73,7 @@ class DirController extends AbstractController
         }
 
         $dirListStore
-            ->setHomePath($homePath->getValue())
+            ->setHomePath($homePath)
             ->setDir($dir ?: DIRECTORY_SEPARATOR)
             ->setWithParents($withParents)
         ;

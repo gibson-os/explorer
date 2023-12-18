@@ -80,7 +80,7 @@ class Html5Controller extends AbstractController
     ): AjaxResponse {
         $settingModels = $settingRepository->getAllByModuleName(
             $requestService->getModuleName(),
-            $this->sessionService->getUserId() ?? 0
+            $this->sessionService->getUserId()
         );
         $settings = [];
 
@@ -120,7 +120,7 @@ class Html5Controller extends AbstractController
         string $audioStream = null,
         string $subtitleStream = null
     ): AjaxResponse {
-        $userId = $this->sessionService->getUserId() ?? 0;
+        $userId = $this->sessionService->getUserId();
 
         return $this->returnSuccess(
             $mediaService->scheduleConvert($userId, $dir, $files, $audioStream, $subtitleStream)
@@ -198,7 +198,7 @@ class Html5Controller extends AbstractController
     #[CheckPermission([Permission::READ])]
     public function getToSeeList(ToSeeStore $toSeeStore, ?array $userIds): AjaxResponse
     {
-        $toSeeStore->setUserIds(array_values(array_unique($userIds ?: [$this->sessionService->getUserId() ?? 0])));
+        $toSeeStore->setUserIds(array_values(array_unique($userIds ?: [$this->sessionService->getUserId()])));
 
         return $this->returnSuccess($toSeeStore->getList(), $toSeeStore->getCount());
     }
@@ -309,7 +309,7 @@ class Html5Controller extends AbstractController
         #[GetMappedModel]
         ConnectedUser $connectedUser,
     ): AjaxResponse {
-        $connectedUser->setUserId($this->sessionService->getUserId() ?? 0);
+        $connectedUser->setUserId($this->sessionService->getUserId());
 
         if ($connectedUser->getConnectedUserId() === $connectedUser->getUserId()) {
             return $this->returnFailure('Same users!');
@@ -332,7 +332,7 @@ class Html5Controller extends AbstractController
         #[GetModels(ConnectedUser::class)]
         array $connectedUsers,
     ): AjaxResponse {
-        $userId = $this->sessionService->getUserId() ?? 0;
+        $userId = $this->sessionService->getUserId();
 
         foreach ($connectedUsers as $connectedUser) {
             if (

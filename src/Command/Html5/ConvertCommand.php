@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Command\Html5;
 
+use Exception;
 use GibsonOS\Core\Attribute\Command\Lock;
 use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
-use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Exception\ProcessError;
@@ -74,7 +74,7 @@ class ConvertCommand extends AbstractCommand
                 }
 
                 $media->setStatus(Media::STATUS_GENERATED);
-            } catch (FileNotFound) {
+            } catch (Exception) {
                 $media->setStatus(Media::STATUS_ERROR);
             }
 

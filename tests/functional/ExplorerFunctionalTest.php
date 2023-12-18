@@ -11,4 +11,9 @@ class ExplorerFunctionalTest extends FunctionalTest
     {
         return __DIR__;
     }
+
+    protected function getDataDir(): string
+    {
+        return realpath($this->getDir() . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '_data' . DIRECTORY_SEPARATOR);
+    }
 }
