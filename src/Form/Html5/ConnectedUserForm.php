@@ -7,15 +7,11 @@ use GibsonOS\Core\AutoComplete\UserAutoComplete;
 use GibsonOS\Core\Dto\Form\Button;
 use GibsonOS\Core\Dto\Parameter\AutoCompleteParameter;
 use GibsonOS\Core\Form\AbstractModelForm;
-use GibsonOS\Core\Mapper\ModelMapper;
 
 class ConnectedUserForm extends AbstractModelForm
 {
-    public function __construct(
-        ModelMapper $modelMapper,
-        private readonly UserAutoComplete $userAutoComplete,
-    ) {
-        parent::__construct($modelMapper);
+    public function __construct(private readonly UserAutoComplete $userAutoComplete)
+    {
     }
 
     protected function getFields(): array

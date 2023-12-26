@@ -31,6 +31,11 @@ Ext.define('GibsonOS.module.explorer.dir.Parameter', {
 
         return me.down('gosFormTextfield').getValue();
     },
+    setValue(value) {
+        const me = this;
+
+        return me.down('gosFormTextfield').setValue(value);
+    },
     isValid() {
         const me = this;
 
