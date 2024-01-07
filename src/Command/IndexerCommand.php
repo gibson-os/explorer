@@ -44,7 +44,7 @@ class IndexerCommand extends AbstractCommand
         private readonly DescriberFactory $describerFactory,
         private readonly ServiceManager $serviceManager,
         private readonly ExplorerFileService $explorerFileService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         parent::__construct($logger);
     }

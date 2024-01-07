@@ -73,7 +73,7 @@ class FileService
             $filename,
             $this->coreFileService->getFileEnding($path),
             $fileSize,
-            $fileTypeDescriber->getCategory()
+            $fileTypeDescriber->getCategory(),
         ))
             ->setThumbAvailable($fileTypeDescriber->isImageAvailable())
             ->setHtml5MediaStatus($html5Status)
@@ -104,7 +104,7 @@ class FileService
     public function isWritable(
         string $path,
         array $overwrite = [],
-        array $ignore = []
+        array $ignore = [],
     ): bool {
         if (file_exists($path)) {
             if (!is_writable($path)) {

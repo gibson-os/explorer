@@ -282,7 +282,7 @@ class FileController extends AbstractController
                 'Content-Length' => strlen($body),
                 'Content-Transfer-Encoding' => $base64 ? 'base64' : 'binary',
                 'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
-            ]
+            ],
         );
     }
 
@@ -300,7 +300,7 @@ class FileController extends AbstractController
         ServiceManager $serviceManager,
         DescriberFactory $describerFactory,
         GibsonStoreService $gibsonStoreService,
-        string $path
+        string $path,
     ): AjaxResponse {
         $fileTypeDescriber = $describerFactory->create($path);
 

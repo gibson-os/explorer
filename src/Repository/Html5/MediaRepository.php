@@ -34,7 +34,7 @@ class MediaRepository extends AbstractRepository
         return $this->fetchAll(
             '`token` IN (' . implode(', ', array_fill(0, count($tokens), '?')) . ')',
             $tokens,
-            Media::class
+            Media::class,
         );
     }
 
@@ -94,7 +94,7 @@ class MediaRepository extends AbstractRepository
         return $this->fetchAll(
             '`added`<?',
             [$date->format('Y-m-d H:i:s')],
-            Media::class
+            Media::class,
         );
     }
 

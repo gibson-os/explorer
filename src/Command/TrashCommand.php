@@ -33,7 +33,7 @@ class TrashCommand extends AbstractCommand
         private readonly DirService $dirService,
         private readonly FileService $fileService,
         private readonly ModelManager $modelManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         parent::__construct($logger);
     }
@@ -49,7 +49,7 @@ class TrashCommand extends AbstractCommand
         ;
         $trashDir = $this->dirService->addEndSlash(
             $this->settingRepository->getByKeyAndModuleName('explorer', 0, 'trashDir')
-                ->getValue()
+                ->getValue(),
         );
 
         $this->logger->info(sprintf('Delete files older than %d days.', $trashLifetime));

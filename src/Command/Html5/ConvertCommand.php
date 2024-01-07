@@ -35,7 +35,7 @@ class ConvertCommand extends AbstractCommand
         private readonly MediaService $mediaService,
         private readonly SettingRepository $settingRepository,
         private readonly ModelManager $modelManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         parent::__construct($logger);
     }
@@ -59,7 +59,7 @@ class ConvertCommand extends AbstractCommand
                 $filename = $this->settingRepository->getByKeyAndModuleName(
                     'explorer',
                     0,
-                    'html5_media_path'
+                    'html5_media_path',
                 )->getValue() . $media->getToken() . '.';
 
                 switch ($media->getType()) {

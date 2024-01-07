@@ -62,7 +62,7 @@ class ToSeeStore extends AbstractDatabaseStore
         $this
             ->addWhere(
                 '`m`.`status` IN (:statusGenerate, :statusGenerated)',
-                ['statusGenerate' => ConvertStatus::STATUS_GENERATE, 'statusGenerated' => ConvertStatus::STATUS_GENERATED]
+                ['statusGenerate' => ConvertStatus::STATUS_GENERATE, 'statusGenerated' => ConvertStatus::STATUS_GENERATED],
             )
         ;
     }
@@ -97,7 +97,7 @@ class ToSeeStore extends AbstractDatabaseStore
                 $this->getDatabaseStoreWrapper()->getSelectService()->getSelects([
                     new Select($this->table, 'm', 'media_'),
                     new Select($this->getTable($this->positionTableName), 'mp', 'position_'),
-                ])
+                ]),
             )
             ->setOrders([
                 'IF(`mp`.`media_id` IS NULL, 0, 1)' => OrderDirection::DESC,
@@ -263,7 +263,7 @@ class ToSeeStore extends AbstractDatabaseStore
                 $duration = (int) $this->gibsonStoreService->getFileMeta(
                     $media->getDir() . $media->getFilename(),
                     'duration',
-                    0
+                    0,
                 );
             } catch (ExecuteError) {
                 $duration = 0;

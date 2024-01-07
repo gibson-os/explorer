@@ -76,11 +76,11 @@ class Html5Controller extends AbstractController
         MediaStore $mediaStore,
         int $start = 0,
         int $limit = 100,
-        array $sort = []
+        array $sort = [],
     ): AjaxResponse {
         $settingModels = $settingRepository->getAllByModuleName(
             $requestService->getModuleName(),
-            $this->sessionService->getUserId()
+            $this->sessionService->getUserId(),
         );
         $settings = [];
 
@@ -118,12 +118,12 @@ class Html5Controller extends AbstractController
         string $dir,
         array $files = [],
         string $audioStream = null,
-        string $subtitleStream = null
+        string $subtitleStream = null,
     ): AjaxResponse {
         $userId = $this->sessionService->getUserId();
 
         return $this->returnSuccess(
-            $mediaService->scheduleConvert($userId, $dir, $files, $audioStream, $subtitleStream)
+            $mediaService->scheduleConvert($userId, $dir, $files, $audioStream, $subtitleStream),
         );
     }
 
@@ -141,7 +141,7 @@ class Html5Controller extends AbstractController
     public function getConvertStatus(
         MediaService $mediaService,
         #[GetModel(['token' => 'token'])]
-        Media $media
+        Media $media,
     ): AjaxResponse {
         return $this->returnSuccess($mediaService->getConvertStatus($media));
     }
@@ -171,13 +171,13 @@ class Html5Controller extends AbstractController
         #[GetModel(['token' => 'token'])]
         Media $media,
         int $position,
-        array $userIds
+        array $userIds,
     ): AjaxResponse {
         foreach (array_unique($userIds) as $userId) {
             $mediaService->savePosition(
                 $media,
                 $position,
-                $userId
+                $userId,
             );
         }
 
@@ -228,7 +228,7 @@ class Html5Controller extends AbstractController
         #[GetModel(['token' => 'token'])]
         Media $media,
         int $width = null,
-        int $height = null
+        int $height = null,
     ): Response {
         $path = $media->getDir() . $media->getFilename();
 
@@ -253,7 +253,7 @@ class Html5Controller extends AbstractController
                 'Content-Length' => strlen($body),
                 'Content-Transfer-Encoding' => 'binary',
                 'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
-            ]
+            ],
         );
     }
 
@@ -266,7 +266,7 @@ class Html5Controller extends AbstractController
     public function delete(
         MediaRepository $mediaRepository,
         ModelManager $modelManager,
-        array $tokens
+        array $tokens,
     ): AjaxResponse {
         foreach ($mediaRepository->getByTokens($tokens) as $media) {
             $modelManager->delete($media);

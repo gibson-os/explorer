@@ -54,7 +54,7 @@ class TrashService
     {
         $dir = $this->dirService->addEndSlash($dir);
         $trashDir = $this->dirService->addEndSlash(
-            $this->settingRepository->getByKeyAndModuleName('explorer', $userId ?? 0, 'trashDir')->getValue()
+            $this->settingRepository->getByKeyAndModuleName('explorer', $userId ?? 0, 'trashDir')->getValue(),
         );
 
         if (empty($files)) {
@@ -88,13 +88,13 @@ class TrashService
     public function restore(array $tokens, ?int $userId): void
     {
         $trashDir = $this->dirService->addEndSlash(
-            $this->settingRepository->getByKeyAndModuleName('explorer', $userId ?? 0, 'trashDir')->getValue()
+            $this->settingRepository->getByKeyAndModuleName('explorer', $userId ?? 0, 'trashDir')->getValue(),
         );
 
         foreach ($this->trashRepository->getByTokens($tokens) as $trash) {
             $this->fileService->move(
                 $trashDir . $trash->getToken(),
-                $this->dirService->addEndSlash($trash->getDir()) . ($trash->getFilename() ?? '')
+                $this->dirService->addEndSlash($trash->getDir()) . ($trash->getFilename() ?? ''),
             );
             $this->modelManager->delete($trash);
         }
@@ -114,7 +114,7 @@ class TrashService
     public function delete(array $tokens, ?int $userId): void
     {
         $trashDir = $this->dirService->addEndSlash(
-            $this->settingRepository->getByKeyAndModuleName('explorer', $userId ?? 0, 'trashDir')->getValue()
+            $this->settingRepository->getByKeyAndModuleName('explorer', $userId ?? 0, 'trashDir')->getValue(),
         );
 
         foreach ($this->trashRepository->getByTokens($tokens) as $trash) {

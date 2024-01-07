@@ -50,7 +50,7 @@ class GibsonStoreService
         private FileService $fileService,
         private DirService $dirService,
         private ThumbnailService $thumbnailService,
-        private SqLiteFactory $sqLiteFactory
+        private SqLiteFactory $sqLiteFactory,
     ) {
     }
 
@@ -71,7 +71,7 @@ class GibsonStoreService
         try {
             $query = $store->query(
                 'SELECT * FROM ' . self::META_TABLE_NAME .
-                " WHERE `key`='" . SQLite3::escapeString($key) . "'"
+                " WHERE `key`='" . SQLite3::escapeString($key) . "'",
             );
         } catch (ExecuteError) {
             return $default;
@@ -176,7 +176,7 @@ class GibsonStoreService
             $query = $store->query(
                 'SELECT * FROM ' . self::FILE_META_TABLE_NAME . ' WHERE ' .
                 "`filename`='" . SQLite3::escapeString($filename) . "' AND " .
-                "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "' AND `key`='" . SQLite3::escapeString($key) . "'"
+                "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "' AND `key`='" . SQLite3::escapeString($key) . "'",
             );
         } catch (ExecuteError) {
             return $default;
@@ -226,7 +226,7 @@ class GibsonStoreService
             $query = $store->query(
                 'SELECT * FROM ' . self::FILE_META_TABLE_NAME . ' WHERE ' .
                 "`filename`='" . SQLite3::escapeString($filename) . "' AND " .
-                "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "'" . $where
+                "`date`='" . SQLite3::escapeString((string) filemtime($path)) . "'" . $where,
             );
         } catch (ExecuteError) {
             return $default;
@@ -303,7 +303,7 @@ class GibsonStoreService
 
         $query = $store->prepare(
             'REPLACE INTO ' . self::FILE_META_TABLE_NAME .
-            ' VALUES(:checkSum, :filename, :date, :key, :value)'
+            ' VALUES(:checkSum, :filename, :date, :key, :value)',
         );
         $query->bindValue(':checkSum', $checkSum, SQLITE3_TEXT);
         $query->bindValue(':filename', $filename, SQLITE3_TEXT);
@@ -351,7 +351,7 @@ class GibsonStoreService
         $query = $store->querySingle(
             'SELECT chksum FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
             "filename='" . SQLite3::escapeString($filename) . "' AND " .
-            "date='" . SQLite3::escapeString((string) filemtime($path)) . "'"
+            "date='" . SQLite3::escapeString((string) filemtime($path)) . "'",
         );
 
         if ($query) {
@@ -361,7 +361,7 @@ class GibsonStoreService
         $checkSum = $this->getChecksum($path, $checkSum);
         $query = $store->querySingle(
             'SELECT chksum FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
-            "chksum='" . SQLite3::escapeString($checkSum) . "'"
+            "chksum='" . SQLite3::escapeString($checkSum) . "'",
         );
 
         if ($query) {
@@ -392,7 +392,7 @@ class GibsonStoreService
         try {
             $query = $store->query(
                 'SELECT * FROM ' . self::IMAGE_TABLE_NAME . ' WHERE ' .
-                "filename='" . SQLite3::escapeString($filename) . "'"
+                "filename='" . SQLite3::escapeString($filename) . "'",
             );
         } catch (ExecuteError) {
             throw new ReadError();
@@ -418,7 +418,7 @@ class GibsonStoreService
                 $this->thumbnailService->resize(
                     $image,
                     $width ?? $this->thumbnailService->getWidth($image),
-                    $height ?? $this->thumbnailService->getHeight($image)
+                    $height ?? $this->thumbnailService->getHeight($image),
                 );
             }
 
@@ -449,7 +449,7 @@ class GibsonStoreService
         try {
             $query = $store->query(
                 'SELECT * FROM ' . self::THUMBNAIL_TABLE_NAME . ' WHERE ' .
-                "filename='" . SQLite3::escapeString($filename) . "'"
+                "filename='" . SQLite3::escapeString($filename) . "'",
             );
         } catch (ExecuteError) {
             return null;
@@ -545,7 +545,7 @@ class GibsonStoreService
 
         $store->execute(
             'DELETE FROM ' . self::FILE_META_TABLE_NAME .
-            " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')"
+            " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')",
         );
 
         return $this;
@@ -574,7 +574,7 @@ class GibsonStoreService
 
         $store->execute(
             'DELETE FROM ' . self::IMAGE_TABLE_NAME .
-            " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')"
+            " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')",
         );
 
         return $this;
@@ -605,7 +605,7 @@ class GibsonStoreService
 
         $store->execute(
             'DELETE FROM ' . self::THUMBNAIL_TABLE_NAME .
-            " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')"
+            " WHERE filename NOT IN ('" . implode("','", $existingFiles) . "')",
         );
 
         return $this;

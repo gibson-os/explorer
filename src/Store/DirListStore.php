@@ -97,7 +97,7 @@ class DirListStore extends AbstractStore
             '',
             $dir,
             1,
-            $hits
+            $hits,
         );
 
         if ($hits === 0 || empty($dirWithoutHomePath)) {

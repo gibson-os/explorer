@@ -50,7 +50,7 @@ class GeneralPermissionData extends AbstractInstall implements PriorityInterface
                 (new Permission($this->modelWrapper))
                     ->setModule($module)
                     ->setTask($task)
-                    ->setPermission(PermissionEnum::READ->value + PermissionEnum::WRITE->value)
+                    ->setPermission(PermissionEnum::READ->value + PermissionEnum::WRITE->value),
             );
         }
 

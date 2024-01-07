@@ -72,7 +72,7 @@ class MediaStore extends AbstractDatabaseStore
                 $file->setSize(
                     $media->getStatus() == 'generate' || $media->getStatus() == 'generated'
                     ? filesize($mediaPath . $media->getToken() . '.mp4')
-                    : 0
+                    : 0,
                 );
             }
 

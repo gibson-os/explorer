@@ -43,7 +43,7 @@ class AudioService implements FileTypeInterface
             '..' . DIRECTORY_SEPARATOR .
             'assets' . DIRECTORY_SEPARATOR .
             'img' . DIRECTORY_SEPARATOR .
-            'audioFile.jpg'
+            'audioFile.jpg',
         );
     }
 

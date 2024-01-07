@@ -44,7 +44,7 @@ class DeleteCommand extends AbstractCommand
         private readonly FileService $fileService,
         private readonly ModelManager $modelManager,
         private readonly MediaService $mediaService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         parent::__construct($logger);
     }
@@ -63,7 +63,7 @@ class DeleteCommand extends AbstractCommand
         $this->mediaPath = $this->settingRepository->getByKeyAndModuleName(
             'explorer',
             0,
-            'html5_media_path'
+            'html5_media_path',
         )->getValue();
 
         $this->deleteWhereFileNotExists();
@@ -90,13 +90,13 @@ class DeleteCommand extends AbstractCommand
                     || file_exists(
                         $this->mediaPath .
                         $media->getToken() .
-                        $this->mediaService->getGeneratedFileEnding($media)
+                        $this->mediaService->getGeneratedFileEnding($media),
                     )
                 )
             ) {
                 $this->logger->debug(sprintf(
                     'Media %s exist. Not deleted.',
-                    $this->mediaPath . $media->getToken()
+                    $this->mediaPath . $media->getToken(),
                 ));
 
                 continue;
@@ -104,7 +104,7 @@ class DeleteCommand extends AbstractCommand
 
             $this->logger->info(sprintf(
                 'Media %s deleted because file does not exist.',
-                $this->mediaPath . $media->getToken()
+                $this->mediaPath . $media->getToken(),
             ));
 
             if (!$this->dry) {
@@ -128,13 +128,13 @@ class DeleteCommand extends AbstractCommand
 
                 $this->logger->debug(sprintf(
                     'Generated media %s exist. Not deleted.',
-                    $this->mediaPath . $filename
+                    $this->mediaPath . $filename,
                 ));
             } catch (SelectError) {
                 try {
                     $this->logger->info(sprintf(
                         'Generated media %s deleted because media entity does not exist.',
-                        $this->mediaPath . $filename
+                        $this->mediaPath . $filename,
                     ));
 
                     if (!$this->dry) {
@@ -160,7 +160,7 @@ class DeleteCommand extends AbstractCommand
             $lifetime = $this->settingRepository->getByKeyAndModuleName(
                 'explorer',
                 0,
-                'html5_media_lifetime'
+                'html5_media_lifetime',
             )->getValue();
 
             if (empty($lifetime)) {
@@ -172,14 +172,14 @@ class DeleteCommand extends AbstractCommand
                     'Media %s deleted because generate date %s is older than %s.' . PHP_EOL,
                     $media->getDir() . $media->getFilename(),
                     $media->getAdded()->format('Y-m-d'),
-                    (new DateTime('-' . $lifetime . ' days'))->format('Y-m-d')
+                    (new DateTime('-' . $lifetime . ' days'))->format('Y-m-d'),
                 ));
 
                 if (!$this->dry) {
                     $this->fileService->delete(
                         $this->mediaPath .
                         $media->getToken() .
-                        $this->mediaService->getGeneratedFileEnding($media)
+                        $this->mediaService->getGeneratedFileEnding($media),
                     );
                     $this->modelManager->delete($media);
                 }
@@ -203,7 +203,7 @@ class DeleteCommand extends AbstractCommand
             $size = $this->settingRepository->getByKeyAndModuleName(
                 'explorer',
                 0,
-                'html5_media_size'
+                'html5_media_size',
             )->getValue();
 
             $hits = [];
@@ -254,7 +254,7 @@ class DeleteCommand extends AbstractCommand
                     'Media %s deleted because folder size is %d Bytes bigger as %d Bytes.' . PHP_EOL,
                     $media->getDir() . $media->getFilename(),
                     $deleteSize,
-                    $size
+                    $size,
                 ));
 
                 if (!$this->dry) {

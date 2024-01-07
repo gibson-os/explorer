@@ -109,7 +109,7 @@ class MiddlewareController extends AbstractController
             $mediaService->savePosition(
                 $media,
                 $position,
-                $userId
+                $userId,
             );
         }
 
@@ -159,7 +159,7 @@ class MiddlewareController extends AbstractController
                 'Content-Length' => strlen($body),
                 'Content-Transfer-Encoding' => 'binary',
                 'Content-Disposition' => 'inline; filename*=UTF-8\'\'image.jpg filename="image.jpg"',
-            ]
+            ],
         );
     }
 
@@ -188,7 +188,7 @@ class MiddlewareController extends AbstractController
         $mediaData['duration'] = (int) $gibsonStoreService->getFileMeta(
             $media->getDir() . $media->getFilename(),
             'duration',
-            0
+            0,
         );
         $positions = [];
 

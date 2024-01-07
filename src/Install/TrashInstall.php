@@ -26,7 +26,7 @@ class TrashInstall extends AbstractInstall implements PriorityInterface
         yield $trashDirInput = $this->getSettingInput(
             'explorer',
             'trashDir',
-            'What is the directory for the trash?'
+            'What is the directory for the trash?',
         );
         $dir = $this->dirService->addEndSlash($trashDirInput->getValue() ?? '');
 
@@ -39,7 +39,7 @@ class TrashInstall extends AbstractInstall implements PriorityInterface
         yield $trashSizeInput = $this->getSettingInput(
             'explorer',
             'explorer_trash_size',
-            'How big should the folder for the trash? (Possible specifications: 1024, 1kb, 1mb, 1gb, 0 = infinite)'
+            'How big should the folder for the trash? (Possible specifications: 1024, 1kb, 1mb, 1gb, 0 = infinite)',
         );
 
         $this->setSetting('explorer', 'explorer_trash_size', $this->checkSizeInput($trashSizeInput));
@@ -47,7 +47,7 @@ class TrashInstall extends AbstractInstall implements PriorityInterface
         yield $trashLifetimeInput = $this->getSettingInput(
             'explorer',
             'trashLifetime',
-            'How long should the files remain in the trash? (In days. 0 = infinite)'
+            'How long should the files remain in the trash? (In days. 0 = infinite)',
         );
         $lifeTime = $trashLifetimeInput->getValue() ?? '';
 
@@ -60,7 +60,7 @@ class TrashInstall extends AbstractInstall implements PriorityInterface
         yield $trashCountInput = $this->getSettingInput(
             'explorer',
             'explorer_trash_count',
-            'How many files should the trash be able to hold? (0 = infinite)'
+            'How many files should the trash be able to hold? (0 = infinite)',
         );
         $count = $trashCountInput->getValue() ?? '';
 

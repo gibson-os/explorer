@@ -30,7 +30,7 @@ class Html5Install extends AbstractInstall implements PriorityInterface
         yield $html5MediaPathInput = $this->getSettingInput(
             'explorer',
             'html5_media_path',
-            'What is the directory for HTML5 medias?'
+            'What is the directory for HTML5 medias?',
         );
         $mediaPath = $this->dirService->addEndSlash($html5MediaPathInput->getValue() ?? '');
 
@@ -43,14 +43,14 @@ class Html5Install extends AbstractInstall implements PriorityInterface
         yield $html5MediaSizeInput = $this->getSettingInput(
             'explorer',
             'html5_media_size',
-            'How big should the folder for HTML5 media be? (Possible specifications: 1024, 1kb, 1mb, 1gb, 0 = infinite)'
+            'How big should the folder for HTML5 media be? (Possible specifications: 1024, 1kb, 1mb, 1gb, 0 = infinite)',
         );
         $this->setSetting('explorer', 'html5_media_size', $this->checkSizeInput($html5MediaSizeInput));
 
         yield $html5MediaLifetimeInput = $this->getSettingInput(
             'explorer',
             'html5_media_lifetime',
-            'How long should the HTML5 media be stored? (In days. 0 = infinite)'
+            'How long should the HTML5 media be stored? (In days. 0 = infinite)',
         );
         $lifeTime = $html5MediaLifetimeInput->getValue() ?? '';
 
@@ -63,7 +63,7 @@ class Html5Install extends AbstractInstall implements PriorityInterface
         yield $html5MediaCountInput = $this->getSettingInput(
             'explorer',
             'html5_media_count',
-            'How many HTML5 media should be created? (0 = infinite)'
+            'How many HTML5 media should be created? (0 = infinite)',
         );
         $count = $html5MediaCountInput->getValue() ?? '';
 

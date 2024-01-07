@@ -59,7 +59,7 @@ class MediaService
     public function convertToMp4(Media $media, string $filename): void
     {
         $mediaDto = $this->mediaService->getMedia(
-            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
+            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename(),
         );
         $audioStream = $media->getAudioStream();
 
@@ -85,7 +85,7 @@ class MediaService
             $mediaDto->selectSubtitleStream(
                 $media->getSubtitleStream() === Media::SUBTITLE_NONE
                     ? null
-                    : $media->getSubtitleStream()
+                    : $media->getSubtitleStream(),
             );
         }
 
@@ -94,7 +94,7 @@ class MediaService
             $filename,
             'libx264',
             'libfdk_aac',
-            $options
+            $options,
         );
     }
 
@@ -108,7 +108,7 @@ class MediaService
     public function convertToWebm(Media $media, string $filename)
     {
         $mediaDto = $this->mediaService->getMedia(
-            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
+            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename(),
         );
 
         if (!empty($media->getAudioStream())) {
@@ -119,7 +119,7 @@ class MediaService
             $mediaDto->selectSubtitleStream(
                 $media->getSubtitleStream() === Media::SUBTITLE_NONE
                     ? null
-                    : $media->getSubtitleStream()
+                    : $media->getSubtitleStream(),
             );
         }
 
@@ -131,7 +131,7 @@ class MediaService
             [
                 'b:v' => '1500k',
                 'q:a' => 4,
-            ]
+            ],
         );
     }
 
@@ -145,7 +145,7 @@ class MediaService
     public function convertToMp3(Media $media, string $filename): void
     {
         $mediaDto = $this->mediaService->getMedia(
-            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
+            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename(),
         );
         $audioStream = $media->getAudioStream();
 
@@ -163,7 +163,7 @@ class MediaService
             $mediaDto,
             $filename,
             null,
-            'libmp3lame'
+            'libmp3lame',
         );
     }
 
@@ -184,7 +184,7 @@ class MediaService
         }
 
         $mediaDto = $this->mediaService->getMedia(
-            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename()
+            $this->dirService->addEndSlash($media->getDir()) . $media->getFilename(),
         );
 
         return $this->mediaService->getConvertStatus($mediaDto, $media->getToken() . $this->getGeneratedFileEnding($media))
@@ -208,7 +208,7 @@ class MediaService
                 ->setMediaId($media->getId() ?? 0)
                 ->setPosition($currentPosition)
                 ->setUserId($userId)
-                ->setModified(new DateTime())
+                ->setModified(new DateTime()),
         );
     }
 
@@ -224,7 +224,7 @@ class MediaService
         string $dir,
         array $files = [],
         string $audioStream = null,
-        string $subtitleStream = null
+        string $subtitleStream = null,
     ): array {
         $dir = $this->dirService->addEndSlash($dir);
 
@@ -245,8 +245,8 @@ class MediaService
                         $dir,
                         [],
                         $audioStream,
-                        $subtitleStream
-                    )
+                        $subtitleStream,
+                    ),
                 );
 
                 continue;
@@ -276,7 +276,7 @@ class MediaService
                         ->setAudioStream($audioStream)
                         ->setSubtitleStream($subtitleStream)
                         ->setType($category)
-                        ->setUserId($userId)
+                        ->setUserId($userId),
                 );
             }
         }
@@ -289,7 +289,7 @@ class MediaService
         return match ($media->getType()) {
             FileTypeDescriberInterface::CATEGORY_VIDEO => '.mp4',
             FileTypeDescriberInterface::CATEGORY_AUDIO => '.mp3',
-            default => throw new MediaException(sprintf('%d has no defined ending!', $media->getType()))
+            default => throw new MediaException(sprintf('%d has no defined ending!', $media->getType())),
         };
     }
 

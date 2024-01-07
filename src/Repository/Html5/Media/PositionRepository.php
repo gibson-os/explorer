@@ -41,7 +41,7 @@ class PositionRepository extends AbstractRepository
         $model = $this->fetchOne(
             '`media_id`=? AND `user_id`=?',
             [$mediaId, $userId],
-            Position::class
+            Position::class,
         );
 
         if (!$model instanceof Position) {
