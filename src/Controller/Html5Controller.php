@@ -47,6 +47,7 @@ use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Utility\JsonUtility;
 use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Explorer\Attribute\CheckExplorerPermission;
+use GibsonOS\Module\Explorer\Config\Form\Html5\ConnectedUserFormConfig;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Form\Html5\ConnectedUserForm;
@@ -59,13 +60,19 @@ use GibsonOS\Module\Explorer\Store\Html5\ConnectedUserStore;
 use GibsonOS\Module\Explorer\Store\Html5\MediaStore;
 use GibsonOS\Module\Explorer\Store\Html5\ToSeeStore;
 use JsonException;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
 use ReflectionException;
 
 class Html5Controller extends AbstractController
 {
     /**
+     * @throws ClientException
+     * @throws FactoryError
      * @throws GetError
      * @throws JsonException
+     * @throws ReadError
+     * @throws RecordException
      * @throws ReflectionException
      * @throws SelectError
      */
@@ -185,15 +192,19 @@ class Html5Controller extends AbstractController
     }
 
     /**
+     * @throws ClientException
      * @throws ConvertStatusError
      * @throws DateTimeError
+     * @throws JsonException
+     * @throws MediaException
      * @throws NoAudioError
      * @throws OpenError
      * @throws ProcessError
      * @throws ReadError
+     * @throws RecordException
+     * @throws ReflectionException
      * @throws SelectError
      * @throws SetError
-     * @throws MediaException
      */
     #[CheckPermission([Permission::READ])]
     public function getToSeeList(ToSeeStore $toSeeStore, ?array $userIds): AjaxResponse
@@ -276,9 +287,11 @@ class Html5Controller extends AbstractController
     }
 
     /**
-     * @throws SelectError
      * @throws JsonException
+     * @throws RecordException
      * @throws ReflectionException
+     * @throws SelectError
+     * @throws ClientException
      */
     #[CheckPermission([Permission::READ])]
     public function getConnectedUsers(
@@ -296,12 +309,16 @@ class Html5Controller extends AbstractController
     #[CheckPermission([Permission::WRITE])]
     public function getConnectedUserForm(ConnectedUserForm $connectedUserForm): AjaxResponse
     {
-        return $this->returnSuccess($connectedUserForm->getForm());
+        $connectedUserFormConfig = new ConnectedUserFormConfig();
+
+        return $this->returnSuccess($connectedUserForm->getForm($connectedUserFormConfig));
     }
 
     /**
-     * @throws SaveError
+     * @throws JsonException
      * @throws ReflectionException
+     * @throws SaveError
+     * @throws RecordException
      */
     #[CheckPermission([Permission::WRITE])]
     public function postConnectedUser(
