@@ -8,7 +8,11 @@ use GibsonOS\Core\Dto\Form\Button;
 use GibsonOS\Core\Dto\Form\ModelFormConfig;
 use GibsonOS\Core\Dto\Parameter\AutoCompleteParameter;
 use GibsonOS\Core\Form\AbstractModelForm;
+use GibsonOS\Module\Explorer\Model\Html5\ConnectedUser;
 
+/**
+ * @extends AbstractModelForm<ConnectedUser>
+ */
 class ConnectedUserForm extends AbstractModelForm
 {
     public function __construct(private readonly UserAutoComplete $userAutoComplete)
@@ -27,5 +31,10 @@ class ConnectedUserForm extends AbstractModelForm
         return [
             'save' => new Button('Speichern', 'explorer', 'html5', 'addConnectedUser'),
         ];
+    }
+
+    protected function supportedModel(): string
+    {
+        return ConnectedUser::class;
     }
 }
