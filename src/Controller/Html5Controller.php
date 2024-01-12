@@ -10,6 +10,7 @@ use GibsonOS\Core\Attribute\GetModel;
 use GibsonOS\Core\Attribute\GetModels;
 use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Controller\AbstractController;
+use GibsonOS\Core\Dto\Form\ModelFormConfig;
 use GibsonOS\Core\Enum\HttpStatusCode;
 use GibsonOS\Core\Enum\Permission;
 use GibsonOS\Core\Exception\DateTimeError;
@@ -47,7 +48,6 @@ use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Utility\JsonUtility;
 use GibsonOS\Core\Wrapper\ModelWrapper;
 use GibsonOS\Module\Explorer\Attribute\CheckExplorerPermission;
-use GibsonOS\Module\Explorer\Config\Form\Html5\ConnectedUserFormConfig;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Form\Html5\ConnectedUserForm;
@@ -309,9 +309,9 @@ class Html5Controller extends AbstractController
     #[CheckPermission([Permission::WRITE])]
     public function getConnectedUserForm(ConnectedUserForm $connectedUserForm): AjaxResponse
     {
-        $connectedUserFormConfig = new ConnectedUserFormConfig();
+        $modelFormConfig = new ModelFormConfig();
 
-        return $this->returnSuccess($connectedUserForm->getForm($connectedUserFormConfig));
+        return $this->returnSuccess($connectedUserForm->getForm($modelFormConfig));
     }
 
     /**

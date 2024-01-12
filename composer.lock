@@ -71,16 +71,16 @@
         },
         {
             "name": "gibson-os/core",
-            "version": "v4.6.1",
+            "version": "v4.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gibson-os/core.git",
-                "reference": "92e97bd5e7cd438515f167ff02c9a0f13e6c0d09"
+                "reference": "3ccd1d0aa470dd5d99fed5bcd0da2c8472246baf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gibson-os/core/zipball/92e97bd5e7cd438515f167ff02c9a0f13e6c0d09",
-                "reference": "92e97bd5e7cd438515f167ff02c9a0f13e6c0d09",
+                "url": "https://api.github.com/repos/gibson-os/core/zipball/3ccd1d0aa470dd5d99fed5bcd0da2c8472246baf",
+                "reference": "3ccd1d0aa470dd5d99fed5bcd0da2c8472246baf",
                 "shasum": ""
             },
             "require": {
@@ -129,9 +129,9 @@
             "notification-url": "https://packagist.org/downloads/",
             "support": {
                 "issues": "https://github.com/gibson-os/core/issues",
-                "source": "https://github.com/gibson-os/core/tree/v4.6.1"
+                "source": "https://github.com/gibson-os/core/tree/v4.6.2"
             },
-            "time": "2024-01-11T20:06:08+00:00"
+            "time": "2024-01-12T08:02:38+00:00"
         },
         {
             "name": "gibson-os/mdo",
