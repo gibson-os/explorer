@@ -47,6 +47,7 @@ use GibsonOS\Core\Service\Response\FileResponse;
 use GibsonOS\Core\Service\Response\Response;
 use GibsonOS\Core\Utility\JsonUtility;
 use GibsonOS\Core\Wrapper\ModelWrapper;
+use GibsonOS\Module\Explorer\Attribute\CheckDeviceRequestValuePermission;
 use GibsonOS\Module\Explorer\Attribute\CheckExplorerPermission;
 use GibsonOS\Module\Explorer\Exception\MediaException;
 use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
@@ -231,7 +232,7 @@ class Html5Controller extends AbstractController
      * @throws FactoryError
      * @throws Exception
      */
-    #[CheckPermission([Permission::READ])]
+    #[CheckDeviceRequestValuePermission([Permission::READ])]
     public function getImage(
         GibsonStoreService $gibsonStoreService,
         ImageService $imageService,
