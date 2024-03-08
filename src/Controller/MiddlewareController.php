@@ -133,8 +133,8 @@ class MiddlewareController extends AbstractController
         TypeFactory $typeFactory,
         #[GetModel(['token' => 'token'])]
         Media $media,
-        int $width = null,
-        int $height = null,
+        ?int $width = null,
+        ?int $height = null,
     ): ResponseInterface {
         $path = $media->getDir() . $media->getFilename();
 

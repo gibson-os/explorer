@@ -92,7 +92,7 @@ class GibsonStoreService
      * @throws ExecuteError
      * @throws ReadError
      */
-    public function getDirMetas(string $dir, array $keys = null, $default = null)
+    public function getDirMetas(string $dir, ?array $keys = null, $default = null)
     {
         $store = $this->getStoreToRead($dir);
 
@@ -201,7 +201,7 @@ class GibsonStoreService
      * @throws ReadError
      * @throws ExecuteError
      */
-    public function getFileMetas(string $path, array $keys = null, $default = null)
+    public function getFileMetas(string $path, ?array $keys = null, $default = null)
     {
         $dir = $this->fileService->getDir($path);
         $filename = $this->fileService->getFilename($path);
@@ -285,7 +285,7 @@ class GibsonStoreService
      * @throws JsonException
      * @throws WriteError
      */
-    public function setFileMeta(string $path, string $key, $value, string $checkSum = null): GibsonStoreService
+    public function setFileMeta(string $path, string $key, $value, ?string $checkSum = null): GibsonStoreService
     {
         $dir = $this->fileService->getDir($path);
         $filename = $this->fileService->getFilename($path);
@@ -324,7 +324,7 @@ class GibsonStoreService
      * @throws JsonException
      * @throws WriteError
      */
-    public function setFileMetas(string $dir, array $values, string $checkSum = null): GibsonStoreService
+    public function setFileMetas(string $dir, array $values, ?string $checkSum = null): GibsonStoreService
     {
         foreach ($values as $key => $value) {
             $this->setFileMeta($dir, $key, $value, $checkSum);
@@ -338,7 +338,7 @@ class GibsonStoreService
      * @throws GetError
      * @throws ReadError
      */
-    public function hasFileImage(string $path, string $checkSum = null): bool
+    public function hasFileImage(string $path, ?string $checkSum = null): bool
     {
         $dir = $this->fileService->getDir($path);
         $filename = $this->fileService->getFilename($path);
@@ -379,7 +379,7 @@ class GibsonStoreService
      * @throws LoadError
      * @throws CreateError
      */
-    public function getFileImage(string $path, int $width = null, int $height = null): Image
+    public function getFileImage(string $path, ?int $width = null, ?int $height = null): Image
     {
         $dir = $this->fileService->getDir($path);
         $filename = $this->fileService->getFilename($path);
@@ -470,7 +470,7 @@ class GibsonStoreService
      * @throws WriteError
      * @throws CreateError
      */
-    public function setFileImage(string $path, Image $image, string $checkSum = null): GibsonStoreService
+    public function setFileImage(string $path, Image $image, ?string $checkSum = null): GibsonStoreService
     {
         $dir = $this->fileService->getDir($path);
         $filename = $this->fileService->getFilename($path);
@@ -511,7 +511,7 @@ class GibsonStoreService
      * @throws GetError
      * @throws WriteError
      */
-    public function cleanStore(string $dir, array $existingFiles = null): GibsonStoreService
+    public function cleanStore(string $dir, ?array $existingFiles = null): GibsonStoreService
     {
         $this
             ->cleanFileMetas($dir, $existingFiles)
@@ -527,7 +527,7 @@ class GibsonStoreService
      * @throws GetError
      * @throws WriteError
      */
-    public function cleanFileMetas(string $dir, array $existingFiles = null): GibsonStoreService
+    public function cleanFileMetas(string $dir, ?array $existingFiles = null): GibsonStoreService
     {
         $store = $this->getStoreToWrite($dir);
 
@@ -556,7 +556,7 @@ class GibsonStoreService
      * @throws WriteError
      * @throws GetError
      */
-    public function cleanFileImages(string $dir, array $existingFiles = null): GibsonStoreService
+    public function cleanFileImages(string $dir, ?array $existingFiles = null): GibsonStoreService
     {
         $store = $this->getStoreToWrite($dir);
 
@@ -587,7 +587,7 @@ class GibsonStoreService
      *
      * @deprecated
      */
-    public function cleanFileThumbs(string $dir, array $existingFiles = null): GibsonStoreService
+    public function cleanFileThumbs(string $dir, ?array $existingFiles = null): GibsonStoreService
     {
         $store = $this->getStoreToWrite($dir);
 
@@ -695,7 +695,7 @@ class GibsonStoreService
     /**
      * @throws GetError
      */
-    private function getChecksum(string $filename, string $checkSum = null): string
+    private function getChecksum(string $filename, ?string $checkSum = null): string
     {
         if ($checkSum === null) {
             $checkSum = md5_file($filename);

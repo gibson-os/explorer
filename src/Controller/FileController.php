@@ -251,8 +251,8 @@ class FileController extends AbstractController
         TypeFactory $typeFactory,
         string $dir,
         string $filename,
-        int $width = null,
-        int $height = null,
+        ?int $width = null,
+        ?int $height = null,
         bool $base64 = false,
     ): ResponseInterface {
         $path = $dirService->addEndSlash($dir) . $filename;

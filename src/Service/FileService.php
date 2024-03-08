@@ -28,7 +28,7 @@ class FileService
      * @throws FactoryError
      * @throws ReadError
      */
-    public function get(string $path, int $userId = null): File
+    public function get(string $path, ?int $userId = null): File
     {
         $dir = $this->coreFileService->getDir($path);
         $filename = $this->coreFileService->getFilename($path);

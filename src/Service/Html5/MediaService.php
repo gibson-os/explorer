@@ -223,8 +223,8 @@ class MediaService
         int $userId,
         string $dir,
         array $files = [],
-        string $audioStream = null,
-        string $subtitleStream = null,
+        ?string $audioStream = null,
+        ?string $subtitleStream = null,
     ): array {
         $dir = $this->dirService->addEndSlash($dir);
 

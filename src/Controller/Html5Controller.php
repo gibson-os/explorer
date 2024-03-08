@@ -54,6 +54,7 @@ use GibsonOS\Module\Explorer\Factory\File\TypeFactory;
 use GibsonOS\Module\Explorer\Form\Html5\ConnectedUserForm;
 use GibsonOS\Module\Explorer\Model\Html5\ConnectedUser;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
+use GibsonOS\Module\Explorer\Repository\Html5\Media\PositionRepository;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\GibsonStoreService;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
@@ -125,8 +126,8 @@ class Html5Controller extends AbstractController
         MediaService $mediaService,
         string $dir,
         array $files = [],
-        string $audioStream = null,
-        string $subtitleStream = null,
+        ?string $audioStream = null,
+        ?string $subtitleStream = null,
     ): AjaxResponse {
         $userId = $this->sessionService->getUserId();
 
@@ -194,6 +195,25 @@ class Html5Controller extends AbstractController
 
     /**
      * @throws ClientException
+     * @throws JsonException
+     * @throws RecordException
+     * @throws ReflectionException
+     * @throws SelectError
+     */
+    #[CheckPermission([Permission::READ])]
+    public function getPosition(
+        PositionRepository $positionRepository,
+        #[GetModel(['token' => 'token'])]
+        Media $media,
+        User $permissionUser,
+    ): AjaxResponse {
+        return $this->returnSuccess(
+            $positionRepository->getByMediaAndUserId($media->getId() ?? 0, $permissionUser->getId() ?? 0),
+        );
+    }
+
+    /**
+     * @throws ClientException
      * @throws ConvertStatusError
      * @throws DateTimeError
      * @throws JsonException
@@ -239,8 +259,8 @@ class Html5Controller extends AbstractController
         TypeFactory $typeFactory,
         #[GetModel(['token' => 'token'])]
         Media $media,
-        int $width = null,
-        int $height = null,
+        ?int $width = null,
+        ?int $height = null,
     ): Response {
         $path = $media->getDir() . $media->getFilename();
 
@@ -381,8 +401,12 @@ class Html5Controller extends AbstractController
     }
 
     /**
+     * @param Setting|null $chromecastReceiverAppId
+     *
+     * @throws ClientException
      * @throws JsonException
      * @throws MiddlewareException
+     * @throws RecordException
      * @throws ReflectionException
      * @throws SaveError
      * @throws SelectError
@@ -395,7 +419,7 @@ class Html5Controller extends AbstractController
         ModelWrapper $modelWrapper,
         MiddlewareService $middlewareService,
         #[GetSetting('chromecastReceiverAppId', 'core')]
-        Setting $chromecastReceiverAppId = null,
+        ?Setting $chromecastReceiverAppId = null,
     ): AjaxResponse {
         if ($chromecastReceiverAppId !== null) {
             return $this->returnSuccess($chromecastReceiverAppId->getValue());

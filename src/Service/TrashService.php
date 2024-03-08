@@ -50,7 +50,7 @@ class TrashService
      * @throws ClientException
      * @throws RecordException
      */
-    public function add(string $dir, array $files = null, int $userId = null): array
+    public function add(string $dir, ?array $files = null, ?int $userId = null): array
     {
         $dir = $this->dirService->addEndSlash($dir);
         $trashDir = $this->dirService->addEndSlash(
