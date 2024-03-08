@@ -98,6 +98,7 @@ class Position extends AbstractModel implements JsonSerializable
         return [
             'position' => $this->getPosition(),
             'user' => $this->getUser(),
+            'modified' => $this->getModified()->format('Y-m-d H:i:s'),
         ];
     }
 }
