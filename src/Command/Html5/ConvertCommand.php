@@ -11,6 +11,7 @@ use GibsonOS\Core\Enum\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Exception\Model\SaveError;
 use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Repository\SettingRepository;
+use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
@@ -74,11 +75,11 @@ class ConvertCommand extends AbstractCommand
                     ->setMessage($exception->getMessage())
                 ;
 
-                if ($media->getSubtitleStream() !== null) {
+                if ($media->getSubtitleStream() !== Media::SUBTITLE_NONE) {
                     $media
                         ->setStatus(ConvertStatus::WAIT)
                         ->setMessage('Subtitle removed')
-                        ->setSubtitleStream(null)
+                        ->setSubtitleStream(Media::SUBTITLE_NONE)
                     ;
                 }
             }
