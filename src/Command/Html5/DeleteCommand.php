@@ -9,6 +9,7 @@ use GibsonOS\Core\Attribute\Command\Lock;
 use GibsonOS\Core\Attribute\Command\Option;
 use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
+use GibsonOS\Core\Enum\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\FileNotFound;
 use GibsonOS\Core\Exception\GetError;
@@ -19,7 +20,6 @@ use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Module\Explorer\Exception\MediaException;
-use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use JsonException;
@@ -82,7 +82,7 @@ class DeleteCommand extends AbstractCommand
      */
     private function deleteWhereFileNotExists(): void
     {
-        foreach ($this->mediaRepository->getAllByStatus(Media::STATUS_GENERATED) as $media) {
+        foreach ($this->mediaRepository->getAllByStatus(ConvertStatus::GENERATED) as $media) {
             if (
                 file_exists($media->getDir() . $media->getFilename())
                 && (
@@ -239,7 +239,7 @@ class DeleteCommand extends AbstractCommand
 
             $deleteSize = $dirSize - $size;
 
-            foreach ($this->mediaRepository->getAllByStatus('generated') as $media) {
+            foreach ($this->mediaRepository->getAllByStatus(ConvertStatus::GENERATED) as $media) {
                 if ($deleteSize <= 0) {
                     break;
                 }

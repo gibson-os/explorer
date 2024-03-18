@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Dto;
 
+use GibsonOS\Core\Enum\Ffmpeg\ConvertStatus;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
 use JsonSerializable;
 
@@ -10,7 +11,7 @@ class File implements JsonSerializable
 {
     private bool $thumbAvailable = false;
 
-    private ?string $html5MediaStatus = null;
+    private ?ConvertStatus $html5MediaStatus = null;
 
     private ?string $html5MediaToken = null;
 
@@ -91,12 +92,12 @@ class File implements JsonSerializable
         return $this;
     }
 
-    public function getHtml5MediaStatus(): ?string
+    public function getHtml5MediaStatus(): ?ConvertStatus
     {
         return $this->html5MediaStatus;
     }
 
-    public function setHtml5MediaStatus(?string $html5MediaStatus): File
+    public function setHtml5MediaStatus(?ConvertStatus $html5MediaStatus): File
     {
         $this->html5MediaStatus = $html5MediaStatus;
 
@@ -182,8 +183,8 @@ class File implements JsonSerializable
             'size' => $this->getSize(),
             'type' => $this->getType(),
             'thumbAvailable' => $this->isThumbAvailable(),
-            'html5VideoStatus' => $this->getHtml5MediaStatus(),
-            'html5MediaStatus' => $this->getHtml5MediaStatus(),
+            'html5VideoStatus' => $this->getHtml5MediaStatus()?->value,
+            'html5MediaStatus' => $this->getHtml5MediaStatus()?->value,
             'html5VideoToken' => $this->getHtml5MediaToken(),
             'html5MediaToken' => $this->getHtml5MediaToken(),
             'position' => $this->getPosition(),

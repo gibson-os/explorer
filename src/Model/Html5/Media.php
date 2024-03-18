@@ -9,6 +9,7 @@ use GibsonOS\Core\Attribute\Install\Database\Column;
 use GibsonOS\Core\Attribute\Install\Database\Constraint;
 use GibsonOS\Core\Attribute\Install\Database\Key;
 use GibsonOS\Core\Attribute\Install\Database\Table;
+use GibsonOS\Core\Enum\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Model\AbstractModel;
 use GibsonOS\Core\Model\User;
 use GibsonOS\Core\Wrapper\ModelWrapper;
@@ -24,14 +25,6 @@ use JsonSerializable;
 class Media extends AbstractModel implements JsonSerializable
 {
     public const SUBTITLE_NONE = 'none';
-
-    public const STATUS_ERROR = 'error';
-
-    public const STATUS_WAIT = 'wait';
-
-    public const STATUS_GENERATE = 'generate';
-
-    public const STATUS_GENERATED = 'generated';
 
     #[Column(attributes: [Column::ATTRIBUTE_UNSIGNED], autoIncrement: true)]
     private ?int $id = null;
@@ -54,7 +47,7 @@ class Media extends AbstractModel implements JsonSerializable
 
     #[Column(type: Column::TYPE_ENUM, values: ['error', 'wait', 'generate', 'generated'])]
     #[Key]
-    private string $status = self::STATUS_WAIT;
+    private ConvertStatus $status = ConvertStatus::WAIT;
 
     #[Column(type: Column::TYPE_TINYINT, attributes: [Column::ATTRIBUTE_UNSIGNED])]
     private int $type = FileTypeDescriberInterface::CATEGORY_VIDEO;
@@ -64,6 +57,9 @@ class Media extends AbstractModel implements JsonSerializable
 
     #[Column]
     private bool $generationRequired = true;
+
+    #[Column(length: 1024)]
+    private string $message = '';
 
     #[Column(type: Column::TYPE_TIMESTAMP, default: Column::DEFAULT_CURRENT_TIMESTAMP)]
     private DateTimeInterface $added;
@@ -153,12 +149,12 @@ class Media extends AbstractModel implements JsonSerializable
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): ConvertStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): Media
+    public function setStatus(ConvertStatus $status): Media
     {
         $this->status = $status;
 
@@ -201,6 +197,18 @@ class Media extends AbstractModel implements JsonSerializable
         return $this;
     }
 
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(string $message): Media
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
     public function getAdded(): DateTimeInterface
     {
         return $this->added;
@@ -233,7 +241,7 @@ class Media extends AbstractModel implements JsonSerializable
             'html5VideoToken' => $this->getToken(),
             'dir' => $this->getDir(),
             'filename' => $this->getFilename(),
-            'status' => $this->getStatus(),
+            'status' => $this->getStatus()->value,
             'added' => $this->getAdded()->format('Y-m-d H:i:s'),
         ];
     }

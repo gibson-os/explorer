@@ -5,7 +5,7 @@ namespace GibsonOS\Module\Explorer\Store\Html5;
 
 use Generator;
 use GibsonOS\Core\Attribute\GetTableName;
-use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
+use GibsonOS\Core\Enum\Ffmpeg\ConvertStatus as ConvertStatusEnum;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
 use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
@@ -62,7 +62,7 @@ class ToSeeStore extends AbstractDatabaseStore
         $this
             ->addWhere(
                 '`m`.`status` IN (:statusGenerate, :statusGenerated)',
-                ['statusGenerate' => ConvertStatus::STATUS_GENERATE, 'statusGenerated' => ConvertStatus::STATUS_GENERATED],
+                ['statusGenerate' => ConvertStatusEnum::GENERATE->name, 'statusGenerated' => ConvertStatusEnum::GENERATED->name],
             )
         ;
     }
@@ -149,7 +149,7 @@ class ToSeeStore extends AbstractDatabaseStore
                 'category' => TypeService::TYPE_CATEGORY_VIDEO,
             ];
 
-            if ($media->getStatus() === ConvertStatus::STATUS_GENERATE) {
+            if ($media->getStatus() === ConvertStatusEnum::GENERATE) {
                 try {
                     $convertStatus = $this->mediaService->getConvertStatus($media);
                 } catch (FileNotFound) {

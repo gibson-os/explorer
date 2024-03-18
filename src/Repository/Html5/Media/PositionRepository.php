@@ -38,17 +38,11 @@ class PositionRepository extends AbstractRepository
      */
     public function getByMediaAndUserId(int $mediaId, int $userId): Position
     {
-        $model = $this->fetchOne(
+        return $this->fetchOne(
             '`media_id`=? AND `user_id`=?',
             [$mediaId, $userId],
             Position::class,
         );
-
-        if (!$model instanceof Position) {
-            throw new SelectError();
-        }
-
-        return $model;
     }
 
     /**

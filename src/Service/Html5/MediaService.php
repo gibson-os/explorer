@@ -7,6 +7,7 @@ use DateTime;
 use GibsonOS\Core\Attribute\GetSetting;
 use GibsonOS\Core\Dto\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Dto\Ffmpeg\Media as MediaDto;
+use GibsonOS\Core\Enum\Ffmpeg\ConvertStatus as ConvertStatusEnum;
 use GibsonOS\Core\Exception\DateTimeError;
 use GibsonOS\Core\Exception\DeleteError;
 use GibsonOS\Core\Exception\Ffmpeg\ConvertStatusError;
@@ -179,7 +180,7 @@ class MediaService
      */
     public function getConvertStatus(Media $media): ConvertStatus
     {
-        if ($media->getStatus() !== 'generate') {
+        if ($media->getStatus() !== ConvertStatusEnum::GENERATE) {
             return new ConvertStatus($media->getStatus());
         }
 

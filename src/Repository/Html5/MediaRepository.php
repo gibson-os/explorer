@@ -4,9 +4,14 @@ declare(strict_types=1);
 namespace GibsonOS\Module\Explorer\Repository\Html5;
 
 use DateTime;
+use GibsonOS\Core\Enum\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Module\Explorer\Model\Html5\Media;
+use JsonException;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
+use ReflectionException;
 
 class MediaRepository extends AbstractRepository
 {
@@ -39,6 +44,10 @@ class MediaRepository extends AbstractRepository
     }
 
     /**
+     * @throws ClientException
+     * @throws JsonException
+     * @throws RecordException
+     * @throws ReflectionException
      * @throws SelectError
      */
     public function getByDirAndFilename(string $dir, string $filename): Media
@@ -53,13 +62,16 @@ class MediaRepository extends AbstractRepository
     }
 
     /**
-     * @throws SelectError
+     * @throws JsonException
+     * @throws ClientException
+     * @throws RecordException
+     * @throws ReflectionException
      *
      * @return Media[]
      */
-    public function getAllByStatus(string $status): array
+    public function getAllByStatus(ConvertStatus $status): array
     {
-        return $this->fetchAll('`status`=?', [$status], Media::class);
+        return $this->fetchAll('`status`=?', [$status->name], Media::class);
     }
 
     /**

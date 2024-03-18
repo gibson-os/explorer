@@ -7,19 +7,16 @@ use Exception;
 use GibsonOS\Core\Attribute\Command\Lock;
 use GibsonOS\Core\Attribute\Install\Cronjob;
 use GibsonOS\Core\Command\AbstractCommand;
-use GibsonOS\Core\Exception\DeleteError;
-use GibsonOS\Core\Exception\Ffmpeg\NoAudioError;
-use GibsonOS\Core\Exception\GetError;
+use GibsonOS\Core\Enum\Ffmpeg\ConvertStatus;
 use GibsonOS\Core\Exception\Model\SaveError;
-use GibsonOS\Core\Exception\ProcessError;
-use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Manager\ModelManager;
 use GibsonOS\Core\Repository\SettingRepository;
-use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\File\Type\Describer\FileTypeDescriberInterface;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use JsonException;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
 
@@ -41,19 +38,16 @@ class ConvertCommand extends AbstractCommand
     }
 
     /**
-     * @throws DeleteError
-     * @throws GetError
-     * @throws NoAudioError
-     * @throws ProcessError
-     * @throws SaveError
-     * @throws SelectError
      * @throws JsonException
      * @throws ReflectionException
+     * @throws SaveError
+     * @throws ClientException
+     * @throws RecordException
      */
     protected function run(): int
     {
-        foreach ($this->mediaRepository->getAllByStatus(Media::STATUS_WAIT) as $media) {
-            $this->modelManager->save($media->setStatus(Media::STATUS_GENERATE));
+        foreach ($this->mediaRepository->getAllByStatus(ConvertStatus::WAIT) as $media) {
+            $this->modelManager->save($media->setStatus(ConvertStatus::GENERATE));
 
             try {
                 $filename = $this->settingRepository->getByKeyAndModuleName(
@@ -73,9 +67,20 @@ class ConvertCommand extends AbstractCommand
                         break;
                 }
 
-                $media->setStatus(Media::STATUS_GENERATED);
-            } catch (Exception) {
-                $media->setStatus(Media::STATUS_ERROR);
+                $media->setStatus(ConvertStatus::GENERATED);
+            } catch (Exception $exception) {
+                $media
+                    ->setStatus(ConvertStatus::ERROR)
+                    ->setMessage($exception->getMessage())
+                ;
+
+                if ($media->getSubtitleStream() !== null) {
+                    $media
+                        ->setStatus(ConvertStatus::WAIT)
+                        ->setMessage('Subtitle removed')
+                        ->setSubtitleStream(null)
+                    ;
+                }
             }
 
             $this->modelManager->save($media);
