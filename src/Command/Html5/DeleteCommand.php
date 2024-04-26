@@ -20,10 +20,14 @@ use GibsonOS\Core\Repository\SettingRepository;
 use GibsonOS\Core\Service\DirService;
 use GibsonOS\Core\Service\FileService;
 use GibsonOS\Module\Explorer\Exception\MediaException;
+use GibsonOS\Module\Explorer\Repository\Html5\Media\PositionRepository;
 use GibsonOS\Module\Explorer\Repository\Html5\MediaRepository;
 use GibsonOS\Module\Explorer\Service\Html5\MediaService;
 use JsonException;
+use MDO\Exception\ClientException;
+use MDO\Exception\RecordException;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 
 /**
  * @description Delete converted files
@@ -39,6 +43,7 @@ class DeleteCommand extends AbstractCommand
 
     public function __construct(
         private readonly MediaRepository $mediaRepository,
+        private readonly PositionRepository $positionRepository,
         private readonly SettingRepository $settingRepository,
         private readonly DirService $dirService,
         private readonly FileService $fileService,
@@ -50,12 +55,15 @@ class DeleteCommand extends AbstractCommand
     }
 
     /**
+     * @throws ClientException
      * @throws DeleteError
      * @throws FileNotFound
      * @throws GetError
      * @throws JsonException
      * @throws MediaException
      * @throws ModelDeleteError
+     * @throws RecordException
+     * @throws ReflectionException
      * @throws SelectError
      */
     protected function run(): int
@@ -75,10 +83,12 @@ class DeleteCommand extends AbstractCommand
     }
 
     /**
-     * @throws ModelDeleteError
-     * @throws SelectError
-     * @throws MediaException
+     * @throws ClientException
      * @throws JsonException
+     * @throws MediaException
+     * @throws ModelDeleteError
+     * @throws RecordException
+     * @throws ReflectionException
      */
     private function deleteWhereFileNotExists(): void
     {
@@ -196,6 +206,9 @@ class DeleteCommand extends AbstractCommand
      * @throws JsonException
      * @throws MediaException
      * @throws ModelDeleteError
+     * @throws ClientException
+     * @throws RecordException
+     * @throws ReflectionException
      */
     private function deleteWhereSizeExceeded(): void
     {
@@ -238,35 +251,65 @@ class DeleteCommand extends AbstractCommand
             }
 
             $deleteSize = $dirSize - $size;
-
-            foreach ($this->mediaRepository->getAllByStatus(ConvertStatus::GENERATED) as $media) {
-                if ($deleteSize <= 0) {
-                    break;
-                }
-
-                if (!$media->isGenerationRequired()) {
-                    continue;
-                }
-
-                $fileEnding = $this->mediaService->getGeneratedFileEnding($media);
-                $fileSize = filesize($this->mediaPath . $media->getToken() . $fileEnding);
-                $this->logger->info(sprintf(
-                    'Media %s deleted because folder size is %d Bytes bigger as %d Bytes.' . PHP_EOL,
-                    $media->getDir() . $media->getFilename(),
-                    $deleteSize,
-                    $size,
-                ));
-
-                if (!$this->dry) {
-                    $this->fileService->delete($this->mediaPath . $media->getToken() . $fileEnding);
-                    $this->modelManager->delete($media);
-                }
-
-                $deleteSize -= $fileSize;
-            }
+            $deleteSize = $this->deleteWhereSizeReached($deleteSize, $size, true);
+            $this->deleteWhereSizeReached($deleteSize, $size, false);
         } catch (SelectError) {
             return;
         }
+    }
+
+    /**
+     * @throws ClientException
+     * @throws DeleteError
+     * @throws FileNotFound
+     * @throws GetError
+     * @throws JsonException
+     * @throws MediaException
+     * @throws ModelDeleteError
+     * @throws RecordException
+     * @throws ReflectionException
+     */
+    private function deleteWhereSizeReached(int $deleteSize, int $expectedSize, bool $onlyViewed): int
+    {
+        if ($deleteSize <= 0) {
+            return $deleteSize;
+        }
+
+        foreach ($this->mediaRepository->getAllByStatus(ConvertStatus::GENERATED) as $media) {
+            if ($deleteSize <= 0) {
+                break;
+            }
+
+            if (!$media->isGenerationRequired()) {
+                continue;
+            }
+
+            if ($media->isLocked()) {
+                continue;
+            }
+
+            if ($onlyViewed && !$this->positionRepository->hasPosition($media->getId() ?? 0)) {
+                continue;
+            }
+
+            $fileEnding = $this->mediaService->getGeneratedFileEnding($media);
+            $fileSize = filesize($this->mediaPath . $media->getToken() . $fileEnding);
+            $this->logger->info(sprintf(
+                'Media %s deleted because folder size is %d Bytes bigger as %d Bytes.' . PHP_EOL,
+                $media->getDir() . $media->getFilename(),
+                $deleteSize,
+                $expectedSize,
+            ));
+
+            if (!$this->dry) {
+                $this->fileService->delete($this->mediaPath . $media->getToken() . $fileEnding);
+                $this->modelManager->delete($media);
+            }
+
+            $deleteSize -= $fileSize;
+        }
+
+        return $deleteSize;
     }
 
     public function setDry(bool $dry): void
