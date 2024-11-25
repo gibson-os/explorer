@@ -8,7 +8,6 @@ use GibsonOS\Core\Exception\Repository\SelectError;
 use GibsonOS\Core\Repository\AbstractRepository;
 use GibsonOS\Core\Wrapper\RepositoryWrapper;
 use GibsonOS\Module\Explorer\Model\Html5\ConnectedUser;
-use GibsonOS\Module\Explorer\Model\Html5\Media;
 use GibsonOS\Module\Explorer\Model\Html5\Media\Position;
 use JsonException;
 use MDO\Dto\Query\Join;
@@ -81,7 +80,7 @@ class PositionRepository extends AbstractRepository
     public function hasPosition(int $mediaId): bool
     {
         try {
-            $this->fetchOne('`media_id`=?', [$mediaId], Media::class);
+            $this->fetchOne('`media_id`=?', [$mediaId], Position::class);
         } catch (SelectError) {
             return false;
         }

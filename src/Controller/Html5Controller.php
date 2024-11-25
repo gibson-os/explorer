@@ -401,8 +401,6 @@ class Html5Controller extends AbstractController
     }
 
     /**
-     * @param Setting|null $chromecastReceiverAppId
-     *
      * @throws ClientException
      * @throws JsonException
      * @throws MiddlewareException
