@@ -9,6 +9,9 @@ use GibsonOS\Core\Store\AbstractDatabaseStore;
 use GibsonOS\Core\Wrapper\DatabaseStoreWrapper;
 use GibsonOS\Module\Explorer\Model\Html5\ConnectedUser;
 
+/**
+ * @extends AbstractDatabaseStore<ConnectedUser>
+ */
 class ConnectedUserStore extends AbstractDatabaseStore
 {
     private User $user;

@@ -20,6 +20,9 @@ use MDO\Exception\ClientException;
 use MDO\Exception\RecordException;
 use ReflectionException;
 
+/**
+ * @extends AbstractDatabaseStore<Media>
+ */
 class MediaStore extends AbstractDatabaseStore
 {
     public function __construct(

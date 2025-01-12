@@ -34,6 +34,9 @@ use MDO\Exception\ClientException;
 use MDO\Exception\RecordException;
 use ReflectionException;
 
+/**
+ * @extends AbstractDatabaseStore<Media>
+ */
 class ToSeeStore extends AbstractDatabaseStore
 {
     /**

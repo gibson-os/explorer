@@ -14,6 +14,9 @@ use MDO\Exception\ClientException;
 use MDO\Exception\RecordException;
 use ReflectionException;
 
+/**
+ * @extends AbstractDatabaseStore<Trash>
+ */
 class TrashStore extends AbstractDatabaseStore
 {
     public function __construct(
