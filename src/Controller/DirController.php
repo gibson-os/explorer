@@ -67,7 +67,7 @@ class DirController extends AbstractController
     ): AjaxResponse {
         $withParents = true;
 
-        if (!empty($node) && $node !== 'root') {
+        if ($node !== null && $node !== '' && $node !== 'root') {
             $dir = $node;
             $withParents = false;
         }

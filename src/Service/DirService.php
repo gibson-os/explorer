@@ -84,7 +84,7 @@ class DirService
             ->setDirMeta($dirPath, 'dirdircount', $dir->getDirDirs())
         ;
 
-        if (!empty($dir->getIcon())) {
+        if (!in_array($dir->getIcon(), [null, '', '0'], true)) {
             $this->gibsonStoreService->setDirMeta($dirPath, 'icon', $dir->getIcon());
         }
 

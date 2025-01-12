@@ -57,7 +57,7 @@ class TrashService
             $this->settingRepository->getByKeyAndModuleName('explorer', $userId ?? 0, 'trashDir')->getValue(),
         );
 
-        if (empty($files)) {
+        if ($files === null || $files === []) {
             return [$this->addElement($trashDir, $dir, null, $userId)];
         }
 

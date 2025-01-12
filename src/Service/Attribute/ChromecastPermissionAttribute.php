@@ -62,7 +62,7 @@ class ChromecastPermissionAttribute extends AbstractActionAttributeService
             }
         }
 
-        if (count($userIdsWithPermission) === 0) {
+        if ($userIdsWithPermission === []) {
             throw new PermissionDenied();
         }
 

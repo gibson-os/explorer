@@ -135,7 +135,7 @@ class ToSeeStore extends AbstractDatabaseStore
 
             if (
                 $this->hasSeen($media)
-                && count($nextFiles) === 0
+                && $nextFiles === []
             ) {
                 continue;
             }

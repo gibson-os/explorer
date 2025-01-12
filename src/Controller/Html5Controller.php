@@ -419,7 +419,7 @@ class Html5Controller extends AbstractController
         #[GetSetting('chromecastReceiverAppId', 'core')]
         ?Setting $chromecastReceiverAppId = null,
     ): AjaxResponse {
-        if ($chromecastReceiverAppId !== null) {
+        if ($chromecastReceiverAppId instanceof Setting) {
             return $this->returnSuccess($chromecastReceiverAppId->getValue());
         }
 

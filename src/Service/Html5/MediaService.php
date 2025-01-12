@@ -76,13 +76,13 @@ class MediaService
             'movflags' => 'faststart',
         ];
 
-        if (!empty($audioStream)) {
+        if ($audioStream !== null && $audioStream !== '' && $audioStream !== '0') {
             $mediaDto->selectAudioStream($audioStream);
 
             $options = $this->convertSurroundSound($mediaDto, $options);
         }
 
-        if (!empty($media->getSubtitleStream())) {
+        if (!in_array($media->getSubtitleStream(), [null, ''], true)) {
             $mediaDto->selectSubtitleStream(
                 $media->getSubtitleStream() === Media::SUBTITLE_NONE
                     ? null
@@ -112,11 +112,11 @@ class MediaService
             $this->dirService->addEndSlash($media->getDir()) . $media->getFilename(),
         );
 
-        if (!empty($media->getAudioStream())) {
+        if (!in_array($media->getAudioStream(), [null, ''], true)) {
             $mediaDto->selectAudioStream($media->getAudioStream());
         }
 
-        if (!empty($media->getSubtitleStream())) {
+        if (!in_array($media->getSubtitleStream(), [null, ''], true)) {
             $mediaDto->selectSubtitleStream(
                 $media->getSubtitleStream() === Media::SUBTITLE_NONE
                     ? null
@@ -156,7 +156,7 @@ class MediaService
             return;
         }
 
-        if (!empty($audioStream)) {
+        if ($audioStream !== null && $audioStream !== '') {
             $mediaDto->selectAudioStream($audioStream);
         }
 
@@ -229,7 +229,7 @@ class MediaService
     ): array {
         $dir = $this->dirService->addEndSlash($dir);
 
-        if (empty($files)) {
+        if ($files === []) {
             $files = array_map(function ($path) {
                 return $this->fileService->getFilename($path);
             }, $this->dirService->getFiles($dir));

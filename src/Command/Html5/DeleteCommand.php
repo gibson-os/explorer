@@ -173,7 +173,7 @@ class DeleteCommand extends AbstractCommand
                 'html5_media_lifetime',
             )->getValue();
 
-            if (empty($lifetime)) {
+            if ($lifetime === '' || $lifetime === '0') {
                 return;
             }
 
@@ -236,7 +236,7 @@ class DeleteCommand extends AbstractCommand
                 $size *= $types[$hits[2]];
             }
 
-            if (empty($size)) {
+            if ($size === 0) {
                 return;
             }
 

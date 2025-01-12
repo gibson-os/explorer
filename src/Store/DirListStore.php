@@ -103,7 +103,7 @@ class DirListStore extends AbstractStore
         if ($hits === 0 || empty($dirWithoutHomePath)) {
             $item = $this->getItem($dir);
 
-            if (!empty($data)) {
+            if ($data !== []) {
                 $item['expanded'] = true;
                 $item['data'] = $data;
             }
@@ -117,7 +117,7 @@ class DirListStore extends AbstractStore
         $parentDir = implode(DIRECTORY_SEPARATOR, $dirParts);
         $dirs = $this->loadDir($parentDir);
 
-        if (!empty($data)) {
+        if ($data !== []) {
             $dirs[$dir . DIRECTORY_SEPARATOR]['expanded'] = true;
             $dirs[$dir . DIRECTORY_SEPARATOR]['data'] = $data;
         }

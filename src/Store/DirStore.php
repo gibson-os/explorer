@@ -99,7 +99,7 @@ class DirStore extends AbstractStore
      */
     private function generateList(): void
     {
-        if (!empty($this->list)) {
+        if ($this->list !== []) {
             return;
         }
 

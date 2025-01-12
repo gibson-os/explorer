@@ -122,7 +122,7 @@ class GibsonStoreService
             $returnList[$row['key']] = $row['value'];
         }
 
-        if (!count($returnList)) {
+        if ($returnList === []) {
             return $default;
         }
 
@@ -242,7 +242,7 @@ class GibsonStoreService
             }
         }
 
-        if (!count($returnList)) {
+        if ($returnList === []) {
             return $default;
         }
 
@@ -364,11 +364,7 @@ class GibsonStoreService
             "chksum='" . SQLite3::escapeString($checkSum) . "'",
         );
 
-        if ($query) {
-            return true;
-        }
-
-        return false;
+        return (bool) $query;
     }
 
     /**

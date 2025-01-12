@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace GibsonOS\Module\Explorer\Controller;
 
+use DateTime;
 use GibsonOS\Core\Attribute\GetModel;
 use GibsonOS\Core\Controller\AbstractController;
 use GibsonOS\Core\Enum\HttpStatusCode;
@@ -204,7 +205,7 @@ class MiddlewareController extends AbstractController
             }
         }
 
-        $mediaData['position'] = count($positions) > 0 ? max($positions) : 0;
+        $mediaData['position'] = $positions !== [] ? max($positions) : 0;
 
         try {
             $convertStatus = $mediaService->getConvertStatus($media);
@@ -215,7 +216,7 @@ class MiddlewareController extends AbstractController
         $mediaData['convertPercent'] = $convertStatus?->getPercent() ?? 0;
         $mediaData['convertTime'] = $convertStatus?->getTime()?->getTimestamp() ?? 0;
         $timeRemaining = $convertStatus?->getTimeRemaining();
-        $mediaData['convertTimeRemaining'] = $timeRemaining === null ? 0 : $timeRemaining->getTimestamp();
+        $mediaData['convertTimeRemaining'] = $timeRemaining instanceof DateTime ? $timeRemaining->getTimestamp() : 0;
 
         return $this->returnSuccess($mediaData);
     }
