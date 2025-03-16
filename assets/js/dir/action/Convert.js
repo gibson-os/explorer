@@ -18,12 +18,12 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Convert', {
                     me.disable();
 
                     Ext.iterate(records, (record) => {
-                        if (!data[dir + record.get('name')]) {
+                        if (!data[dir + '/' + record.get('name')]) {
                             return true;
                         }
 
                         record.set('html5MediaStatus', 'wait');
-                        record.set('html5MediaToken', data[dir + record.get('name')]);
+                        record.set('html5MediaToken', data[dir + '/' + record.get('name')]);
                         record.commit();
                     });
 
@@ -138,7 +138,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.action.Convert', {
                                 url: baseDir + 'explorer/file/metaInfos',
                                 method: 'GET',
                                 params: {
-                                    path: dir + record.get('name')
+                                    path: dir + '/' + record.get('name')
                                 },
                                 success(response) {
                                     var data = Ext.decode(response.responseText).data;

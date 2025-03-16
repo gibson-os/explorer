@@ -102,9 +102,6 @@ class MediaStore extends AbstractDatabaseStore
         return $size;
     }
 
-    /**
-     * @return string[]
-     */
     protected function getOrderMapping(): array
     {
         return [

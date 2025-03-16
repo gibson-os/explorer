@@ -15,7 +15,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Shortcuts', {
                             text: record.get('name'),
                             icon: 'icon_dir',
                             parameters: {
-                                dir: dir + record.get('name') + '/'
+                                dir: dir + '/' + record.get('name') + '/'
                             }
                         });
                     } else {
@@ -26,7 +26,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Shortcuts', {
                             text: record.get('name'),
                             icon: 'icon_' + record.get('type'),
                             parameters: {
-                                path: dir + record.get('name')
+                                path: dir + '/' + record.get('name')
                             }
                         });
                     }

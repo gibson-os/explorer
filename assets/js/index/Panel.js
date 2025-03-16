@@ -526,11 +526,11 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
         });
         view.on('renameDir', (button, response, dir, oldName, record) => {
             const tree = me.down('#explorerDirTree');
-            const node = tree.getStore().getNodeById(dir + oldName + '/');
+            const node = tree.getStore().getNodeById(dir + '/' + oldName + '/');
 
             if (node) {
                 node.set('text', record.get('name'));
-                node.setId(dir + record.get('name') + '/');
+                node.setId(dir + '/' + record.get('name') + '/');
                 node.commit();
             }
         });
@@ -539,7 +539,7 @@ Ext.define('GibsonOS.module.explorer.index.Panel', {
 
             Ext.iterate(records, (record) => {
                 if (record.get('type') === 'dir') {
-                    const node = tree.getStore().getNodeById(dir + record.get('name') + '/');
+                    const node = tree.getStore().getNodeById(dir + '/' + record.get('name') + '/');
 
                     if (node) {
                         node.remove(true);

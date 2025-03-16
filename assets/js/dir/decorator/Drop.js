@@ -17,7 +17,7 @@ GibsonOS.define('GibsonOS.module.explorer.dir.decorator.Drop', {
                     return dir;
                 }
 
-                return dir + (targetRecord.get('type') === 'dir' ? targetRecord.get('name') : '')
+                return dir + '/' + (targetRecord.get('type') === 'dir' ? targetRecord.get('name') : '')
             },
             addAfterDrop(records) {
                 let newRecords = [];

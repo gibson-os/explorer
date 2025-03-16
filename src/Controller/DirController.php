@@ -37,6 +37,7 @@ class DirController extends AbstractController
         ?string $dir,
     ): AjaxResponse {
         $dir ??= $homePath;
+        $dir = $dirService->removeEndSlash($dir);
         $dirStore
             ->setDir($dir)
             ->setUserId($this->sessionService->getUserId())
@@ -49,7 +50,7 @@ class DirController extends AbstractController
             'total' => $dirStore->getCount(),
             'dir' => $dir,
             'meta' => $dirStore->getMetas(),
-            'path' => explode(DIRECTORY_SEPARATOR, $dirService->removeEndSlash($dir)),
+            'path' => explode(DIRECTORY_SEPARATOR, $dir),
             'homePath' => $homePath,
         ]);
     }

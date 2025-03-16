@@ -15,9 +15,9 @@ Ext.define('GibsonOS.module.explorer.dir.Grid', {
         const dir = me.getStore().getProxy().getReader().jsonData.dir;
 
         if (record.get('type') === 'dir') {
-            GibsonOS.module.explorer.dir.fn.open(me.getStore(), dir + '/' + record.get('name') + '/');
+            GibsonOS.module.explorer.dir.fn.open(me.getStore(), dir + '/' + record.get('name'));
         } else {
-            GibsonOS.module.explorer.file.fn.download(dir + record.get('name'));
+            GibsonOS.module.explorer.file.fn.download(dir + '/' + record.get('name'));
         }
     },
     enterButton: {
